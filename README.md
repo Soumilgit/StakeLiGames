@@ -9,11 +9,11 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## 🪧Demo pics
 
-<img width="939" height="945" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/81ceda1c-10b9-4b43-8e63-3a411747f5b5" />
+<img width="1048" height="923" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/c293cec4-d40f-413d-a02b-94100340c4e8" />
 <img width="1917" height="989" alt="hero-section" src="https://github.com/user-attachments/assets/7a99eab7-e52e-44f6-a267-6890586eb769" />
 <img width="1909" height="879" alt="why" src="https://github.com/user-attachments/assets/d39809fe-d7cc-46fb-89c4-07026d4978e8" />
 <img width="1919" height="699" alt="info" src="https://github.com/user-attachments/assets/f367c680-504d-424f-8453-ab67809cbf69" />
-<img width="1358" height="883" alt="start" src="https://github.com/user-attachments/assets/a1126456-7c1e-404c-80dd-332e9b4494a0" />
+<img width="1339" height="881" alt="start" src="https://github.com/user-attachments/assets/866091bc-2f44-4aff-ba28-a4d23547109a" />
 <img width="1763" height="670" alt="foot" src="https://github.com/user-attachments/assets/dac8c73a-eef2-46f1-af1b-c60022f3c755" />
 
 ## 🌟 Features
