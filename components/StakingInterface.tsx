@@ -31,9 +31,9 @@ export function StakingInterface() {
 
     setLoading(true);
     try {
-      // Contract ABI (ETH version)
+      // Contract ABI (simplified - just the createGame function)
       const contractABI = [
-        "function createGame(bytes32 gameId, string gameType, uint256 targetScore) external payable"
+        "function createGame(string gameId, string gameType, uint256 targetScore, uint256 stakeAmount) external"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -44,19 +44,19 @@ export function StakingInterface() {
       // Create contract instance
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-      // Create game ID (as bytes32)
-      const gameIdStr = `${selectedGame.id}_${account}_${Date.now()}`;
-      const gameId = ethers.id(gameIdStr); // keccak256 hash as bytes32
+      // Create game ID
+      const gameId = `${selectedGame.id}_${account}_${Date.now()}`;
+      
+      // Convert stake amount to USDC smallest unit (6 decimals)
+      const microAmount = ethers.parseUnits(stakeAmount, 6);
 
-      // Convert stake amount to ETH (wei)
-      const ethAmount = ethers.parseEther(stakeAmount);
-
-      // Call createGame function with ETH value
+      // Call createGame function
+      // For Pinpoint: targetTime is tries (1-5), for others: time in seconds
       const tx = await contract.createGame(
         gameId,
         selectedGame.id,
         parseInt(targetTime),
-        { value: ethAmount }
+        microAmount
       );
 
       console.log("Transaction sent:", tx.hash);
@@ -64,7 +64,7 @@ export function StakingInterface() {
 
       // Wait for confirmation
       const receipt = await tx.wait();
-
+      
       console.log("Stake successful! Receipt:", receipt);
       const performanceMsg = selectedGame.id === "pinpoint" 
         ? `score of ${targetTime} or lower (1-5, or NA if unsolved)`
@@ -151,7 +151,7 @@ export function StakingInterface() {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold mb-2">Stake Amount (ETH)</label>
+                <label className="block text-sm font-bold mb-2">Stake Amount (USDC)</label>
                 <input
                   type="number"
                   value={stakeAmount}
@@ -161,7 +161,7 @@ export function StakingInterface() {
                   min="0.01"
                   step="0.01"
                 />
-                <div className="text-xs text-muted mt-2">Minimum: 0.01 ETH</div>
+                <div className="text-xs text-muted mt-2">Minimum: 0.01 USDC</div>
               </div>
 
               <div>
@@ -212,19 +212,19 @@ export function StakingInterface() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm">Stake Amount:</span>
-                      <span className="font-bold">{stakeAmount} ETH</span>
+                      <span className="font-bold">{stakeAmount} USDC</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">Base Reward ({selectedGame.reward}):</span>
                       <span className="font-bold text-primary">
-                        {(parseFloat(stakeAmount) * parseFloat(selectedGame.reward) / 100).toFixed(4)} ETH
+                        {(parseFloat(stakeAmount) * parseFloat(selectedGame.reward) / 100).toFixed(2)} USDC
                       </span>
                     </div>
                     {isFlawless && !selectedGame.hideFlawless && (
                       <div className="flex justify-between">
                         <span className="text-sm flex items-center gap-1">✨ Flawless Bonus ({selectedGame.flawlessBonus}):</span>
                         <span className="font-bold text-secondary">
-                          +{(parseFloat(stakeAmount) * parseFloat(selectedGame.flawlessBonus) / 100).toFixed(4)} ETH
+                          +{(parseFloat(stakeAmount) * parseFloat(selectedGame.flawlessBonus) / 100).toFixed(2)} USDC
                         </span>
                       </div>
                     )}
@@ -234,7 +234,7 @@ export function StakingInterface() {
                         {(
                           parseFloat(stakeAmount) * 
                           (1 + parseFloat(selectedGame.reward) / 100 + ((isFlawless && !selectedGame.hideFlawless) ? parseFloat(selectedGame.flawlessBonus) / 100 : 0))
-                        ).toFixed(4)} ETH
+                        ).toFixed(2)} USDC
                       </span>
                     </div>
                   </div>
