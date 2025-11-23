@@ -1,16 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_usdcAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -151,16 +140,11 @@
         "internalType": "uint256",
         "name": "targetScore",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "stakeAmount",
-        "type": "uint256"
       }
     ],
     "name": "createGame",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -403,19 +387,6 @@
     "name": "updatePlatformFee",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "usdc",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

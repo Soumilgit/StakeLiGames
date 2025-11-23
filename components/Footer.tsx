@@ -71,9 +71,9 @@ export function Footer() {
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted bg-transparent">
           <p>© 2025 StakeLiGames. Built with ❤️ on Ethereum blockchain.</p>
           <p className="mt-2">
-            Powered by{" "}
-            <a href="https://firstdollar.money/SoumilMukh6476" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-              FirstDollar
+            Developed by{" "}
+            <a href="https://github.com/Soumilgit" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              Soumil Mukhopadhyay
             </a>
           </p>
         </div>

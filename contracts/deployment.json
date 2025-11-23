@@ -1,7 +1,7 @@
 {
   "network": "sepolia",
-  "contractAddress": "0xF419ccaDF195D72B1B6C5F3F38F6143273b085cf",
+  "contractAddress": "0xA7C4d7103b7Ff89a6C3CBb00D2C202D3aa6bb04f",
   "usdcAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
   "deployer": "0xf1173D83984e8a413828E0c4e4E1828ae25e5C72",
-  "txHash": "0x6a93fa81cb5b65e306ae44446d6eb871e92b51885e7a83130b2f5b4c2024d5e0"
+  "txHash": "0xa3f12eb0683e972ce99ddf1c860c3052d433678da6ebb1cf15879283ba05f3db"
 }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
@@ -10,8 +9,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * @dev Stake USDC on LinkedIn Games scores and earn rewards based on verified results
  */
 contract StakeLiGames is Ownable, ReentrancyGuard {
-    IERC20 public usdc;
-    
     uint256 public totalStaked;
     uint256 public totalGames;
     uint256 public platformFee = 250; // 2.5% in basis points
@@ -22,7 +19,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         uint256 stakeAmount;
         uint256 timestamp;
         GameStatus status;
-        string gameType; // "queens", "crossword", "pinpoint", "tango"
+        string gameType;
     }
     
     enum GameStatus { Pending, Won, Lost, Cancelled }
@@ -51,48 +48,38 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     
     event FeesWithdrawn(address indexed owner, uint256 amount);
     
-    constructor(address _usdcAddress) {
-        usdc = IERC20(_usdcAddress);
-    }
+
     
     /**
-     * @dev Create a new game stake
+     * @dev Create a new game stake (ETH)
      * @param gameId Unique identifier for the game
      * @param gameType Type of LinkedIn game (queens, crossword, etc.)
      * @param targetScore Score player aims to achieve
-     * @param stakeAmount Amount of USDC to stake (in wei, 6 decimals)
      */
     function createGame(
         bytes32 gameId,
         string memory gameType,
-        uint256 targetScore,
-        uint256 stakeAmount
-    ) external nonReentrant {
+        uint256 targetScore
+    ) external payable nonReentrant {
         require(games[gameId].player == address(0), "Game ID already exists");
-        require(stakeAmount > 0, "Stake amount must be greater than 0");
+        require(msg.value >= 0.01 ether, "Minimum stake is 0.01 ETH");
         require(targetScore > 0, "Target score must be greater than 0");
-        
-        // Transfer USDC from player to contract
-        require(
-            usdc.transferFrom(msg.sender, address(this), stakeAmount),
-            "USDC transfer failed"
-        );
-        
+
         games[gameId] = Game({
             player: msg.sender,
             targetScore: targetScore,
-            stakeAmount: stakeAmount,
+            stakeAmount: msg.value,
             timestamp: block.timestamp,
             status: GameStatus.Pending,
             gameType: gameType
         });
-        
-        totalStaked += stakeAmount;
+
+        totalStaked += msg.value;
         totalGames++;
-        userStakedAmount[msg.sender] += stakeAmount;
+        userStakedAmount[msg.sender] += msg.value;
         userGamesPlayed[msg.sender]++;
-        
-        emit GameCreated(gameId, msg.sender, gameType, targetScore, stakeAmount);
+
+        emit GameCreated(gameId, msg.sender, gameType, targetScore, msg.value);
     }
     
     /**
@@ -105,33 +92,34 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         uint256 actualScore
     ) external nonReentrant {
         Game storage game = games[gameId];
-        
+
         require(game.player == msg.sender, "Only player can verify");
         require(game.status == GameStatus.Pending, "Game already verified");
-        
+
         bool won = actualScore >= game.targetScore;
         uint256 payout = 0;
-        
+
         if (won) {
             // Player wins: return stake + 20% reward
             uint256 reward = (game.stakeAmount * 20) / 100;
             uint256 totalAmount = game.stakeAmount + reward;
             uint256 fee = (totalAmount * platformFee) / 10000;
             payout = totalAmount - fee;
-            
+
             game.status = GameStatus.Won;
             userTotalWinnings[msg.sender] += reward;
-            
-            require(usdc.transfer(msg.sender, payout), "Payout failed");
+
+            (bool sent, ) = msg.sender.call{value: payout}("");
+            require(sent, "Payout failed");
         } else {
             // Player loses: stake goes to reward pool
             game.status = GameStatus.Lost;
             userTotalLosses[msg.sender] += game.stakeAmount;
         }
-        
+
         totalStaked -= game.stakeAmount;
         userStakedAmount[msg.sender] -= game.stakeAmount;
-        
+
         emit GameVerified(gameId, msg.sender, actualScore, won, payout);
     }
     
@@ -141,20 +129,21 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
      */
     function cancelGame(bytes32 gameId) external nonReentrant {
         Game storage game = games[gameId];
-        
+
         require(game.player == msg.sender, "Only player can cancel");
         require(game.status == GameStatus.Pending, "Game not pending");
         require(block.timestamp - game.timestamp < 7 days, "Game too old to cancel");
-        
+
         game.status = GameStatus.Cancelled;
         totalStaked -= game.stakeAmount;
         userStakedAmount[msg.sender] -= game.stakeAmount;
-        
+
         // Refund with 1% cancellation fee
         uint256 fee = game.stakeAmount / 100;
         uint256 refund = game.stakeAmount - fee;
-        
-        require(usdc.transfer(msg.sender, refund), "Refund failed");
+
+        (bool sent, ) = msg.sender.call{value: refund}("");
+        require(sent, "Refund failed");
     }
     
     /**
@@ -162,12 +151,13 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
      * @param amount Amount to withdraw
      */
     function withdrawFees(uint256 amount) external onlyOwner {
-        uint256 contractBalance = usdc.balanceOf(address(this));
+        uint256 contractBalance = address(this).balance;
         uint256 availableFees = contractBalance - totalStaked;
-        
+
         require(amount <= availableFees, "Insufficient fees available");
-        require(usdc.transfer(owner(), amount), "Withdrawal failed");
-        
+        (bool sent, ) = owner().call{value: amount}("");
+        require(sent, "Withdrawal failed");
+
         emit FeesWithdrawn(owner(), amount);
     }
     
@@ -219,7 +209,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             totalStaked,
             totalGames,
             platformFee,
-            usdc.balanceOf(address(this))
+            address(this).balance
         );
     }
 }
