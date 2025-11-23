@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f4f0e8;
+  --foreground: #1a1a1a;
+  --primary: #00d4aa;
+  --secondary: #6366f1;
+  --accent: #f59e0b;
+  --border: #1a1a1a;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn-brutal {
+    @apply px-6 py-3 bg-primary text-foreground font-bold border-2 border-border shadow-brutal 
+           hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
+           active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
+           transition-all duration-150;
+  }
+  
+  .btn-brutal-secondary {
+    @apply px-6 py-3 bg-white text-foreground font-bold border-2 border-border shadow-brutal 
+           hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
+           active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
+           transition-all duration-150;
+  }
+  
+  .card-brutal {
+    @apply bg-white border-2 border-border shadow-brutal-lg p-6;
+  }
+  
+  .input-brutal {
+    @apply px-4 py-3 bg-white border-2 border-border shadow-brutal-sm
+           focus:outline-none focus:shadow-brutal
+           transition-all duration-150;
+  }
+  
+  .badge-brutal {
+    @apply inline-block px-3 py-1 text-sm font-bold border-2 border-border bg-accent;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--primary);
+  color: var(--foreground);
+}
