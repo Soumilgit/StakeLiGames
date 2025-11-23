@@ -7,7 +7,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ![Next.js](https://img.shields.io/badge/frontend-Next.js-000000?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?style=for-the-badge)
 
-## 🪧Demo
+## 🪧Demo pics
 
 <img width="939" height="945" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/81ceda1c-10b9-4b43-8e63-3a411747f5b5" />
 <img width="1917" height="989" alt="hero-section" src="https://github.com/user-attachments/assets/7a99eab7-e52e-44f6-a267-6890586eb769" />
