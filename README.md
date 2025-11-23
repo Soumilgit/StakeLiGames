@@ -7,6 +7,15 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ![Next.js](https://img.shields.io/badge/frontend-Next.js-000000?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?style=for-the-badge)
 
+## 🪧Demo
+
+<img width="939" height="945" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/111ab167-18c1-4891-95f8-fcb5c0d046a6" />
+<img width="1900" height="988" alt="hero-section" src="https://github.com/user-attachments/assets/8165ecc7-e003-475d-870a-dcaf913aa674" />
+<img width="1900" height="885" alt="why" src="https://github.com/user-attachments/assets/b5f80d3d-50f9-47d6-8c25-c7644ea1f777" />
+<img width="1899" height="878" alt="info" src="https://github.com/user-attachments/assets/0130def0-39c5-45fa-a6f4-3bc455d068c9" />
+<img width="1894" height="875" alt="start" src="https://github.com/user-attachments/assets/0850293d-bffb-4a65-acaa-18987cc4dc9a" />
+<img width="1898" height="742" alt="foot" src="https://github.com/user-attachments/assets/14d60119-5fd1-4be0-aad9-6d7798088284" />
+
 ## 🌟 Features
 
 - **🔗 Algorand Blockchain** - Fast, secure, and near-zero transaction fees
