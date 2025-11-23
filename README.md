@@ -1,4 +1,4 @@
-# 🎮 StakeLiGames - The On-Chain Confidence Market
+# StakeLiGames - The On-Chain Confidence Market
 
 Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built with **Algorand blockchain** using **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind** and **Next.js**.
 
@@ -7,7 +7,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ![Next.js](https://img.shields.io/badge/frontend-Next.js-000000?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?style=for-the-badge)
 
-## 🪧Demo pics
+## Demo pics
 
 <img width="1048" height="923" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/c293cec4-d40f-413d-a02b-94100340c4e8" />
 <img width="1917" height="989" alt="hero-section" src="https://github.com/user-attachments/assets/7a99eab7-e52e-44f6-a267-6890586eb769" />
@@ -16,24 +16,24 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 <img width="1339" height="881" alt="start" src="https://github.com/user-attachments/assets/866091bc-2f44-4aff-ba28-a4d23547109a" />
 <img width="1763" height="670" alt="foot" src="https://github.com/user-attachments/assets/dac8c73a-eef2-46f1-af1b-c60022f3c755" />
 
-## 🌟 Features
+## Features
 
-- **🔗 Algorand Blockchain** - Fast, secure, and near-zero transaction fees
-- **🐍 Python Smart Contracts** - PyTeal for readable, Python-based blockchain logic
-- **💰 USDC Staking** - Stake stablecoins on your LinkedIn Games scores
-- **🎯 Score Verification** - On-chain verification of game performance
-- **🏆 Instant Rewards** - Earn up to 20% APY when you meet your target score
-- **👛 Pera/Defly Wallet** - Easy wallet integration for Algorand
-- **🎨 Neo-Brutalist UI** - Clean, minimal design inspired by FlashFlow
-- **⚡ Zero Gas Fees** - Free testnet transactions, minimal mainnet costs
+- Algorand Blockchain - Fast, secure, and near-zero transaction fees
+- Python Smart Contracts - PyTeal for readable, Python-based blockchain logic
+- USDC Staking - Stake stablecoins on your LinkedIn Games scores
+- Score Verification - On-chain verification of game performance
+- Instant Rewards - Earn up to 20% APY when you meet your target score
+- Pera/Defly Wallet - Easy wallet integration for Algorand
+- Neo-Brutalist UI - Clean, minimal design inspired by FlashFlow
+- Zero Gas Fees - Free testnet transactions, minimal mainnet costs
 
-## 🎯 How It Works
+## How It Works
 
-1. **Connect Wallet** - Link your Pera or Defly wallet (Algorand testnet)
-2. **Choose Game** - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango)
-3. **Stake USDC** - Set your target score and stake amount
-4. **Play & Verify** - Complete the game and verify your score on-chain
-5. **Earn Rewards** - Meet your target = get your stake back + 20% APY!
+1. Connect Wallet - Link your Pera or Defly wallet (Algorand testnet)
+2. Choose Game - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango)
+3. Stake USDC - Set your target and stake amount (minimum: 0.01 USDC)
+4. Play & Verify - Complete the game and verify your result on-chain
+5. Earn Rewards - Meet your target = get your stake back + 20% APY!
 
 ## 🛠 Tech Stack
 
@@ -56,7 +56,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - **Python 3.8+** - Contract compilation & deployment
 - **py-algorand-sdk** - Python SDK for Algorand
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js** 18+ and npm
 - **Python** 3.8+ and pip
@@ -127,10 +127,10 @@ The deployment script will:
 
 **Output:**
 ```
-🎉 Contract deployed successfully!
-📋 Application ID: 123456789
-📍 Application Address: XXXXXX...
-🔗 View on AlgoExplorer: https://testnet.algoexplorer.io/application/123456789
+Contract deployed successfully!
+Application ID: 123456789
+Application Address: XXXXXX...
+View on AlgoExplorer: https://testnet.algoexplorer.io/application/123456789
 ```
 
 ### 6. Configure Frontend
@@ -154,9 +154,9 @@ NEXT_PUBLIC_USDC_ASSET_ID=10458941
 npm run dev
 ```
 
-Open http://localhost:3000 🎉
+Open http://localhost:3000
 
-## 💰 Get Testnet USDC
+## Get Testnet USDC
 
 The testnet uses Asset ID `10458941` for USDC simulation:
 
@@ -169,23 +169,25 @@ The testnet uses Asset ID `10458941` for USDC simulation:
 
 ### Stake on a Game
 
-1. **Connect Wallet** - Click "Connect Wallet" (top right)
-2. **Select Game**:
-   - 👑 Queens (Hard) - 850+ score → 20% APY
-   - 🧩 Crossword (Medium) - 750+ score → 15% APY
-   - 🎯 Pinpoint (Medium) - 700+ score → 15% APY
-   - 💃 Tango (Easy) - 600+ score → 10% APY
+1. Connect Wallet - Click "Connect Wallet" (top right)
+2. Select Game:
+   - Queens (Hard) - Complete in under 40 seconds → 25% reward
+   - Crossclimb (Hard) - Complete in under 50 seconds → 25% reward
+   - Mini Sudoku (Medium) - Complete in under 80 seconds → 20% reward
+   - Tango (Medium) - Complete in under 90 seconds → 20% reward
+   - Zip (Easy) - Complete in under 120 seconds → 15% reward
+   - Pinpoint (Special) - Score 1-5 or NA → 30% reward
 
-3. **Configure Stake**:
-   - Enter USDC amount (min: 1 USDC)
-   - Set target score (min: game's minimum)
+3. Configure Stake:
+   - Enter USDC amount (min: 0.01 USDC)
+   - Set your target (time or score, as per game)
    - Review estimated returns
 
-4. **Create Stake** - Approve transaction in wallet
+4. Create Stake - Approve transaction in wallet
 
-5. **Play Game** - Complete your LinkedIn Game
+5. Play Game - Complete your LinkedIn Game
 
-6. **Verify Score** - Submit score to claim rewards
+6. Verify Result - Submit your result to claim rewards
 
 ### Verify & Claim Rewards
 
@@ -277,16 +279,16 @@ python deploy.py     # Deploy to testnet
 
 ### Contract Methods
 
-1. **`create_game`** - Create new stake on game score
+1. `create_game` - Create new stake on game result
    - Args: game_id, target_score, stake_amount
-   - Requires: USDC transfer to contract
+   - Requires: USDC transfer to contract (min: 0.01 USDC)
 
-2. **`verify_payout`** - Verify score and distribute rewards
+2. `verify_payout` - Verify result and distribute rewards
    - Args: game_id, actual_score
-   - Logic: If score >= target → return stake + 20% reward
+   - Logic: If result meets/exceeds target → return stake + reward (see above)
    - Else: stake → reward pool
 
-3. **`withdraw_fees`** - Owner withdraws platform fees
+3. `withdraw_fees` - Owner withdraws platform fees
    - Args: amount
    - Requires: Owner signature
 
@@ -344,8 +346,8 @@ Edit `components/StakingInterface.tsx`:
 
 ```typescript
 const games = [
-  { id: "new_game", name: "New Game", emoji: "🎲", difficulty: "Hard", minScore: 900, reward: "25%" },
-  // ... existing games
+   { id: "new_game", name: "New Game", difficulty: "Hard", targetTime: 60, unit: "sec", reward: "25%" },
+   // ... existing games
 ];
 ```
 
@@ -391,6 +393,12 @@ Contributions welcome! Please:
 
 ---
 
-**Built with ❤️ using Algorand + PyTeal + Next.js**
+**Built with love using Algorand + PyTeal + Next.js**
 
-*Turn your gaming confidence into instant liquidity! 🎮💰*
+*Turn your gaming confidence into instant liquidity!*
+# Ethereum Sepolia Deployment
+
+- Contract Address: 0xF22995f0b507C9e7e02317e4190E55F20e611f54
+- Chain ID: 11155111
+- Network: Sepolia Testnet
+
