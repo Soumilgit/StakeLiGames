@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useWallet } from "./WalletProvider";
 import { Gamepad2, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
@@ -85,8 +85,11 @@ export function StakingInterface() {
   };
 
   return (
-    <section id="stake" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section id="stake" className="py-20 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5" />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +97,7 @@ export function StakingInterface() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">Start Staking Now</h2>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+          <p className="text-xl text-muted max-w-2xl mx-auto">
             Choose your game, set your time target, and stake to earn rewards.
           </p>
         </motion.div>
@@ -105,10 +108,10 @@ export function StakingInterface() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="card-brutal"
+            className="card-modern"
           >
             <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Gamepad2 className="w-6 h-6" />
+              <Gamepad2 className="w-6 h-6 text-primary" />
               Select Your Game
             </h3>
 
@@ -117,49 +120,21 @@ export function StakingInterface() {
                 <button
                   key={game.id}
                   onClick={() => setSelectedGame(game)}
-                  className={`p-3 border-2 border-border shadow-brutal-sm transition-all ${
+                  className={`p-3 rounded-lg border transition-all ${
                     selectedGame.id === game.id
-                      ? "bg-primary translate-x-1 translate-y-1 shadow-none"
-                      : "bg-white hover:translate-x-0.5 hover:translate-y-0.5"
+                      ? "bg-gradient-primary border-primary shadow-glow scale-105"
+                      : "bg-card/50 border-border hover:border-primary/50 hover:shadow-glow-sm hover:scale-105"
                   }`}
                 >
                   <div className="text-2xl mb-1">{game.emoji}</div>
-                  <div className="font-bold text-sm mb-1">{game.name}</div>
-                  <div className="text-xs text-gray-600">{game.difficulty}</div>
-                  <div className="text-xs font-bold text-primary mt-1">+{game.reward}</div>
+                  <div className={`font-bold text-sm mb-1 ${selectedGame.id === game.id ? 'text-white' : ''}`}>{game.name}</div>
+                  <div className={`text-xs ${selectedGame.id === game.id ? 'text-white/80' : 'text-muted'}`}>{game.difficulty}</div>
+                  <div className={`text-xs font-bold mt-1 ${selectedGame.id === game.id ? 'text-white' : 'text-primary'}`}>+{game.reward}</div>
                 </button>
               ))}
             </div>
 
-            {selectedGame && (
-              <div className="bg-white p-4 border-2 border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold">Selected Game:</span>
-                  <span className="text-xl">{selectedGame.emoji}</span>
-                </div>
-                <div className="font-bold text-lg mb-1">{selectedGame.name}</div>
-                <div className="text-sm text-gray-600 mb-2">Difficulty: {selectedGame.difficulty}</div>
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                  <span className="text-sm font-semibold">Target:</span>
-                  <span className="font-bold text-primary">
-                    {selectedGame.id === "pinpoint" ? `≤${selectedGame.targetTime} score` : `<${selectedGame.targetTime} sec`}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-sm font-semibold">Base Reward:</span>
-                  <span className="font-bold text-primary">{selectedGame.reward}</span>
-                </div>
-                {!selectedGame.hideFlawless && (
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-sm font-semibold">Flawless Bonus:</span>
-                    <span className="font-bold text-secondary">+{selectedGame.flawlessBonus}</span>
-                  </div>
-                )}
-                {selectedGame.note && (
-                  <div className="text-xs text-gray-500 mt-2 italic">{selectedGame.note}</div>
-                )}
-              </div>
-            )}
+            {selectedGame && <SelectedGameBox selectedGame={selectedGame} />}
           </motion.div>
 
           {/* Staking Form */}
@@ -167,10 +142,10 @@ export function StakingInterface() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="card-brutal"
+            className="card-modern"
           >
             <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6" />
+              <TrendingUp className="w-6 h-6 text-secondary" />
               Configure Your Stake
             </h3>
 
@@ -182,11 +157,11 @@ export function StakingInterface() {
                   value={stakeAmount}
                   onChange={(e) => setStakeAmount(e.target.value)}
                   placeholder="Enter amount (e.g., 100)"
-                  className="input-brutal w-full"
+                  className="input-modern w-full"
                   min="1"
                   step="1"
                 />
-                <div className="text-xs text-gray-600 mt-2">Minimum: 1 USDC</div>
+                <div className="text-xs text-muted mt-2">Minimum: 1 USDC</div>
               </div>
 
               <div>
@@ -198,11 +173,11 @@ export function StakingInterface() {
                   value={targetTime}
                   onChange={(e) => setTargetTime(e.target.value)}
                   placeholder={selectedGame.id === "pinpoint" ? "e.g., 3" : `e.g., ${selectedGame.targetTime}`}
-                  className="input-brutal w-full"
+                  className="input-modern w-full"
                   min={selectedGame.id === "pinpoint" ? 1 : 10}
                   max={selectedGame.id === "pinpoint" ? 5 : undefined}
                 />
-                <div className="text-xs text-gray-600 mt-2">
+                <div className="text-xs text-muted mt-2">
                   {selectedGame.id === "pinpoint" 
                     ? "Set score target (1-5). Lower score = harder = higher rewards! NA if unsolved."
                     : "Set your time target. Faster = harder = higher rewards!"}
@@ -210,7 +185,7 @@ export function StakingInterface() {
               </div>
 
               {!selectedGame.hideFlawless && (
-                <div className="bg-gradient-to-r from-secondary/10 to-accent/10 p-4 border-2 border-border">
+                <div className="bg-gradient-to-r from-secondary/10 to-accent/10 p-4 rounded-lg border border-secondary/20">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -221,9 +196,9 @@ export function StakingInterface() {
                     <div className="flex-1">
                       <div className="font-bold text-sm flex items-center gap-2">
                         ✨ Flawless Solve Commitment
-                        <span className="text-xs bg-secondary text-white px-2 py-0.5 rounded">+{selectedGame.flawlessBonus}</span>
+                        <span className="text-xs bg-secondary text-white px-2 py-0.5 rounded-full">+{selectedGame.flawlessBonus}</span>
                       </div>
-                      <div className="text-xs text-gray-600 mt-1">
+                      <div className="text-xs text-muted mt-1">
                         No hints, no mistakes - pure skill! Earn extra rewards for honest solving.
                       </div>
                     </div>
@@ -232,8 +207,8 @@ export function StakingInterface() {
               )}
 
               {stakeAmount && targetTime && (
-                <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 border-2 border-border">
-                  <div className="text-sm font-semibold text-gray-600 mb-3">Estimated Returns</div>
+                <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 rounded-lg border border-primary/20">
+                  <div className="text-sm font-semibold text-muted mb-3">Estimated Returns</div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm">Stake Amount:</span>
@@ -269,13 +244,13 @@ export function StakingInterface() {
               <button
                 onClick={handleStake}
                 disabled={!account || loading || !stakeAmount || !targetTime}
-                className="btn-brutal w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Processing..." : account ? "🚀 Create Stake" : "Connect Wallet First"}
               </button>
 
               {!account && (
-                <div className="text-center text-sm text-gray-600">
+                <div className="text-center text-sm text-muted">
                   Connect your MetaMask wallet to start staking
                 </div>
               )}
@@ -285,29 +260,90 @@ export function StakingInterface() {
 
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
-          <div className="card-brutal bg-white">
+          <div className="card-modern bg-white hover:bg-cardHover">
             <div className="text-3xl mb-3">⚡</div>
             <h4 className="font-bold mb-2">Time-Based & Score Scoring</h4>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-muted">
               Beat the clock for 5 games! Pinpoint uses score (1-5 or NA if unsolved).
             </p>
           </div>
-          <div className="card-brutal bg-white">
+          <div className="card-modern bg-card/50 hover:bg-cardHover">
             <div className="text-3xl mb-3">✨</div>
             <h4 className="font-bold mb-2">Flawless Bonuses</h4>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-muted">
               No hints, no mistakes! Honest solvers earn extra rewards up to 12% bonus.
             </p>
           </div>
-          <div className="card-brutal bg-white">
+          <div className="card-modern bg-card/50 hover:bg-cardHover">
             <div className="text-3xl mb-3">🔒</div>
             <h4 className="font-bold mb-2">Secure & Transparent</h4>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-muted">
               All stakes are locked in audited smart contracts on Ethereum Sepolia testnet.
             </p>
           </div>
         </div>
       </div>
     </section>
+
+  );
+}
+
+// --- SelectedGameBox component for dynamic background ---
+type SelectedGame = {
+  id: string;
+  name: string;
+  emoji: string;
+  difficulty: string;
+  targetTime: number;
+  unit: string;
+  reward: string;
+  flawlessBonus: string;
+  note?: string;
+  hideFlawless?: boolean;
+};
+
+function SelectedGameBox({ selectedGame }: { selectedGame: SelectedGame }) {
+  const [bg, setBg] = React.useState('white');
+  React.useEffect(() => {
+    const html = document.documentElement;
+    const updateBg = () => {
+      setBg(html.classList.contains('dark') ? '#181825' : 'white');
+    };
+    updateBg();
+    const observer = new MutationObserver(updateBg);
+    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div
+      className="p-4 rounded-lg border border-border"
+      style={{ backgroundColor: bg, color: 'inherit' }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-semibold text-muted">Selected Game:</span>
+        <span className="text-xl">{selectedGame.emoji}</span>
+      </div>
+      <div className="font-bold text-lg mb-1 gradient-text">{selectedGame.name}</div>
+      <div className="text-sm text-muted mb-2">Difficulty: {selectedGame.difficulty}</div>
+      <div className="flex items-center justify-between pt-2 border-t border-border">
+        <span className="text-sm font-semibold text-muted">Target:</span>
+        <span className="font-bold text-primary">
+          {selectedGame.id === "pinpoint" ? `≤${selectedGame.targetTime} score` : `<${selectedGame.targetTime} sec`}
+        </span>
+      </div>
+      <div className="flex items-center justify-between pt-1">
+        <span className="text-sm font-semibold text-muted">Base Reward:</span>
+        <span className="font-bold text-primary">{selectedGame.reward}</span>
+      </div>
+      {!selectedGame.hideFlawless && (
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-sm font-semibold text-muted">Flawless Bonus:</span>
+          <span className="font-bold text-secondary">+{selectedGame.flawlessBonus}</span>
+        </div>
+      )}
+      {selectedGame.note && (
+        <div className="text-xs text-muted mt-2 italic">{selectedGame.note}</div>
+      )}
+    </div>
   );
 }

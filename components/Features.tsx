@@ -6,34 +6,52 @@ import { motion } from "framer-motion";
 const features = [
   {
     icon: Shield,
-    title: "AI-Powered Risk Assessment",
+    title: "Smart Risk Assessment",
     description: "Advanced algorithms evaluate your gaming performance and calculate optimal stake amounts for maximum returns.",
-    color: "bg-primary",
+    gradient: "from-primary to-secondary",
   },
   {
     icon: Zap,
     title: "Instant Liquidity",
     description: "Get immediate access to funds based on your future game performance. No waiting, no intermediaries.",
-    color: "bg-secondary",
+    gradient: "from-secondary to-accent",
   },
   {
     icon: TrendingUp,
     title: "Global Asset Network",
     description: "Stake on LinkedIn Games scores with verified, on-chain results. Transparency guaranteed by blockchain.",
-    color: "bg-accent",
+    gradient: "from-accent to-primary",
   },
   {
     icon: Lock,
     title: "Real-Time Analytics",
     description: "Track your stakes, earnings, and performance metrics in real-time with our comprehensive dashboard.",
-    color: "bg-primary",
+    gradient: "from-primary to-accent",
   },
 ];
 
+import { useEffect, useState } from "react";
+
 export function Features() {
+  const [bg, setBg] = useState('white');
+  useEffect(() => {
+    const html = document.documentElement;
+    const updateBg = () => {
+      setBg(html.classList.contains('dark') ? '#0a0a0f' : 'white');
+    };
+    updateBg();
+    const observer = new MutationObserver(updateBg);
+    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
   return (
-    <section id="features" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section
+      id="features"
+      className="py-20 relative overflow-hidden"
+      style={{ backgroundColor: bg, color: 'inherit' }}
+    >
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -41,8 +59,8 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">Why Choose StakeLiGames?</h2>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-            Built on cutting-edge blockchain technology with AI-powered risk assessment and instant liquidity.
+          <p className="text-xl text-muted max-w-2xl mx-auto">
+            Built on cutting-edge blockchain technology with smart risk assessment and instant liquidity.
           </p>
         </motion.div>
 
@@ -54,13 +72,13 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="card-brutal group hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal transition-all duration-200"
+              className="card-modern bg-white group hover:scale-105 cursor-pointer"
             >
-              <div className={`w-16 h-16 ${feature.color} border-2 border-border flex items-center justify-center mb-6`}>
-                <feature.icon className="w-8 h-8 text-foreground" />
+              <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center mb-6 shadow-glow`}>
+                <feature.icon className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-              <p className="text-gray-700 leading-relaxed">{feature.description}</p>
+              <p className="text-muted leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>

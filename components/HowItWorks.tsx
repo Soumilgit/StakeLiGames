@@ -6,13 +6,13 @@ const steps = [
   {
     number: "01",
     title: "Connect Your Wallet",
-    description: "Link your Pera or Defly wallet to access the Algorand testnet. Get free test USDC instantly.",
+    description: "Link your MetaMask wallet to access the Ethereum Sepolia testnet. Get free test ETH and USDC instantly.",
     emoji: "👛",
   },
   {
     number: "02",
     title: "Choose Your Game",
-    description: "Select a LinkedIn Game (Queens, Crossword, etc.) and set your target score for staking.",
+    description: "Select a LinkedIn Game (Queens, Crossclimb, etc.) and set your target time for staking.",
     emoji: "🎮",
   },
   {
@@ -24,14 +24,31 @@ const steps = [
   {
     number: "04",
     title: "Play & Verify",
-    description: "Complete the game and verify your score. If you meet the target, earn 20% APY on your stake!",
+    description: "Complete the game and verify your time. If you meet the target, earn up to 35% rewards on your stake!",
     emoji: "🏆",
   },
 ];
 
+import { useEffect, useState } from "react";
+
 export function HowItWorks() {
+  const [bg, setBg] = useState('white');
+  useEffect(() => {
+    const html = document.documentElement;
+    const updateBg = () => {
+      setBg(html.classList.contains('dark') ? '#0a0a0f' : 'white');
+    };
+    updateBg();
+    const observer = new MutationObserver(updateBg);
+    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
   return (
-    <section id="how-it-works" className="py-20 bg-white border-y-4 border-border">
+    <section
+      id="how-it-works"
+      className="py-20 border-y border-border"
+      style={{ backgroundColor: bg, color: 'inherit' }}
+    >
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -40,7 +57,7 @@ export function HowItWorks() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">Ready to Transform Your Cash Flow?</h2>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+          <p className="text-xl text-muted max-w-2xl mx-auto">
             Join thousands of gamers and investors who trust StakeLiGames for their gaming confidence needs.
           </p>
         </motion.div>
@@ -55,15 +72,17 @@ export function HowItWorks() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="relative"
             >
-              <div className="card-brutal h-full">
+              <div className="card-modern bg-white h-full hover:shadow-glow transition-all">
                 <div className="text-6xl mb-4">{step.emoji}</div>
-                <div className="text-sm font-bold text-gray-500 mb-2">STEP {step.number}</div>
+                <div className="inline-block px-3 py-1 bg-primary/10 rounded-full text-sm font-bold text-primary mb-3">
+                  STEP {step.number}
+                </div>
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                <p className="text-gray-700 text-sm leading-relaxed">{step.description}</p>
+                <p className="text-muted text-sm leading-relaxed">{step.description}</p>
               </div>
               
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 text-2xl">
+                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 text-2xl text-primary">
                   →
                 </div>
               )}
