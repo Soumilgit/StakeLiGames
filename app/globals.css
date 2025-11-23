@@ -3,12 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --background: #f4f0e8;
-  --foreground: #1a1a1a;
-  --primary: #00d4aa;
-  --secondary: #6366f1;
-  --accent: #f59e0b;
-  --border: #1a1a1a;
+  --background: #ffffff;
+  --foreground: #18181b;
+  --primary: #7c3aed;
+  --secondary: #ec4899;
+  --accent: #10b981;
+  --border: #e5e7eb;
+  --card: #ffffff;
+  --card-hover: #f3f4f6;
+  --muted: #444444;
+  --card-secondary: #ffffff;
+  --card-secondary-hover: #f3f4f6;
+  --navbar: #f3f4f6;
+}
+
+.dark {
+  --background: #0a0a0f;
+  --foreground: #f8f9fa;
+  --primary: #7c3aed;
+  --secondary: #ec4899;
+  --accent: #10b981;
+  --border: #1f1f2e;
+  --card: #181825;
+  --card-hover: #232336;
+  --muted: #a1a1aa;
+  --card-secondary: #232336;
+  --card-secondary-hover: #181825;
+  --navbar: #181825;
 }
 
 @layer base {
@@ -18,35 +39,92 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+  }
+  .text-muted {
+    color: var(--muted);
+  }
+  .card-modern {
+    background: var(--card) !important;
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.02);
+  }
+  .bg-card\/50 {
+    background: var(--card-secondary) !important;
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+  }
+  .bg-cardHover {
+    background: var(--card-secondary-hover) !important;
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+  }
+  .card-modern .text-muted {
+    color: var(--muted) !important;
+  }
+  /* Remove all gradients from card backgrounds in light mode */
+  :root .card-modern,
+  :root .bg-card\/50,
+  :root .bg-cardHover {
+    background: #fff !important;
+    color: #18181b !important;
+    border-color: #e5e7eb !important;
+  }
+  .dark .card-modern,
+  .dark .bg-card\/50,
+  .dark .bg-cardHover {
+    background: #181825 !important;
+    color: #f8f9fa !important;
+    border-color: #1f1f2e !important;
+  }
+  .navbar {
+    background: var(--navbar) !important;
+    color: var(--foreground) !important;
+    border-bottom: 1px solid var(--border);
+  }
+  .badge-modern {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .btn-primary, .btn-secondary {
+    color: var(--foreground);
+  }
 }
 
 @layer components {
-  .btn-brutal {
-    @apply px-6 py-3 bg-primary text-foreground font-bold border-2 border-border shadow-brutal 
-           hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
-           active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
-           transition-all duration-150;
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg
+           shadow-glow hover:shadow-glow-lg hover:scale-105
+           active:scale-95 transition-all duration-300;
   }
   
-  .btn-brutal-secondary {
-    @apply px-6 py-3 bg-white text-foreground font-bold border-2 border-border shadow-brutal 
-           hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
-           active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
-           transition-all duration-150;
+  .btn-secondary {
+    @apply px-6 py-3 bg-card text-foreground font-semibold rounded-lg border border-border
+           hover:bg-cardHover hover:border-primary hover:shadow-glow-sm
+           active:scale-95 transition-all duration-300;
   }
   
-  .card-brutal {
-    @apply bg-white border-2 border-border shadow-brutal-lg p-6;
+  .card-modern {
+    @apply bg-card border border-border rounded-xl shadow-card p-6
+           hover:border-primary/50 transition-all duration-300;
   }
   
-  .input-brutal {
-    @apply px-4 py-3 bg-white border-2 border-border shadow-brutal-sm
-           focus:outline-none focus:shadow-brutal
-           transition-all duration-150;
+  .input-modern {
+    @apply px-4 py-3 bg-card/50 border border-border rounded-lg text-foreground
+           focus:outline-none focus:border-primary focus:shadow-glow-sm
+           placeholder:text-muted transition-all duration-300;
   }
   
-  .badge-brutal {
-    @apply inline-block px-3 py-1 text-sm font-bold border-2 border-border bg-accent;
+  .badge-modern {
+    @apply inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
+           bg-accent/10 text-accent border border-accent/20;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
   }
 }
 
@@ -60,8 +138,21 @@
   }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
 }
 
 /* Scroll behavior */
@@ -69,8 +160,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
 /* Selection */
 ::selection {
   background-color: var(--primary);
-  color: var(--foreground);
+  color: white;
 }
