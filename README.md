@@ -1,6 +1,6 @@
 # 🎮 StakeLiGames - The On-Chain Confidence Market
 
-Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built with **Algorand blockchain** using **PyTeal (Python smart contracts)** and **Next.js** with neo-brutalist UI design.
+Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built with **Algorand blockchain** using **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind** and **Next.js**.
 
 ![StakeLiGames](https://img.shields.io/badge/blockchain-Algorand-00D4AA?style=for-the-badge)
 ![PyTeal](https://img.shields.io/badge/contracts-PyTeal-6366F1?style=for-the-badge)
@@ -9,12 +9,12 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## 🪧Demo
 
-<img width="939" height="945" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/111ab167-18c1-4891-95f8-fcb5c0d046a6" />
-<img width="1900" height="988" alt="hero-section" src="https://github.com/user-attachments/assets/8165ecc7-e003-475d-870a-dcaf913aa674" />
-<img width="1900" height="885" alt="why" src="https://github.com/user-attachments/assets/b5f80d3d-50f9-47d6-8c25-c7644ea1f777" />
-<img width="1899" height="878" alt="info" src="https://github.com/user-attachments/assets/0130def0-39c5-45fa-a6f4-3bc455d068c9" />
-<img width="1894" height="875" alt="start" src="https://github.com/user-attachments/assets/0850293d-bffb-4a65-acaa-18987cc4dc9a" />
-<img width="1898" height="742" alt="foot" src="https://github.com/user-attachments/assets/14d60119-5fd1-4be0-aad9-6d7798088284" />
+<img width="939" height="945" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/81ceda1c-10b9-4b43-8e63-3a411747f5b5" />
+<img width="1917" height="989" alt="hero-section" src="https://github.com/user-attachments/assets/7a99eab7-e52e-44f6-a267-6890586eb769" />
+<img width="1909" height="879" alt="why" src="https://github.com/user-attachments/assets/d39809fe-d7cc-46fb-89c4-07026d4978e8" />
+<img width="1919" height="699" alt="info" src="https://github.com/user-attachments/assets/f367c680-504d-424f-8453-ab67809cbf69" />
+<img width="1358" height="883" alt="start" src="https://github.com/user-attachments/assets/a1126456-7c1e-404c-80dd-332e9b4494a0" />
+<img width="1763" height="670" alt="foot" src="https://github.com/user-attachments/assets/dac8c73a-eef2-46f1-af1b-c60022f3c755" />
 
 ## 🌟 Features
 
@@ -40,9 +40,10 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ### Frontend
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe development
-- **TailwindCSS** - Neo-brutalist styling
+- **TailwindCSS** - For the styling
 - **Framer Motion** - Smooth animations
 - **@txnlab/use-wallet** - Algorand wallet connection
+- **Solidity** - For 1 smart contract
 - **algosdk** - Algorand JavaScript SDK
 
 ### Smart Contracts (Blockchain)
