@@ -31,9 +31,9 @@ export function StakingInterface() {
 
     setLoading(true);
     try {
-      // Contract ABI (simplified - just the createGame function)
+      // Contract ABI (corrected - createGame expects bytes32 gameId)
       const contractABI = [
-        "function createGame(string gameId, string gameType, uint256 targetScore, uint256 stakeAmount) external"
+        "function createGame(bytes32 gameId, string gameType, uint256 targetScore, uint256 stakeAmount) external"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -44,9 +44,10 @@ export function StakingInterface() {
       // Create contract instance
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-      // Create game ID
-      const gameId = `${selectedGame.id}_${account}_${Date.now()}`;
-      
+      // Create game ID as bytes32
+      const gameIdString = `${selectedGame.id}_${account}_${Date.now()}`;
+      const gameId = ethers.id(gameIdString); // ethers.id returns bytes32
+
       // Convert stake amount to USDC smallest unit (6 decimals)
       const microAmount = ethers.parseUnits(stakeAmount, 6);
 
