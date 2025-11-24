@@ -35,11 +35,20 @@ export function Header() {
             <ThemeToggle />
             {/* Network display and switch */}
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-1 rounded bg-card border border-border">
+              <span
+                className="text-xs px-2 py-1 rounded bg-card border border-border"
+                style={{ color: 'white', backgroundColor: '#222', borderColor: '#444' }}
+              >
                 Network: {chainId === "11155111" ? "Sepolia" : chainId === "1" ? "Ethereum" : chainId ? `Chain ${chainId}` : "Unknown"}
               </span>
               {chainId !== "11155111" && (
-                <button onClick={switchToSepolia} className="btn-secondary text-xs px-2 py-1 ml-2">Switch to Sepolia</button>
+                <button
+                  onClick={switchToSepolia}
+                  className="btn-secondary text-xs px-2 py-1 ml-2"
+                  style={{ color: 'white', backgroundColor: '#222', borderColor: '#444' }}
+                >
+                  Switch to Sepolia
+                </button>
               )}
             </div>
             {account ? (
