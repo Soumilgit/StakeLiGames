@@ -17,12 +17,12 @@ export function Hero() {
             transition={{ duration: 0.6 }}
           >
             <div className="inline-block mb-4">
-              <span className="badge-modern">🏆 Game Staking</span>
+              <span className="badge-modern">LinkedIn Games Staking</span>
             </div>
             
             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
               Turn Future Cash Flow Into{" "}
-              <span className="gradient-text">Instant Liquidity</span>
+              <span className="gradient-text">Instant LinkedIn Rewards</span>
             </h1>
 
             <p className="text-xl mb-8 text-muted leading-relaxed">
@@ -56,7 +56,7 @@ export function Hero() {
               </div>
 
               <div className="mb-6">
-                <div className="text-sm font-semibold text-muted mb-2">Your Confidence</div>
+                <div className="text-sm font-semibold text-muted mb-2">Your LinkedIn Game Skill</div>
                 <div className="text-4xl font-bold gradient-text">1,808 USDC</div>
               </div>
 

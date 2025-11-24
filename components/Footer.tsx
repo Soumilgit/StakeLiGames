@@ -15,7 +15,7 @@ export function Footer() {
               <span className="text-xl font-bold gradient-text">StakeLiGames</span>
             </div>
             <p className="text-sm text-muted">
-              The on-chain confidence market powered by Ethereum blockchain.
+              Stake on your LinkedIn Games performance and earn real rewards, powered by Ethereum blockchain.
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted bg-transparent">
-          <p>© 2025 StakeLiGames. Built with ❤️ on Ethereum blockchain.</p>
+          <p>© 2025 StakeLiGames. Built for LinkedIn Games fans on Ethereum blockchain.</p>
           <p className="mt-2">
             Developed by{" "}
             <a href="https://github.com/Soumilgit" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">

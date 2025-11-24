@@ -11,20 +11,20 @@ const steps = [
   },
   {
     number: "02",
-    title: "Choose Your Game",
+    title: "Choose Your LinkedIn Game",
     description: "Select a LinkedIn Game (Queens, Crossclimb, etc.) and set your target time for staking.",
     emoji: "🎮",
   },
   {
     number: "03",
     title: "Stake Your USDC",
-    description: "Lock in your stake amount. The smart contract securely holds your funds until game completion.",
+    description: "Lock in your stake amount. The smart contract securely holds your funds until your LinkedIn Game is complete.",
     emoji: "💰",
   },
   {
     number: "04",
     title: "Play & Verify",
-    description: "Complete the game and verify your time. If you meet the target, earn up to 35% rewards on your stake!",
+    description: "Complete your LinkedIn Game and verify your time. If you meet the target, earn up to 35% rewards on your stake!",
     emoji: "🏆",
   },
 ];
@@ -58,7 +58,7 @@ export function HowItWorks() {
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">Ready to Transform Your Cash Flow?</h2>
           <p className="text-xl text-muted max-w-2xl mx-auto">
-            Join thousands of gamers and investors who trust StakeLiGames for their gaming confidence needs.
+            Join the LinkedIn Games community and stake on your skills for real rewards.
           </p>
         </motion.div>
 
