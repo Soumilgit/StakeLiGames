@@ -26,6 +26,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Standard favicon (jpg) */}
+        <link rel="icon" type="image/jpeg" sizes="32x32" href="/favicon.jpg" />
+        {/* Fallback for .ico */}
+        <link rel="icon" href="/favicon.ico" />
+        {/* Apple touch icon for iOS */}
+        <link rel="apple-touch-icon" href="/favicon.jpg" />
+      </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
         style={{ background: 'var(--background)', color: 'var(--foreground)' }}
