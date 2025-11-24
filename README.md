@@ -19,19 +19,21 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Features
 
+- Sepolia Testnet - All staking and rewards use the Ethereum Sepolia testnet for fast, low-cost testing
+- USDC Stablecoin - Stake and earn rewards using Sepolia USDC (ERC20)
 - Algorand Blockchain - Fast, secure, and near-zero transaction fees
 - Python Smart Contracts - PyTeal for readable, Python-based blockchain logic
 - USDC Staking - Stake stablecoins on your LinkedIn Games scores
 - Score Verification - On-chain verification of game performance
 - Instant Rewards - Earn up to 20% APY when you meet your target score
 - Pera/Defly Wallet - Easy wallet integration for Algorand
-- Neo-Brutalist UI - Clean, minimal design inspired by competitive gaming and LinkedIn Games
+- Pleasant UI - Clean, minimal design inspired by competitive gaming and LinkedIn Games
 - Zero Gas Fees - Free testnet transactions, minimal mainnet costs
 
 ## How It Works
 
 1. Connect Wallet - Link your Pera or Defly wallet (Algorand testnet)
-2. Choose Game - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango)
+2. Choose Game - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango, Zip & Mini Sudoku)
 3. Stake USDC - Set your target and stake amount (minimum: 0.01 USDC)
 4. Play & Verify - Complete the game and verify your result on-chain
 5. Earn Rewards - Meet your target = get your stake back + 20% APY!
@@ -49,20 +51,20 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ### Smart Contracts (Blockchain)
 - **PyTeal** - Python for Algorand smart contracts
-- **Algorand Testnet** - Free, fast blockchain (3.7s finality)
+- **Sepolia Testnet** - Free, fast blockchain (3.7s finality)
 - **TEAL** - Algorand's compiled contract language
 - **Box Storage** - Scalable on-chain data storage
 
 ### Backend/Scripts
 - **Python 3.8+** - Contract compilation & deployment
-- **py-algorand-sdk** - Python SDK for Algorand
+- **py-sepolia-sdk** - Python SDK for Algorand
 
 ## Prerequisites
 
 - **Node.js** 18+ and npm
 - **Python** 3.8+ and pip
 - **Pera Wallet** or **Defly Wallet** (mobile or browser extension)
-- **Algorand Testnet Account** (created via wallet)
+- **Sepolia Testnet Account** (created via wallet)
 
 ## Quick Start
 
@@ -99,15 +101,17 @@ This generates:
 - `staking_approval.teal` - Main contract logic
 - `staking_clear.teal` - Clear state program
 
-### 4. Get Testnet ALGO
+### 4. Get Testnet USDC (Sepolia)
 
-1. Install [Pera Wallet](https://perawallet.app/) (recommended) or [Defly Wallet](https://defly.app/)
-2. Create a new account on **Algorand Testnet**
-3. Copy your wallet address
-4. Get free testnet ALGO from any of these faucets:
-   - **Bank.testnet.algorand.network** (Primary): https://bank.testnet.algorand.network
-   - **Dispenser API** (Backup): https://dispenser.testnet.aws.algodev.network
-5. Paste your address and claim **10 ALGO** (free!)
+The testnet now uses Sepolia USDC (ERC20) for simulation and staking.
+
+1. Visit the official Circle Sepolia USDC faucet: https://faucet.circle.com/
+2. Connect your wallet (e.g., MetaMask) and select the Sepolia network.
+3. Paste your wallet address and request testnet USDC.
+4. Confirm the transaction in your wallet.
+5. You will receive Sepolia USDC directly to your wallet (no asset opt-in required).
+
+**Note:** The old Algorand testnet asset (ID 10458941) is no longer used. All staking and rewards now use Sepolia USDC.
 
 ### 5. Deploy Smart Contract
 
@@ -156,15 +160,6 @@ npm run dev
 ```
 
 Open http://localhost:3000
-
-## Get Testnet USDC
-
-The testnet uses Asset ID `10458941` for USDC simulation:
-
-1. Visit: https://testnet.explorer.perawallet.app/asset/10458941
-   - Or: https://testnet.explorer.lora.algokit.io/asset/10458941
-2. Opt-in to the asset in your wallet
-3. Use testnet faucets or swap testnet ALGO → USDC
 
 ## Using the Platform
 
@@ -250,7 +245,7 @@ python deploy_sepolia.py     # Deploy to testnet
 
 ## Algorand Testnet Resources
 
-- **Faucet**: https://bank.testnet.algorand.network (Get free ALGO - Official)
+- **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
 - **Explorer Options**:
   - https://testnet.explorer.perawallet.app (Pera Explorer - Recommended)
   - https://testnet.explorer.lora.algokit.io (Lora Explorer)
@@ -308,21 +303,6 @@ python deploy_sepolia.py     # Deploy to testnet
 - **Testnet first** - Deploy safely before mainnet
 
 ## Deployment to Production
-
-### Algorand Mainnet
-
-1. **Get Mainnet ALGO** (~0.5 ALGO for deployment)
-2. **Update `.env`**:
-   ```env
-   NEXT_PUBLIC_ALGOD_SERVER=https://mainnet-api.algonode.cloud
-   NEXT_PUBLIC_NETWORK=mainnet
-   NEXT_PUBLIC_USDC_ASSET_ID=31566704  # Real USDC on Algorand
-   ```
-3. **Deploy contract**:
-   ```bash
-   python deploy.py  # Use mainnet-funded account
-   ```
-4. **Update frontend** with new APP_ID
 
 ### Frontend Hosting
 
