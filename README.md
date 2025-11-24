@@ -1,6 +1,6 @@
-# StakeLiGames - The On-Chain Confidence Market
+# StakeLiGames - Stake on Your LinkedIn Games Performance
 
-Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built with **Algorand blockchain** using **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind** and **Next.js**.
+Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain**, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind**, and **Next.js**.
 
 ![StakeLiGames](https://img.shields.io/badge/blockchain-Algorand-00D4AA?style=for-the-badge)
 ![PyTeal](https://img.shields.io/badge/contracts-PyTeal-6366F1?style=for-the-badge)
@@ -24,7 +24,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - Score Verification - On-chain verification of game performance
 - Instant Rewards - Earn up to 20% APY when you meet your target score
 - Pera/Defly Wallet - Easy wallet integration for Algorand
-- Neo-Brutalist UI - Clean, minimal design inspired by FlashFlow
+- Neo-Brutalist UI - Clean, minimal design inspired by competitive gaming and LinkedIn Games
 - Zero Gas Fees - Free testnet transactions, minimal mainnet costs
 
 ## How It Works
@@ -295,7 +295,7 @@ python deploy.py     # Deploy to testnet
 ## 🎨 UI Design Philosophy
 
 - **Neo-Brutalist** - Bold borders, sharp shadows, minimal colors
-- **Clean & Minimal** - Inspired by FlashFlow reference
+- **Clean & Minimal** - Inspired by the challenge and excitement of LinkedIn Games
 - **Accessible** - High contrast, readable fonts
 - **Responsive** - Mobile-first design
 
@@ -388,7 +388,7 @@ Contributions welcome! Please:
 
 - **FirstDollar**: https://firstdollar.money/SoumilMukh6476
 - **Referral**: https://firstdollar.money/?r=k3S11X
-- **FlashFlow Reference**: https://github.com/Percobain/FlashFlow
+
 - **Blockchain Python**: https://github.com/topics/blockchain-python
 
 ---

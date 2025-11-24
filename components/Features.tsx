@@ -7,25 +7,25 @@ const features = [
   {
     icon: Shield,
     title: "Smart Risk Assessment",
-    description: "Advanced algorithms evaluate your gaming performance and calculate optimal stake amounts for maximum returns.",
+    description: "Smart algorithms analyze your LinkedIn Games performance and help you stake for the best possible rewards.",
     gradient: "from-primary to-secondary",
   },
   {
     icon: Zap,
-    title: "Instant Liquidity",
-    description: "Get immediate access to funds based on your future game performance. No waiting, no intermediaries.",
+    title: "Instant Rewards",
+    description: "Get instant rewards based on your LinkedIn Games results. No waiting, no intermediaries.",
     gradient: "from-secondary to-accent",
   },
   {
     icon: TrendingUp,
     title: "Global Asset Network",
-    description: "Stake on LinkedIn Games scores with verified, on-chain results. Transparency guaranteed by blockchain.",
+    description: "Stake on LinkedIn Games scores with verified, on-chain results. Transparency and fairness guaranteed by blockchain.",
     gradient: "from-accent to-primary",
   },
   {
     icon: Lock,
     title: "Real-Time Analytics",
-    description: "Track your stakes, earnings, and performance metrics in real-time with our comprehensive dashboard.",
+    description: "Track your LinkedIn Games stakes, earnings, and performance metrics in real-time with our comprehensive dashboard.",
     gradient: "from-primary to-accent",
   },
 ];
@@ -58,9 +58,9 @@ export function Features() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Why Choose StakeLiGames?</h2>
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Why Stake on LinkedIn Games?</h2>
           <p className="text-xl text-muted max-w-2xl mx-auto">
-            Built on cutting-edge blockchain technology with smart risk assessment and instant liquidity.
+            Built for LinkedIn Games fans, with secure blockchain technology and instant rewards for your best performances.
           </p>
         </motion.div>
 
