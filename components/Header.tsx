@@ -5,7 +5,7 @@ import { Wallet } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
-  const { account, connect, disconnect, isConnecting } = useWallet();
+  const { account, connect, disconnect, isConnecting, chainId, switchToSepolia } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 navbar">
@@ -33,6 +33,15 @@ export function Header() {
           {/* Responsive wallet controls */}
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <ThemeToggle />
+            {/* Network display and switch */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-2 py-1 rounded bg-card border border-border">
+                Network: {chainId === "11155111" ? "Sepolia" : chainId === "1" ? "Ethereum" : chainId ? `Chain ${chainId}` : "Unknown"}
+              </span>
+              {chainId !== "11155111" && (
+                <button onClick={switchToSepolia} className="btn-secondary text-xs px-2 py-1 ml-2">Switch to Sepolia</button>
+              )}
+            </div>
             {account ? (
               <>
                 <div className="flex items-center gap-2 px-4 py-2 card-modern border border-border rounded-lg w-full sm:w-auto justify-center">
