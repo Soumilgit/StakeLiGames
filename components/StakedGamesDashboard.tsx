@@ -44,7 +44,19 @@ export default function StakedGamesDashboard() {
             if (verifiedEvents.length > 0) {
               // Use the last GameVerified event (should only be one per game)
               const last = verifiedEvents[verifiedEvents.length - 1];
-              actualScore = last.args.actualScore?.toString?.() || last.args.actualScore;
+              // ethers v6: args may not exist on Log/EventLog in production, so decode if needed
+              let actualScoreRaw = null;
+              if ('args' in last && last.args && typeof last.args === 'object') {
+                actualScoreRaw = last.args.actualScore;
+              } else if (last.data && last.topics) {
+                // decode log manually
+                const iface = new ethers.Interface([
+                  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, uint256 payout)"
+                ]);
+                const decoded = iface.decodeEventLog("GameVerified", last.data, last.topics);
+                actualScoreRaw = decoded.actualScore;
+              }
+              actualScore = actualScoreRaw?.toString?.() || actualScoreRaw;
             }
             // Convert ethers.js Result (Proxy) to plain object
             let gameObj: { [key: string]: any };

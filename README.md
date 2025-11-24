@@ -14,7 +14,8 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 <img width="1919" height="881" alt="why" src="https://github.com/user-attachments/assets/77e2e34a-c6e2-45a8-b79d-6a4999346276" />
 <img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
 <img width="1393" height="887" alt="start" src="https://github.com/user-attachments/assets/93730066-20ca-4264-a990-541e55a7867a" />
-<img width="1650" height="660" alt="foot" src="https://github.com/user-attachments/assets/ea9a362d-4539-44af-9f2c-4e2f7eaded3b" />
+<img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
+<img width="1919" height="983" alt="dashboard-onchain" src="https://github.com/user-attachments/assets/00aaf2bc-60ce-48fb-ab30-fbcc9fce7ad2" />
 
 ## Features
 
@@ -91,7 +92,7 @@ pip install -r requirements.txt
 
 ```bash
 # From contracts directory
-python compile.py
+python compile_solidity.py
 ```
 
 This generates:
@@ -112,7 +113,7 @@ This generates:
 
 ```bash
 # From contracts directory (with venv activated)
-python deploy.py
+python deploy_sepolia.py
 ```
 
 **Options:**
@@ -243,8 +244,8 @@ npm run contracts:compile   # Compile PyTeal contracts
 npm run contracts:deploy    # Deploy to Algorand
 
 # Python (from contracts/)
-python compile.py    # Compile contracts
-python deploy.py     # Deploy to testnet
+python compile_solidity.py    # Compile contracts
+python deploy_sepolia.py     # Deploy to testnet
 ```
 
 ## Algorand Testnet Resources
