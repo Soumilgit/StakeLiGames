@@ -10,11 +10,11 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ## Demo pics
 
 <img width="1048" height="923" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/c293cec4-d40f-413d-a02b-94100340c4e8" />
-<img width="1917" height="989" alt="hero-section" src="https://github.com/user-attachments/assets/7a99eab7-e52e-44f6-a267-6890586eb769" />
-<img width="1909" height="879" alt="why" src="https://github.com/user-attachments/assets/d39809fe-d7cc-46fb-89c4-07026d4978e8" />
-<img width="1919" height="699" alt="info" src="https://github.com/user-attachments/assets/f367c680-504d-424f-8453-ab67809cbf69" />
-<img width="1339" height="881" alt="start" src="https://github.com/user-attachments/assets/866091bc-2f44-4aff-ba28-a4d23547109a" />
-<img width="1763" height="670" alt="foot" src="https://github.com/user-attachments/assets/dac8c73a-eef2-46f1-af1b-c60022f3c755" />
+<img width="1919" height="984" alt="hero-section" src="https://github.com/user-attachments/assets/2b5f8d5d-9c04-4152-b976-f335403cb9fa" />
+<img width="1919" height="881" alt="why" src="https://github.com/user-attachments/assets/77e2e34a-c6e2-45a8-b79d-6a4999346276" />
+<img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
+<img width="1393" height="887" alt="start" src="https://github.com/user-attachments/assets/93730066-20ca-4264-a990-541e55a7867a" />
+<img width="1650" height="660" alt="foot" src="https://github.com/user-attachments/assets/ea9a362d-4539-44af-9f2c-4e2f7eaded3b" />
 
 ## Features
 
@@ -35,7 +35,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 4. Play & Verify - Complete the game and verify your result on-chain
 5. Earn Rewards - Meet your target = get your stake back + 20% APY!
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Next.js 14** - React framework with App Router
@@ -63,7 +63,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - **Pera Wallet** or **Defly Wallet** (mobile or browser extension)
 - **Algorand Testnet Account** (created via wallet)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone & Install
 
@@ -120,10 +120,10 @@ python deploy.py
 - **Press Enter** to generate a new account (you'll need to fund it)
 
 The deployment script will:
-- ✅ Compile PyTeal → TEAL
-- ✅ Deploy to Algorand testnet
-- ✅ Generate Application ID
-- ✅ Create `.env.local` with config
+- Compile PyTeal → TEAL
+- Deploy to Algorand testnet
+- Generate Application ID
+- Create `.env.local` with config
 
 **Output:**
 ```
@@ -165,7 +165,7 @@ The testnet uses Asset ID `10458941` for USDC simulation:
 2. Opt-in to the asset in your wallet
 3. Use testnet faucets or swap testnet ALGO → USDC
 
-## 🎮 Using the Platform
+## Using the Platform
 
 ### Stake on a Game
 
@@ -199,7 +199,7 @@ The testnet uses Asset ID `10458941` for USDC simulation:
 // - If NO: Stake goes to reward pool
 ```
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 StakeLiGames/
@@ -229,7 +229,7 @@ StakeLiGames/
 └── README.md               # This file
 ```
 
-## 🔧 Available Scripts
+## Available Scripts
 
 ```bash
 # Frontend
@@ -247,7 +247,7 @@ python compile.py    # Compile contracts
 python deploy.py     # Deploy to testnet
 ```
 
-## 🌐 Algorand Testnet Resources
+## Algorand Testnet Resources
 
 - **Faucet**: https://bank.testnet.algorand.network (Get free ALGO - Official)
 - **Explorer Options**:
@@ -258,7 +258,7 @@ python deploy.py     # Deploy to testnet
 - **PyTeal Guide**: https://pyteal.readthedocs.io (Smart contract docs)
 - **AlgoNode API**: https://testnet-api.algonode.cloud (Free RPC node - Most reliable)
 
-## 📊 Smart Contract Details
+## Smart Contract Details
 
 ### State Schema
 
@@ -292,22 +292,21 @@ python deploy.py     # Deploy to testnet
    - Args: amount
    - Requires: Owner signature
 
-## 🎨 UI Design Philosophy
+## UI Design Philosophy
 
-- **Neo-Brutalist** - Bold borders, sharp shadows, minimal colors
 - **Clean & Minimal** - Inspired by the challenge and excitement of LinkedIn Games
 - **Accessible** - High contrast, readable fonts
 - **Responsive** - Mobile-first design
 
-## 🔐 Security Features
+## Security Features
 
-- ✅ **OpenZeppelin patterns** (Algorand equivalent)
-- ✅ **Reentrancy protection** via atomic transactions
-- ✅ **Access control** for admin functions
-- ✅ **Box storage** for scalability
-- ✅ **Testnet first** - Deploy safely before mainnet
+- **OpenZeppelin patterns** (Algorand equivalent)
+- **Reentrancy protection** via atomic transactions
+- **Access control** for admin functions
+- **Box storage** for scalability
+- **Testnet first** - Deploy safely before mainnet
 
-## 🚀 Deployment to Production
+## Deployment to Production
 
 ### Algorand Mainnet
 
@@ -338,7 +337,7 @@ npm run build
 netlify deploy --prod --dir=.next
 ```
 
-## 💡 Customization
+## Customization
 
 ### Add New Games
 
@@ -363,28 +362,24 @@ reward := stake_amount / Int(5),  # 20% reward (1/5)
 
 Recompile and redeploy:
 ```bash
-python compile.py
-python deploy.py
+python compile_solidity.py
+python deploy_sepolia.py
 ```
 
-## 📝 License
-
-MIT License - feel free to fork and customize!
-
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request
 
-## 📞 Support
+## Support
 
 - **Algorand Discord**: https://discord.gg/algorand
 - **PyTeal Docs**: https://pyteal.readthedocs.io
 - **Next.js Docs**: https://nextjs.org/docs
 
-## 🔗 Links
+## Links
 
 - **FirstDollar**: https://firstdollar.money/SoumilMukh6476
 - **Referral**: https://firstdollar.money/?r=k3S11X
