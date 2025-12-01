@@ -1,6 +1,6 @@
 # StakeLiGames - Stake on Your LinkedIn Games Performance
 
-Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain**, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind**, and **Next.js**.
+Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain** logic on **Sepolia** testnet, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind**, and **Next.js**.
 
 ![StakeLiGames](https://img.shields.io/badge/blockchain-Algorand-00D4AA?style=for-the-badge)
 ![PyTeal](https://img.shields.io/badge/contracts-PyTeal-6366F1?style=for-the-badge)
@@ -32,7 +32,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## How It Works
 
-1. Connect Wallet - Link your Pera or Defly wallet (Algorand testnet)
+1. Connect Wallet - Link your MetaMask wallet (Sepolia testnet)
 2. Choose Game - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango, Zip & Mini Sudoku)
 3. Stake USDC - Set your target and stake amount (minimum: 0.01 USDC)
 4. Play & Verify - Complete the game and verify your result on-chain
@@ -57,13 +57,13 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ### Backend/Scripts
 - **Python 3.8+** - Contract compilation & deployment
-- **py-sepolia-sdk** - Python SDK for Algorand
+- **py-sepolia-sdk** - Python SDK for Sepolia
 
 ## Prerequisites
 
 - **Node.js** 18+ and npm
 - **Python** 3.8+ and pip
-- **Pera Wallet** or **Defly Wallet** (mobile or browser extension)
+- **MetaMask Wallet** (mobile or browser extension)
 - **Sepolia Testnet Account** (created via wallet)
 
 ## Quick Start
@@ -134,8 +134,7 @@ The deployment script will:
 ```
 Contract deployed successfully!
 Application ID: 123456789
-Application Address: XXXXXX...
-View on AlgoExplorer: https://testnet.algoexplorer.io/application/123456789
+Application Address: XXXX...
 ```
 
 ### 6. Configure Frontend
@@ -143,13 +142,18 @@ View on AlgoExplorer: https://testnet.algoexplorer.io/application/123456789
 The deployment script automatically creates `.env.local`:
 
 ```env
-NEXT_PUBLIC_ALGOD_SERVER=https://testnet-api.algonode.cloud
-NEXT_PUBLIC_ALGOD_PORT=443
-NEXT_PUBLIC_INDEXER_SERVER=https://testnet-idx.algonode.cloud
-NEXT_PUBLIC_INDEXER_PORT=443
-NEXT_PUBLIC_NETWORK=testnet
-NEXT_PUBLIC_STAKING_APP_ID=123456789
-NEXT_PUBLIC_USDC_ASSET_ID=10458941
+# Ethereum Sepolia Configuration
+NEXT_PUBLIC_CHAIN_ID=
+NEXT_PUBLIC_RPC_URL=https://rpc.sepolia.org
+NEXT_PUBLIC_NETWORK_NAME=Sepolia Testnet
+
+# Smart Contract Addresses
+NEXT_PUBLIC_CONTRACT_ADDRESS=
+NEXT_PUBLIC_USDC_ADDRESS=
+
+# Application Settings
+NEXT_PUBLIC_APP_NAME=
+
 ```
 
 ### 7. Run Development Server
@@ -198,31 +202,398 @@ Open http://localhost:3000
 ## Project Structure
 
 ```
-StakeLiGames/
-├── app/
-│   ├── layout.tsx          # Root layout with WalletProvider
-│   ├── page.tsx            # Main page
-│   └── globals.css         # Global styles (TailwindCSS)
-├── components/
-│   ├── Header.tsx          # Navigation & wallet connection
-│   ├── Hero.tsx            # Landing hero section
-│   ├── Stats.tsx           # Platform statistics
-│   ├── Features.tsx        # Feature cards
-│   ├── HowItWorks.tsx      # Step-by-step guide
-│   ├── StakingInterface.tsx # Main staking UI
-│   ├── Footer.tsx          # Footer with links
-│   └── WalletProvider.tsx  # Algorand wallet context
-├── contracts/
-│   ├── staking_contract.py # PyTeal smart contract
-│   ├── compile.py          # Compile PyTeal → TEAL
-│   ├── deploy.py           # Deploy to Algorand
-│   └── requirements.txt    # Python dependencies
-├── public/                 # Static assets
-├── .env.example            # Environment template
-├── package.json            # Node dependencies
-├── tailwind.config.ts      # TailwindCSS config
-├── tsconfig.json           # TypeScript config
-└── README.md               # This file
+📦 StakeLiGames
+├─ .env.example
+├─ .eslintrc.json
+├─ .gitignore
+├─ GAME_CONFIGURATIONS.md
+├─ README.md
+├─ app
+│  ├─ dashboard
+│  │  └─ page.tsx
+│  ├─ game
+│  │  └─ [gameId]
+│  │     └─ page.tsx
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  └─ page.tsx
+├─ components
+│  ├─ Features.tsx
+│  ├─ Footer.tsx
+│  ├─ Header.tsx
+│  ├─ Hero.tsx
+│  ├─ HowItWorks.tsx
+│  ├─ NotificationBar.tsx
+│  ├─ StakedGamesDashboard.tsx
+│  ├─ StakingInterface.tsx
+│  ├─ Stats.tsx
+│  ├─ ThemeProvider.tsx
+│  ├─ ThemeToggle.tsx
+│  ├─ UserDashboard.tsx
+│  └─ WalletProvider.tsx
+├─ contracts
+│  ├─ .env.example
+│  ├─ @openzeppelin
+│  │  └─ contracts
+│  │     ├─ access
+│  │     │  ├─ AccessControl.sol
+│  │     │  ├─ AccessControlCrossChain.sol
+│  │     │  ├─ AccessControlDefaultAdminRules.sol
+│  │     │  ├─ AccessControlEnumerable.sol
+│  │     │  ├─ IAccessControl.sol
+│  │     │  ├─ IAccessControlDefaultAdminRules.sol
+│  │     │  ├─ IAccessControlEnumerable.sol
+│  │     │  ├─ Ownable.sol
+│  │     │  ├─ Ownable2Step.sol
+│  │     │  └─ README.adoc
+│  │     ├─ crosschain
+│  │     │  ├─ CrossChainEnabled.sol
+│  │     │  ├─ README.adoc
+│  │     │  ├─ amb
+│  │     │  │  ├─ CrossChainEnabledAMB.sol
+│  │     │  │  └─ LibAMB.sol
+│  │     │  ├─ arbitrum
+│  │     │  │  ├─ CrossChainEnabledArbitrumL1.sol
+│  │     │  │  ├─ CrossChainEnabledArbitrumL2.sol
+│  │     │  │  ├─ LibArbitrumL1.sol
+│  │     │  │  └─ LibArbitrumL2.sol
+│  │     │  ├─ errors.sol
+│  │     │  ├─ optimism
+│  │     │  │  ├─ CrossChainEnabledOptimism.sol
+│  │     │  │  └─ LibOptimism.sol
+│  │     │  └─ polygon
+│  │     │     └─ CrossChainEnabledPolygonChild.sol
+│  │     ├─ finance
+│  │     │  ├─ PaymentSplitter.sol
+│  │     │  ├─ README.adoc
+│  │     │  └─ VestingWallet.sol
+│  │     ├─ governance
+│  │     │  ├─ Governor.sol
+│  │     │  ├─ IGovernor.sol
+│  │     │  ├─ README.adoc
+│  │     │  ├─ TimelockController.sol
+│  │     │  ├─ compatibility
+│  │     │  │  ├─ GovernorCompatibilityBravo.sol
+│  │     │  │  └─ IGovernorCompatibilityBravo.sol
+│  │     │  ├─ extensions
+│  │     │  │  ├─ GovernorCountingSimple.sol
+│  │     │  │  ├─ GovernorPreventLateQuorum.sol
+│  │     │  │  ├─ GovernorProposalThreshold.sol
+│  │     │  │  ├─ GovernorSettings.sol
+│  │     │  │  ├─ GovernorTimelockCompound.sol
+│  │     │  │  ├─ GovernorTimelockControl.sol
+│  │     │  │  ├─ GovernorVotes.sol
+│  │     │  │  ├─ GovernorVotesComp.sol
+│  │     │  │  ├─ GovernorVotesQuorumFraction.sol
+│  │     │  │  └─ IGovernorTimelock.sol
+│  │     │  └─ utils
+│  │     │     ├─ IVotes.sol
+│  │     │     └─ Votes.sol
+│  │     ├─ interfaces
+│  │     │  ├─ IERC1155.sol
+│  │     │  ├─ IERC1155MetadataURI.sol
+│  │     │  ├─ IERC1155Receiver.sol
+│  │     │  ├─ IERC1271.sol
+│  │     │  ├─ IERC1363.sol
+│  │     │  ├─ IERC1363Receiver.sol
+│  │     │  ├─ IERC1363Spender.sol
+│  │     │  ├─ IERC165.sol
+│  │     │  ├─ IERC1820Implementer.sol
+│  │     │  ├─ IERC1820Registry.sol
+│  │     │  ├─ IERC1967.sol
+│  │     │  ├─ IERC20.sol
+│  │     │  ├─ IERC20Metadata.sol
+│  │     │  ├─ IERC2309.sol
+│  │     │  ├─ IERC2612.sol
+│  │     │  ├─ IERC2981.sol
+│  │     │  ├─ IERC3156.sol
+│  │     │  ├─ IERC3156FlashBorrower.sol
+│  │     │  ├─ IERC3156FlashLender.sol
+│  │     │  ├─ IERC4626.sol
+│  │     │  ├─ IERC4906.sol
+│  │     │  ├─ IERC5267.sol
+│  │     │  ├─ IERC5313.sol
+│  │     │  ├─ IERC5805.sol
+│  │     │  ├─ IERC6372.sol
+│  │     │  ├─ IERC721.sol
+│  │     │  ├─ IERC721Enumerable.sol
+│  │     │  ├─ IERC721Metadata.sol
+│  │     │  ├─ IERC721Receiver.sol
+│  │     │  ├─ IERC777.sol
+│  │     │  ├─ IERC777Recipient.sol
+│  │     │  ├─ IERC777Sender.sol
+│  │     │  ├─ README.adoc
+│  │     │  ├─ draft-IERC1822.sol
+│  │     │  └─ draft-IERC2612.sol
+│  │     ├─ metatx
+│  │     │  ├─ ERC2771Context.sol
+│  │     │  ├─ MinimalForwarder.sol
+│  │     │  └─ README.adoc
+│  │     ├─ mocks
+│  │     │  ├─ AccessControlCrossChainMock.sol
+│  │     │  ├─ ArraysMock.sol
+│  │     │  ├─ CallReceiverMock.sol
+│  │     │  ├─ ConditionalEscrowMock.sol
+│  │     │  ├─ ContextMock.sol
+│  │     │  ├─ DummyImplementation.sol
+│  │     │  ├─ EIP712Verifier.sol
+│  │     │  ├─ ERC1271WalletMock.sol
+│  │     │  ├─ ERC165
+│  │     │  │  ├─ ERC165MaliciousData.sol
+│  │     │  │  ├─ ERC165MissingData.sol
+│  │     │  │  ├─ ERC165NotSupported.sol
+│  │     │  │  └─ ERC165ReturnBomb.sol
+│  │     │  ├─ ERC20Mock.sol
+│  │     │  ├─ ERC20Reentrant.sol
+│  │     │  ├─ ERC2771ContextMock.sol
+│  │     │  ├─ ERC3156FlashBorrowerMock.sol
+│  │     │  ├─ ERC4626Mock.sol
+│  │     │  ├─ EtherReceiverMock.sol
+│  │     │  ├─ InitializableMock.sol
+│  │     │  ├─ MulticallTest.sol
+│  │     │  ├─ MultipleInheritanceInitializableMocks.sol
+│  │     │  ├─ PausableMock.sol
+│  │     │  ├─ PullPaymentMock.sol
+│  │     │  ├─ ReentrancyAttack.sol
+│  │     │  ├─ ReentrancyMock.sol
+│  │     │  ├─ RegressionImplementation.sol
+│  │     │  ├─ SafeMathMemoryCheck.sol
+│  │     │  ├─ SingleInheritanceInitializableMocks.sol
+│  │     │  ├─ StorageSlotMock.sol
+│  │     │  ├─ TimelockReentrant.sol
+│  │     │  ├─ TimersBlockNumberImpl.sol
+│  │     │  ├─ TimersTimestampImpl.sol
+│  │     │  ├─ VotesMock.sol
+│  │     │  ├─ compound
+│  │     │  │  └─ CompTimelock.sol
+│  │     │  ├─ crosschain
+│  │     │  │  ├─ bridges.sol
+│  │     │  │  └─ receivers.sol
+│  │     │  ├─ docs
+│  │     │  │  └─ ERC4626Fees.sol
+│  │     │  ├─ governance
+│  │     │  │  ├─ GovernorCompMock.sol
+│  │     │  │  ├─ GovernorCompatibilityBravoMock.sol
+│  │     │  │  ├─ GovernorMock.sol
+│  │     │  │  ├─ GovernorPreventLateQuorumMock.sol
+│  │     │  │  ├─ GovernorTimelockCompoundMock.sol
+│  │     │  │  ├─ GovernorTimelockControlMock.sol
+│  │     │  │  ├─ GovernorVoteMock.sol
+│  │     │  │  └─ GovernorWithParamsMock.sol
+│  │     │  ├─ proxy
+│  │     │  │  ├─ BadBeacon.sol
+│  │     │  │  ├─ ClashingImplementation.sol
+│  │     │  │  ├─ UUPSLegacy.sol
+│  │     │  │  └─ UUPSUpgradeableMock.sol
+│  │     │  ├─ token
+│  │     │  │  ├─ ERC1155ReceiverMock.sol
+│  │     │  │  ├─ ERC20DecimalsMock.sol
+│  │     │  │  ├─ ERC20ExcessDecimalsMock.sol
+│  │     │  │  ├─ ERC20FlashMintMock.sol
+│  │     │  │  ├─ ERC20ForceApproveMock.sol
+│  │     │  │  ├─ ERC20MulticallMock.sol
+│  │     │  │  ├─ ERC20NoReturnMock.sol
+│  │     │  │  ├─ ERC20PermitNoRevertMock.sol
+│  │     │  │  ├─ ERC20ReturnFalseMock.sol
+│  │     │  │  ├─ ERC20VotesLegacyMock.sol
+│  │     │  │  ├─ ERC4626OffsetMock.sol
+│  │     │  │  ├─ ERC4646FeesMock.sol
+│  │     │  │  ├─ ERC721ConsecutiveEnumerableMock.sol
+│  │     │  │  ├─ ERC721ConsecutiveMock.sol
+│  │     │  │  ├─ ERC721ReceiverMock.sol
+│  │     │  │  ├─ ERC721URIStorageMock.sol
+│  │     │  │  ├─ ERC777Mock.sol
+│  │     │  │  ├─ ERC777SenderRecipientMock.sol
+│  │     │  │  └─ VotesTimestamp.sol
+│  │     │  └─ wizard
+│  │     │     ├─ MyGovernor1.sol
+│  │     │     ├─ MyGovernor2.sol
+│  │     │     └─ MyGovernor3.sol
+│  │     ├─ package.json
+│  │     ├─ proxy
+│  │     │  ├─ Clones.sol
+│  │     │  ├─ ERC1967
+│  │     │  │  ├─ ERC1967Proxy.sol
+│  │     │  │  └─ ERC1967Upgrade.sol
+│  │     │  ├─ Proxy.sol
+│  │     │  ├─ README.adoc
+│  │     │  ├─ beacon
+│  │     │  │  ├─ BeaconProxy.sol
+│  │     │  │  ├─ IBeacon.sol
+│  │     │  │  └─ UpgradeableBeacon.sol
+│  │     │  ├─ transparent
+│  │     │  │  ├─ ProxyAdmin.sol
+│  │     │  │  └─ TransparentUpgradeableProxy.sol
+│  │     │  └─ utils
+│  │     │     ├─ Initializable.sol
+│  │     │     └─ UUPSUpgradeable.sol
+│  │     ├─ security
+│  │     │  ├─ Pausable.sol
+│  │     │  ├─ PullPayment.sol
+│  │     │  ├─ README.adoc
+│  │     │  └─ ReentrancyGuard.sol
+│  │     ├─ token
+│  │     │  ├─ ERC1155
+│  │     │  │  ├─ ERC1155.sol
+│  │     │  │  ├─ IERC1155.sol
+│  │     │  │  ├─ IERC1155Receiver.sol
+│  │     │  │  ├─ README.adoc
+│  │     │  │  ├─ extensions
+│  │     │  │  │  ├─ ERC1155Burnable.sol
+│  │     │  │  │  ├─ ERC1155Pausable.sol
+│  │     │  │  │  ├─ ERC1155Supply.sol
+│  │     │  │  │  ├─ ERC1155URIStorage.sol
+│  │     │  │  │  └─ IERC1155MetadataURI.sol
+│  │     │  │  ├─ presets
+│  │     │  │  │  ├─ ERC1155PresetMinterPauser.sol
+│  │     │  │  │  └─ README.md
+│  │     │  │  └─ utils
+│  │     │  │     ├─ ERC1155Holder.sol
+│  │     │  │     └─ ERC1155Receiver.sol
+│  │     │  ├─ ERC20
+│  │     │  │  ├─ ERC20.sol
+│  │     │  │  ├─ IERC20.sol
+│  │     │  │  ├─ README.adoc
+│  │     │  │  ├─ extensions
+│  │     │  │  │  ├─ ERC20Burnable.sol
+│  │     │  │  │  ├─ ERC20Capped.sol
+│  │     │  │  │  ├─ ERC20FlashMint.sol
+│  │     │  │  │  ├─ ERC20Pausable.sol
+│  │     │  │  │  ├─ ERC20Permit.sol
+│  │     │  │  │  ├─ ERC20Snapshot.sol
+│  │     │  │  │  ├─ ERC20Votes.sol
+│  │     │  │  │  ├─ ERC20VotesComp.sol
+│  │     │  │  │  ├─ ERC20Wrapper.sol
+│  │     │  │  │  ├─ ERC4626.sol
+│  │     │  │  │  ├─ IERC20Metadata.sol
+│  │     │  │  │  ├─ IERC20Permit.sol
+│  │     │  │  │  ├─ draft-ERC20Permit.sol
+│  │     │  │  │  └─ draft-IERC20Permit.sol
+│  │     │  │  ├─ presets
+│  │     │  │  │  ├─ ERC20PresetFixedSupply.sol
+│  │     │  │  │  ├─ ERC20PresetMinterPauser.sol
+│  │     │  │  │  └─ README.md
+│  │     │  │  └─ utils
+│  │     │  │     ├─ SafeERC20.sol
+│  │     │  │     └─ TokenTimelock.sol
+│  │     │  ├─ ERC721
+│  │     │  │  ├─ ERC721.sol
+│  │     │  │  ├─ IERC721.sol
+│  │     │  │  ├─ IERC721Receiver.sol
+│  │     │  │  ├─ README.adoc
+│  │     │  │  ├─ extensions
+│  │     │  │  │  ├─ ERC721Burnable.sol
+│  │     │  │  │  ├─ ERC721Consecutive.sol
+│  │     │  │  │  ├─ ERC721Enumerable.sol
+│  │     │  │  │  ├─ ERC721Pausable.sol
+│  │     │  │  │  ├─ ERC721Royalty.sol
+│  │     │  │  │  ├─ ERC721URIStorage.sol
+│  │     │  │  │  ├─ ERC721Votes.sol
+│  │     │  │  │  ├─ ERC721Wrapper.sol
+│  │     │  │  │  ├─ IERC721Enumerable.sol
+│  │     │  │  │  ├─ IERC721Metadata.sol
+│  │     │  │  │  └─ draft-ERC721Votes.sol
+│  │     │  │  ├─ presets
+│  │     │  │  │  ├─ ERC721PresetMinterPauserAutoId.sol
+│  │     │  │  │  └─ README.md
+│  │     │  │  └─ utils
+│  │     │  │     └─ ERC721Holder.sol
+│  │     │  ├─ ERC777
+│  │     │  │  ├─ ERC777.sol
+│  │     │  │  ├─ IERC777.sol
+│  │     │  │  ├─ IERC777Recipient.sol
+│  │     │  │  ├─ IERC777Sender.sol
+│  │     │  │  ├─ README.adoc
+│  │     │  │  └─ presets
+│  │     │  │     └─ ERC777PresetFixedSupply.sol
+│  │     │  └─ common
+│  │     │     ├─ ERC2981.sol
+│  │     │     └─ README.adoc
+│  │     ├─ utils
+│  │     │  ├─ Address.sol
+│  │     │  ├─ Arrays.sol
+│  │     │  ├─ Base64.sol
+│  │     │  ├─ Checkpoints.sol
+│  │     │  ├─ Context.sol
+│  │     │  ├─ Counters.sol
+│  │     │  ├─ Create2.sol
+│  │     │  ├─ Multicall.sol
+│  │     │  ├─ README.adoc
+│  │     │  ├─ ShortStrings.sol
+│  │     │  ├─ StorageSlot.sol
+│  │     │  ├─ Strings.sol
+│  │     │  ├─ Timers.sol
+│  │     │  ├─ cryptography
+│  │     │  │  ├─ ECDSA.sol
+│  │     │  │  ├─ EIP712.sol
+│  │     │  │  ├─ MerkleProof.sol
+│  │     │  │  ├─ SignatureChecker.sol
+│  │     │  │  └─ draft-EIP712.sol
+│  │     │  ├─ escrow
+│  │     │  │  ├─ ConditionalEscrow.sol
+│  │     │  │  ├─ Escrow.sol
+│  │     │  │  └─ RefundEscrow.sol
+│  │     │  ├─ introspection
+│  │     │  │  ├─ ERC165.sol
+│  │     │  │  ├─ ERC165Checker.sol
+│  │     │  │  ├─ ERC165Storage.sol
+│  │     │  │  ├─ ERC1820Implementer.sol
+│  │     │  │  ├─ IERC165.sol
+│  │     │  │  ├─ IERC1820Implementer.sol
+│  │     │  │  └─ IERC1820Registry.sol
+│  │     │  ├─ math
+│  │     │  │  ├─ Math.sol
+│  │     │  │  ├─ SafeCast.sol
+│  │     │  │  ├─ SafeMath.sol
+│  │     │  │  ├─ SignedMath.sol
+│  │     │  │  └─ SignedSafeMath.sol
+│  │     │  └─ structs
+│  │     │     ├─ BitMaps.sol
+│  │     │     ├─ DoubleEndedQueue.sol
+│  │     │     ├─ EnumerableMap.sol
+│  │     │     └─ EnumerableSet.sol
+│  │     └─ vendor
+│  │        ├─ amb
+│  │        │  └─ IAMB.sol
+│  │        ├─ arbitrum
+│  │        │  ├─ IArbSys.sol
+│  │        │  ├─ IBridge.sol
+│  │        │  ├─ IDelayedMessageProvider.sol
+│  │        │  ├─ IInbox.sol
+│  │        │  └─ IOutbox.sol
+│  │        ├─ compound
+│  │        │  ├─ ICompoundTimelock.sol
+│  │        │  └─ LICENSE
+│  │        ├─ optimism
+│  │        │  ├─ ICrossDomainMessenger.sol
+│  │        │  └─ LICENSE
+│  │        └─ polygon
+│  │           └─ IFxMessageProcessor.sol
+│  ├─ StakeLiGames.sol
+│  ├─ abi.json
+│  ├─ bytecode.txt
+│  ├─ compile.py
+│  ├─ compile_solidity.py
+│  ├─ compiled_contract.json
+│  ├─ deploy.py
+│  ├─ deploy_sepolia.py
+│  ├─ deployment.json
+│  ├─ hardhat.config.js
+│  ├─ package.json
+│  ├─ requirements.txt
+│  ├─ scripts
+│  │  └─ deploy.js
+│  └─ staking_contract.py
+├─ next.config.js
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  └─ favicon.jpg
+├─ tailwind.config.ts
+├─ tsconfig.json
+└─ types
+   └─ ethereum.d.ts
 ```
 
 ## Available Scripts
@@ -236,7 +607,7 @@ npm run lint         # Run ESLint
 
 # Smart Contracts
 npm run contracts:compile   # Compile PyTeal contracts
-npm run contracts:deploy    # Deploy to Algorand
+npm run contracts:deploy    # Deploy to Sepolia
 
 # Python (from contracts/)
 python compile_solidity.py    # Compile contracts
