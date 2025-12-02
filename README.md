@@ -357,7 +357,7 @@ Contributions welcome! Please:
 ## Support
 
 - **Algorand Discord**: https://discord.gg/algorand
-- **PyTeal Docs**: https://pyteal.readthedocs.io
+- **PyTeal Docs**: https://pyteal.readthedocs.ionot
 - **Next.js Docs**: https://nextjs.org/docs
 
 ## Links
