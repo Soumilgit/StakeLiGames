@@ -20,10 +20,10 @@ export default function StakedGamesDashboard() {
       try {
         // Fetch GameCreated events for this user
         const contractABI = [
-          "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount)",
-          "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, uint256 payout)",
-          // Use ethers v6 tuple ABI with named output
-          "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 timestamp, uint8 status, string gameType) game)"
+          "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
+          "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
+          // Use ethers v6 tuple ABI with named output (flawlessStake added)
+          "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType) game)"
         ];
         const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
         const provider = signer.provider;
@@ -51,7 +51,7 @@ export default function StakedGamesDashboard() {
               } else if (last.data && last.topics) {
                 // decode log manually
                 const iface = new ethers.Interface([
-                  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, uint256 payout)"
+                  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)"
                 ]);
                 const decoded = iface.decodeEventLog("GameVerified", last.data, last.topics);
                 actualScoreRaw = decoded.actualScore;
@@ -89,7 +89,14 @@ export default function StakedGamesDashboard() {
             } catch {
               stakeAmount = gameData.stakeAmount?.toString?.() || ev.args.stakeAmount?.toString?.() || "0";
             }
+            // read flawlessStake if present
+            let flawlessStake = "0";
+            try {
+              flawlessStake = gameData.flawlessStake ? ethers.formatUnits(gameData.flawlessStake, 6) : "0";
+            } catch { flawlessStake = gameData.flawlessStake?.toString?.() || "0"; }
             status = typeof gameData.status !== "undefined" ? Number(gameData.status) : 0;
+            // attach flawless info to object for UI
+            ev.flawlessStake = flawlessStake;
           } else {
             gameType = ev.args.gameType;
             targetScore = ev.args.targetScore?.toString?.() || "";
@@ -98,6 +105,7 @@ export default function StakedGamesDashboard() {
             } catch {
               stakeAmount = ev.args.stakeAmount?.toString?.() || "0";
             }
+            ev.flawlessStake = "0";
             status = typeof ev.args.status !== "undefined" ? Number(ev.args.status) : 0;
           }
           return {
@@ -105,6 +113,7 @@ export default function StakedGamesDashboard() {
             gameType,
             targetScore,
             stakeAmount,
+            flawlessStake: ev.flawlessStake || "0",
             status: typeof status === 'bigint' ? Number(status) : status,
             actualScore: actualScore !== null ? Number(actualScore) : null,
           };
@@ -133,6 +142,7 @@ export default function StakedGamesDashboard() {
                 <th className="px-2 py-1 text-left">Game</th>
                 <th className="px-2 py-1 text-left">Target</th>
                 <th className="px-2 py-1 text-left">Stake</th>
+                <th className="px-2 py-1 text-left">Flawless Stake</th>
                 <th className="px-2 py-1 text-left">Status</th>
                 <th className="px-2 py-1"></th>
               </tr>
@@ -143,6 +153,7 @@ export default function StakedGamesDashboard() {
                   <td className="px-2 py-1">{g.gameType}</td>
                   <td className="px-2 py-1">{g.targetScore}</td>
                   <td className="px-2 py-1">{g.stakeAmount} USDC</td>
+                  <td className="px-2 py-1">{g.flawlessStake} USDC</td>
                   <td className="px-2 py-1">
                     {(() => {
                       // Use actualScore from GameVerified event if available

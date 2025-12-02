@@ -23,6 +23,13 @@ export function StakingInterface() {
   const [isFlawless, setIsFlawless] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const formatUSDC = (v: number) => {
+    if (!isFinite(v) || isNaN(v)) return "0.00";
+    if (v >= 0.01) return v.toFixed(2);
+    if (v >= 0.001) return v.toFixed(4);
+    return v.toFixed(6);
+  };
+
   const handleStake = async () => {
     if (!account || !signer || !stakeAmount || !targetTime) {
       alert("Please connect wallet and fill all fields");
@@ -33,7 +40,7 @@ export function StakingInterface() {
     try {
       // Contract ABI (corrected - createGame expects bytes32 gameId)
       const contractABI = [
-        "function createGame(bytes32 gameId, string gameType, uint256 targetScore, uint256 stakeAmount) external"
+        "function createGame(bytes32 gameId, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -50,6 +57,17 @@ export function StakingInterface() {
 
       // Convert stake amount to USDC smallest unit (6 decimals)
       const microAmount = ethers.parseUnits(stakeAmount, 6);
+      const flawlessMicro = isFlawless ? microAmount : ethers.parseUnits("0", 6);
+
+      // Approve USDC transfer (base + flawless) to contract if necessary
+      const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS || "";
+      if (!usdcAddress) throw new Error("USDC address not configured");
+      const usdcAbi = ["function approve(address spender, uint256 amount) public returns (bool)"];
+      const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
+      const totalToApprove = microAmount + flawlessMicro;
+      // Request approval
+      const approveTx = await usdcContract.approve(contractAddress, totalToApprove);
+      await approveTx.wait();
 
       // Call createGame function
       // For Pinpoint: targetTime is tries (1-5), for others: time in seconds
@@ -57,7 +75,8 @@ export function StakingInterface() {
         gameId,
         selectedGame.id,
         parseInt(targetTime),
-        microAmount
+        microAmount,
+        flawlessMicro
       );
 
       console.log("Transaction sent:", tx.hash);
@@ -218,24 +237,24 @@ export function StakingInterface() {
                     <div className="flex justify-between">
                       <span className="text-sm">Base Reward ({selectedGame.reward}):</span>
                       <span className="font-bold text-primary">
-                        {(parseFloat(stakeAmount) * parseFloat(selectedGame.reward) / 100).toFixed(2)} USDC
+                        {formatUSDC(parseFloat(stakeAmount) * parseFloat(selectedGame.reward) / 100)} USDC
                       </span>
                     </div>
                     {isFlawless && !selectedGame.hideFlawless && (
                       <div className="flex justify-between">
                         <span className="text-sm flex items-center gap-1">✨ Flawless Bonus ({selectedGame.flawlessBonus}):</span>
                         <span className="font-bold text-secondary">
-                          +{(parseFloat(stakeAmount) * parseFloat(selectedGame.flawlessBonus) / 100).toFixed(2)} USDC
+                          +{formatUSDC(parseFloat(stakeAmount) * parseFloat(selectedGame.flawlessBonus) / 100)} USDC
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between pt-2 border-t border-border">
                       <span className="font-semibold">Total if Success:</span>
                       <span className="font-bold text-lg text-primary">
-                        {(
-                          parseFloat(stakeAmount) * 
-                          (1 + parseFloat(selectedGame.reward) / 100 + ((isFlawless && !selectedGame.hideFlawless) ? parseFloat(selectedGame.flawlessBonus) / 100 : 0))
-                        ).toFixed(2)} USDC
+                        {formatUSDC(
+                            parseFloat(stakeAmount) * 
+                            (1 + parseFloat(selectedGame.reward) / 100 + ((isFlawless && !selectedGame.hideFlawless) ? parseFloat(selectedGame.flawlessBonus) / 100 : 0))
+                          )} USDC
                       </span>
                     </div>
                   </div>
