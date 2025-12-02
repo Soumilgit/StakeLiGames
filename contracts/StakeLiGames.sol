@@ -20,6 +20,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         address player;
         uint256 targetScore;
         uint256 stakeAmount;
+        uint256 flawlessStake; // optional extra stake for flawless commitment
         uint256 timestamp;
         GameStatus status;
         string gameType; // "queens", "crossword", "pinpoint", "tango"
@@ -32,13 +33,16 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     mapping(address => uint256) public userGamesPlayed;
     mapping(address => uint256) public userTotalWinnings;
     mapping(address => uint256) public userTotalLosses;
+    // configurable reverse scoring per game type (keccak256(gameType) => bool)
+    mapping(bytes32 => bool) public reverseScoring;
     
     event GameCreated(
         bytes32 indexed gameId,
         address indexed player,
         string gameType,
         uint256 targetScore,
-        uint256 stakeAmount
+        uint256 stakeAmount,
+        uint256 flawlessStake
     );
     
     event GameVerified(
@@ -46,6 +50,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         address indexed player,
         uint256 actualScore,
         bool won,
+        bool flawlessClaimed,
         uint256 payout
     );
     
@@ -53,6 +58,23 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     
     constructor(address _usdcAddress) {
         usdc = IERC20(_usdcAddress);
+        // default: pinpoint uses reverse scoring (lower-is-better)
+        // enable reverse scoring (lower-is-better) for time/score based games
+        reverseScoring[keccak256(bytes("pinpoint"))] = true;
+        reverseScoring[keccak256(bytes("queens"))] = true;
+        reverseScoring[keccak256(bytes("crossclimb"))] = true;
+        reverseScoring[keccak256(bytes("mini-sudoku"))] = true;
+        reverseScoring[keccak256(bytes("tango"))] = true;
+        reverseScoring[keccak256(bytes("zip"))] = true;
+    }
+
+    /**
+     * @dev Owner can mark a game type as reverse-scoring (lower-is-better)
+     * @param gameType string name of the game type (e.g., "pinpoint")
+     * @param isReverse true to enable reverse scoring for this game type
+     */
+    function setReverseScoring(string calldata gameType, bool isReverse) external onlyOwner {
+        reverseScoring[keccak256(bytes(gameType))] = isReverse;
     }
     
     /**
@@ -66,16 +88,18 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         bytes32 gameId,
         string memory gameType,
         uint256 targetScore,
-        uint256 stakeAmount
+        uint256 stakeAmount,
+        uint256 flawlessStake
     ) external nonReentrant {
         require(games[gameId].player == address(0), "Game ID already exists");
         require(stakeAmount >= 1e4, "Minimum stake is 0.01 USDC");
         require(targetScore > 0, "Target score must be greater than 0");
         // 1e4 = 0.01 USDC in 6 decimals
         
-        // Transfer USDC from player to contract
+        // Transfer USDC (base + optional flawless) from player to contract
+        uint256 totalToTransfer = stakeAmount + flawlessStake;
         require(
-            usdc.transferFrom(msg.sender, address(this), stakeAmount),
+            usdc.transferFrom(msg.sender, address(this), totalToTransfer),
             "USDC transfer failed"
         );
         
@@ -83,17 +107,18 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             player: msg.sender,
             targetScore: targetScore,
             stakeAmount: stakeAmount,
+            flawlessStake: flawlessStake,
             timestamp: block.timestamp,
             status: GameStatus.Pending,
             gameType: gameType
         });
-        
-        totalStaked += stakeAmount;
+
+        totalStaked += (stakeAmount + flawlessStake);
         totalGames++;
-        userStakedAmount[msg.sender] += stakeAmount;
+        userStakedAmount[msg.sender] += (stakeAmount + flawlessStake);
         userGamesPlayed[msg.sender]++;
         
-        emit GameCreated(gameId, msg.sender, gameType, targetScore, stakeAmount);
+        emit GameCreated(gameId, msg.sender, gameType, targetScore, stakeAmount, flawlessStake);
     }
     
     /**
@@ -103,37 +128,139 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
      */
     function verifyAndPayout(
         bytes32 gameId,
-        uint256 actualScore
+        uint256 actualScore,
+        bool flawlessClaimed
     ) external nonReentrant {
         Game storage game = games[gameId];
-        
+
         require(game.player == msg.sender, "Only player can verify");
         require(game.status == GameStatus.Pending, "Game already verified");
-        
-        bool won = actualScore >= game.targetScore;
+
+        // Determine whether this game type uses reverse scoring (lower-is-better)
+        bool isReverse = reverseScoring[keccak256(bytes(game.gameType))];
+        bool won;
+        if (isReverse) {
+            // reverse scoring: lower is better
+            won = actualScore < game.targetScore;
+        } else {
+            // normal scoring: higher or equal is better
+            won = actualScore >= game.targetScore;
+        }
+
         uint256 payout = 0;
-        
+        uint256 base = game.stakeAmount;
+        uint256 flawless = game.flawlessStake;
+
         if (won) {
-            // Player wins: return stake + 20% reward
-            uint256 reward = (game.stakeAmount * 20) / 100;
-            uint256 totalAmount = game.stakeAmount + reward;
+            // Player wins: return base stake + reward; for non-Pinpoint games include flawless stake only if claimed
+            uint256 reward = (base * 20) / 100;
+            uint256 totalAmount = base + reward;
+            bool includeFlawless = (!isReverse && flawless > 0 && flawlessClaimed);
+            if (includeFlawless) {
+                totalAmount += flawless;
+            }
+
             uint256 fee = (totalAmount * platformFee) / 10000;
             payout = totalAmount - fee;
-            
+
             game.status = GameStatus.Won;
             userTotalWinnings[msg.sender] += reward;
-            
+
+            // Transfer payout (base + reward, and flawless stake if included above)
             require(usdc.transfer(msg.sender, payout), "Payout failed");
+
+            // Update totals: remove base stake
+            if (totalStaked >= base) {
+                totalStaked -= base;
+            } else {
+                totalStaked = 0;
+            }
+            if (userStakedAmount[msg.sender] >= base) {
+                userStakedAmount[msg.sender] -= base;
+            } else {
+                userStakedAmount[msg.sender] = 0;
+            }
+
+            // Handle flawless stake totals: if flawless was included in payout remove it from totals; otherwise it's forfeited and should also be removed from totals
+            if (flawless > 0) {
+                if (includeFlawless) {
+                    if (totalStaked >= flawless) {
+                        totalStaked -= flawless;
+                    } else {
+                        totalStaked = 0;
+                    }
+                    if (userStakedAmount[msg.sender] >= flawless) {
+                        userStakedAmount[msg.sender] -= flawless;
+                    } else {
+                        userStakedAmount[msg.sender] = 0;
+                    }
+                } else {
+                    // forfeited flawless stake (or ignored for Pinpoint) -> remove from staked totals
+                    if (totalStaked >= flawless) {
+                        totalStaked -= flawless;
+                    } else {
+                        totalStaked = 0;
+                    }
+                    if (userStakedAmount[msg.sender] >= flawless) {
+                        userStakedAmount[msg.sender] -= flawless;
+                    } else {
+                        userStakedAmount[msg.sender] = 0;
+                    }
+                }
+            }
+
         } else {
-            // Player loses: stake goes to reward pool
+            // Player loses
             game.status = GameStatus.Lost;
-            userTotalLosses[msg.sender] += game.stakeAmount;
+            userTotalLosses[msg.sender] += base;
+
+            // For non-Pinpoint games, if user claimed flawless they get it back on loss; for Pinpoint or non-claimed, flawless is forfeited
+            bool refundFlawless = (!isReverse && flawless > 0 && flawlessClaimed);
+            if (refundFlawless) {
+                uint256 refund = flawless;
+                require(usdc.transfer(msg.sender, refund), "Flawless refund failed");
+                payout = refund;
+
+                if (totalStaked >= refund) {
+                    totalStaked -= refund;
+                } else {
+                    totalStaked = 0;
+                }
+                if (userStakedAmount[msg.sender] >= refund) {
+                    userStakedAmount[msg.sender] -= refund;
+                } else {
+                    userStakedAmount[msg.sender] = 0;
+                }
+            } else {
+                // flawless forfeited or ignored for Pinpoint: remove from totals (kept by contract)
+                if (flawless > 0) {
+                    if (totalStaked >= flawless) {
+                        totalStaked -= flawless;
+                    } else {
+                        totalStaked = 0;
+                    }
+                    if (userStakedAmount[msg.sender] >= flawless) {
+                        userStakedAmount[msg.sender] -= flawless;
+                    } else {
+                        userStakedAmount[msg.sender] = 0;
+                    }
+                }
+            }
+
+            // remove base stake from totals
+            if (totalStaked >= base) {
+                totalStaked -= base;
+            } else {
+                totalStaked = 0;
+            }
+            if (userStakedAmount[msg.sender] >= base) {
+                userStakedAmount[msg.sender] -= base;
+            } else {
+                userStakedAmount[msg.sender] = 0;
+            }
         }
-        
-        totalStaked -= game.stakeAmount;
-        userStakedAmount[msg.sender] -= game.stakeAmount;
-        
-        emit GameVerified(gameId, msg.sender, actualScore, won, payout);
+
+        emit GameVerified(gameId, msg.sender, actualScore, won, flawlessClaimed, payout);
     }
     
     /**

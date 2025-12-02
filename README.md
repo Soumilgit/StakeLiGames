@@ -199,6 +199,159 @@ Open http://localhost:3000
 // - If NO: Stake goes to reward pool
 ```
 
+## Available Scripts
+
+```bash
+# Frontend
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+
+# Smart Contracts
+npm run contracts:compile   # Compile PyTeal contracts
+npm run contracts:deploy    # Deploy to Sepolia
+
+# Python (from contracts/)
+python compile_solidity.py    # Compile contracts
+python deploy_sepolia.py     # Deploy to testnet
+```
+
+## Algorand Testnet Resources
+
+- **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
+- **Explorer Options**:
+  - https://testnet.explorer.perawallet.app (Pera Explorer - Recommended)
+  - https://testnet.explorer.lora.algokit.io (Lora Explorer)
+  - https://app.dappflow.org/explorer (Dappflow)
+- **Docs**: https://developer.algorand.org (Algorand dev docs)
+- **PyTeal Guide**: https://pyteal.readthedocs.io (Smart contract docs)
+- **AlgoNode API**: https://testnet-api.algonode.cloud (Free RPC node - Most reliable)
+
+## Smart Contract Details
+
+### State Schema
+
+**Global State:**
+- `total_staked` - Total USDC locked in platform
+- `total_games` - Number of games created
+- `platform_fee` - Fee percentage (250 = 2.5%)
+- `owner` - Platform owner address
+
+**Local State (per user):**
+- `staked_amount` - User's active stakes
+- `games_participated` - Total games count
+- `total_winnings` - Cumulative winnings
+- `total_losses` - Cumulative losses
+
+**Box Storage (scalable):**
+- Game data: player, target score, stake amount, timestamp, status
+
+### Contract Methods
+
+1. `create_game` - Create new stake on game result
+   - Args: game_id, target_score, stake_amount
+   - Requires: USDC transfer to contract (min: 0.01 USDC)
+
+2. `verify_payout` - Verify result and distribute rewards
+   - Args: game_id, actual_score
+   - Logic: If result meets/exceeds target → return stake + reward (see above)
+   - Else: stake → reward pool
+
+3. `withdraw_fees` - Owner withdraws platform fees
+   - Args: amount
+   - Requires: Owner signature
+
+## UI Design Philosophy
+
+- **Clean & Minimal** - Inspired by the challenge and excitement of LinkedIn Games
+- **Accessible** - High contrast, readable fonts
+- **Responsive** - Mobile-first design
+
+## Security Features
+
+- **OpenZeppelin patterns** (Algorand equivalent)
+- **Reentrancy protection** via atomic transactions
+- **Access control** for admin functions
+- **Box storage** for scalability
+- **Testnet first** - Deploy safely before mainnet
+
+## Deployment to Production
+
+### Frontend Hosting
+
+**Vercel (Recommended):**
+```bash
+npm install -g vercel
+vercel deploy
+```
+
+**Netlify:**
+```bash
+npm run build
+netlify deploy --prod --dir=.next
+```
+
+## Customization
+
+### Add New Games
+
+Edit `components/StakingInterface.tsx`:
+
+```typescript
+const games = [
+   { id: "new_game", name: "New Game", difficulty: "Hard", targetTime: 60, unit: "sec", reward: "25%" },
+   // ... existing games
+];
+```
+
+### Adjust Rewards
+
+Edit `contracts/staking_contract.py`:
+
+```python
+reward := stake_amount / Int(5),  # 20% reward (1/5)
+# Change to stake_amount / Int(4) for 25%
+# Change to stake_amount / Int(10) for 10%
+```
+
+Recompile and redeploy:
+```bash
+python compile_solidity.py
+python deploy_sepolia.py
+```
+
+## Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+## Support
+
+- **Algorand Discord**: https://discord.gg/algorand
+- **PyTeal Docs**: https://pyteal.readthedocs.ionot
+- **Next.js Docs**: https://nextjs.org/docs
+
+## Links
+
+- **FirstDollar**: https://firstdollar.money/SoumilMukh6476
+- **Referral**: https://firstdollar.money/?r=k3S11X
+
+- **Blockchain Python**: https://github.com/topics/blockchain-python
+
+---
+
+**Built with love using Algorand + PyTeal + Next.js**
+
+*Turn your gaming confidence into instant liquidity!*
+# Ethereum Sepolia Deployment
+
+- Contract Address: 0x68900B5594De2D84FeE2265b01B3481b090E11e8
+- Chain ID: 11155111
+- Network: Sepolia Testnet
+
 ## Project Structure
 
 ```
@@ -595,157 +748,3 @@ Open http://localhost:3000
 └─ types
    └─ ethereum.d.ts
 ```
-
-## Available Scripts
-
-```bash
-# Frontend
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-
-# Smart Contracts
-npm run contracts:compile   # Compile PyTeal contracts
-npm run contracts:deploy    # Deploy to Sepolia
-
-# Python (from contracts/)
-python compile_solidity.py    # Compile contracts
-python deploy_sepolia.py     # Deploy to testnet
-```
-
-## Algorand Testnet Resources
-
-- **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
-- **Explorer Options**:
-  - https://testnet.explorer.perawallet.app (Pera Explorer - Recommended)
-  - https://testnet.explorer.lora.algokit.io (Lora Explorer)
-  - https://app.dappflow.org/explorer (Dappflow)
-- **Docs**: https://developer.algorand.org (Algorand dev docs)
-- **PyTeal Guide**: https://pyteal.readthedocs.io (Smart contract docs)
-- **AlgoNode API**: https://testnet-api.algonode.cloud (Free RPC node - Most reliable)
-
-## Smart Contract Details
-
-### State Schema
-
-**Global State:**
-- `total_staked` - Total USDC locked in platform
-- `total_games` - Number of games created
-- `platform_fee` - Fee percentage (250 = 2.5%)
-- `owner` - Platform owner address
-
-**Local State (per user):**
-- `staked_amount` - User's active stakes
-- `games_participated` - Total games count
-- `total_winnings` - Cumulative winnings
-- `total_losses` - Cumulative losses
-
-**Box Storage (scalable):**
-- Game data: player, target score, stake amount, timestamp, status
-
-### Contract Methods
-
-1. `create_game` - Create new stake on game result
-   - Args: game_id, target_score, stake_amount
-   - Requires: USDC transfer to contract (min: 0.01 USDC)
-
-2. `verify_payout` - Verify result and distribute rewards
-   - Args: game_id, actual_score
-   - Logic: If result meets/exceeds target → return stake + reward (see above)
-   - Else: stake → reward pool
-
-3. `withdraw_fees` - Owner withdraws platform fees
-   - Args: amount
-   - Requires: Owner signature
-
-## UI Design Philosophy
-
-- **Clean & Minimal** - Inspired by the challenge and excitement of LinkedIn Games
-- **Accessible** - High contrast, readable fonts
-- **Responsive** - Mobile-first design
-
-## Security Features
-
-- **OpenZeppelin patterns** (Algorand equivalent)
-- **Reentrancy protection** via atomic transactions
-- **Access control** for admin functions
-- **Box storage** for scalability
-- **Testnet first** - Deploy safely before mainnet
-
-## Deployment to Production
-
-### Frontend Hosting
-
-**Vercel (Recommended):**
-```bash
-npm install -g vercel
-vercel deploy
-```
-
-**Netlify:**
-```bash
-npm run build
-netlify deploy --prod --dir=.next
-```
-
-## Customization
-
-### Add New Games
-
-Edit `components/StakingInterface.tsx`:
-
-```typescript
-const games = [
-   { id: "new_game", name: "New Game", difficulty: "Hard", targetTime: 60, unit: "sec", reward: "25%" },
-   // ... existing games
-];
-```
-
-### Adjust Rewards
-
-Edit `contracts/staking_contract.py`:
-
-```python
-reward := stake_amount / Int(5),  # 20% reward (1/5)
-# Change to stake_amount / Int(4) for 25%
-# Change to stake_amount / Int(10) for 10%
-```
-
-Recompile and redeploy:
-```bash
-python compile_solidity.py
-python deploy_sepolia.py
-```
-
-## Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
-## Support
-
-- **Algorand Discord**: https://discord.gg/algorand
-- **PyTeal Docs**: https://pyteal.readthedocs.ionot
-- **Next.js Docs**: https://nextjs.org/docs
-
-## Links
-
-- **FirstDollar**: https://firstdollar.money/SoumilMukh6476
-- **Referral**: https://firstdollar.money/?r=k3S11X
-
-- **Blockchain Python**: https://github.com/topics/blockchain-python
-
----
-
-**Built with love using Algorand + PyTeal + Next.js**
-
-*Turn your gaming confidence into instant liquidity!*
-# Ethereum Sepolia Deployment
-
-- Contract Address: 0xF22995f0b507C9e7e02317e4190E55F20e611f54
-- Chain ID: 11155111
-- Network: Sepolia Testnet
-
