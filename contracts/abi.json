@@ -61,6 +61,12 @@
         "internalType": "uint256",
         "name": "stakeAmount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "flawlessStake",
+        "type": "uint256"
       }
     ],
     "name": "GameCreated",
@@ -91,6 +97,12 @@
         "indexed": false,
         "internalType": "bool",
         "name": "won",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "flawlessClaimed",
         "type": "bool"
       },
       {
@@ -156,6 +168,11 @@
         "internalType": "uint256",
         "name": "stakeAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "flawlessStake",
+        "type": "uint256"
       }
     ],
     "name": "createGame",
@@ -186,6 +203,11 @@
       {
         "internalType": "uint256",
         "name": "stakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "flawlessStake",
         "type": "uint256"
       },
       {
@@ -232,6 +254,11 @@
           {
             "internalType": "uint256",
             "name": "stakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "flawlessStake",
             "type": "uint256"
           },
           {
@@ -349,6 +376,43 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "reverseScoring",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "gameType",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "isReverse",
+        "type": "bool"
+      }
+    ],
+    "name": "setReverseScoring",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -505,6 +569,11 @@
         "internalType": "uint256",
         "name": "actualScore",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "flawlessClaimed",
+        "type": "bool"
       }
     ],
     "name": "verifyAndPayout",
