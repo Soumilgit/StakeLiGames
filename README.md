@@ -1,21 +1,22 @@
-# StakeLiGames - Stake on Your LinkedIn Games Performance
+# StakeLiGames - Stake on LinkedIn Games Scores
+<a href="https://www.producthunt.com/products/stakeligames?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-stakeligames" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1044696&theme=neutral&t=1764664965863" alt="StakeLiGames - Protocol&#0032;to&#0032;stake&#0032;on&#0032;your&#0032;LinkedIn&#0032;games&#0032;performance | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain** logic on **Sepolia** testnet, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind**, and **Next.js**.
+Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain** logic on **Sepolia** testnet, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind** and **Next.js**.
 
-![StakeLiGames](https://img.shields.io/badge/blockchain-Algorand-00D4AA?style=for-the-badge)
+![StakeLiGames](https://img.shields.io/badge/chain-Sepolia-00D4AA?style=for-the-badge)
 ![PyTeal](https://img.shields.io/badge/contracts-PyTeal-6366F1?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/frontend-Next.js-000000?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?style=for-the-badge)
 
 ## Demo pics
 
-<img width="1048" height="923" alt="contract-successful-deployment" src="https://github.com/user-attachments/assets/c293cec4-d40f-413d-a02b-94100340c4e8" />
-<img width="1919" height="984" alt="hero-section" src="https://github.com/user-attachments/assets/2b5f8d5d-9c04-4152-b976-f335403cb9fa" />
+<img width="1549" height="871" alt="contract-successful-deployment-re" src="https://github.com/user-attachments/assets/55c5303f-4819-469a-925e-c6d8eaee33b9" />
+<img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/248d9838-307e-493c-a2e2-334175884a9d" />
 <img width="1919" height="881" alt="why" src="https://github.com/user-attachments/assets/77e2e34a-c6e2-45a8-b79d-6a4999346276" />
 <img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
 <img width="1393" height="887" alt="start" src="https://github.com/user-attachments/assets/93730066-20ca-4264-a990-541e55a7867a" />
 <img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
-<img width="1919" height="983" alt="dashboard-onchain" src="https://github.com/user-attachments/assets/00aaf2bc-60ce-48fb-ab30-fbcc9fce7ad2" />
+<img width="1919" height="987" alt="image" src="https://github.com/user-attachments/assets/ab20d310-a9c4-4f21-82cb-c0473258a199" />
 
 ## Features
 

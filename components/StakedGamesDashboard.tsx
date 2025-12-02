@@ -30,7 +30,7 @@ export default function StakedGamesDashboard() {
         const contract = new ethers.Contract(contractAddress, contractABI, provider);
         // Query all GameCreated events for this user
         const filter = contract.filters.GameCreated(null, account);
-        const events = await contract.queryFilter(filter, -10000); // last 10k blocks
+        const events = await contract.queryFilter(filter, 0); // all blocks since contract deployment
         // Always fetch latest status from contract for each game
         const gameList = await Promise.all(events.map(async (ev: any) => {
           const gameId = ev.args.gameId;
@@ -40,7 +40,7 @@ export default function StakedGamesDashboard() {
             gameData = await contract.getGame(gameId);
             // Fetch GameVerified event for this gameId
             const verifiedFilter = contract.filters.GameVerified(gameId);
-            const verifiedEvents = await contract.queryFilter(verifiedFilter, -10000);
+            const verifiedEvents = await contract.queryFilter(verifiedFilter, 0);
             if (verifiedEvents.length > 0) {
               // Use the last GameVerified event (should only be one per game)
               const last = verifiedEvents[verifiedEvents.length - 1];
@@ -142,7 +142,7 @@ export default function StakedGamesDashboard() {
                 <th className="px-2 py-1 text-left">Game</th>
                 <th className="px-2 py-1 text-left">Target</th>
                 <th className="px-2 py-1 text-left">Stake</th>
-                <th className="px-2 py-1 text-left">Flawless Stake</th>
+                <th className="px-2 py-1 text-left">Est. Flawless Stake</th>
                 <th className="px-2 py-1 text-left">Status</th>
                 <th className="px-2 py-1"></th>
               </tr>
@@ -171,9 +171,25 @@ export default function StakedGamesDashboard() {
                     })()}
                   </td>
                   <td className="px-2 py-1">
-                    <Link href={`/game/${g.gameId}`}>
-                      <button className="btn-secondary text-xs">Submit Result</button>
-                    </Link>
+                    {/* Only show Submit Result button for pending stakes */}
+                    {(() => {
+                      // Status logic matches the status column above
+                      if (g.status === 3) return null; // Cancelled
+                      if (typeof g.actualScore === 'number' && typeof g.targetScore !== 'undefined') {
+                        const scoreNum = g.actualScore;
+                        const targetNum = Number(g.targetScore);
+                        if (!isNaN(scoreNum) && !isNaN(targetNum)) {
+                          // Completed (won/lost), no button
+                          return null;
+                        }
+                      }
+                      // Pending: show button
+                      return (
+                        <Link href={`/game/${g.gameId}`}>
+                          <button className="btn-secondary text-xs">Submit Result</button>
+                        </Link>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}
