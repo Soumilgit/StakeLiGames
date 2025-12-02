@@ -30,12 +30,30 @@ export function Hero() {
               Beat the clock, solve flawlessly, and earn up to 35% rewards on Ethereum Sepolia.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 items-center">
               <a href="#stake" className="btn-primary text-lg">
                 🎯 Get Started
               </a>
+
               <a href="#how-it-works" className="btn-secondary text-lg">
                 📚 Learn More
+              </a>
+
+              {/* Product Hunt featured badge - placed inline with Learn More */}
+              <a
+                href="https://www.producthunt.com/products/stakeligames?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-stakeligames"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-block ml-2"
+                aria-label="StakeLiGames on Product Hunt"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1044696&theme=neutral&t=1764664965863"
+                  alt="StakeLiGames - Product Hunt"
+                  width={250}
+                  height={54}
+                  style={{ width: 250, height: 54 }}
+                />
               </a>
             </div>
           </motion.div>
