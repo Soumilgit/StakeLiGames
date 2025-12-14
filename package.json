@@ -11,7 +11,7 @@
     "contracts:deploy": "cd contracts && python deploy_sepolia.py"
   },
   "dependencies": {
-    "next": "^14.2.0",
+    "next": "14.2.35",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "typescript": "^5.4.0",

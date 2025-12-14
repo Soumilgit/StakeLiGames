@@ -19,7 +19,8 @@ SEPOLIA_RPC_URLS = [
 ]
 
 # Sepolia USDC test token address
-SEPOLIA_USDC = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+import os
+SEPOLIA_USDC = os.environ["NEXT_PUBLIC_USDC_ADDRESS"]
 
 def get_web3():
     """Connect to Sepolia using free public RPC"""

@@ -4,7 +4,7 @@ async function main() {
   console.log("🚀 Deploying StakeLiGames to Sepolia...\n");
 
   // Sepolia USDC address (testnet mock)
-  const USDC_ADDRESS = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"; // Sepolia USDC
+  const USDC_ADDRESS = process.env.NEXT_PUBLIC_USDC_ADDRESS; // Sepolia USDC
 
   console.log("📝 Contract details:");
   console.log(`   USDC Address: ${USDC_ADDRESS}`);

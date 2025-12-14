@@ -7,7 +7,7 @@ const RPC = process.env.SEP_RPC || 'https://rpc.sepolia.org';
 const provider = new ethers.JsonRpcProvider(RPC);
 const CONTRACT = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '';
 const WALLET = process.env.WALLET || '';
-const USDC = process.env.NEXT_PUBLIC_USDC_ADDRESS || '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
+const USDC = process.env.NEXT_PUBLIC_USDC_ADDRESS;
 
 if (!CONTRACT || !WALLET) {
   console.error('Please set NEXT_PUBLIC_CONTRACT_ADDRESS and WALLET env vars');
