@@ -18,19 +18,21 @@ export default function StakedGamesDashboard() {
       setLoading(true);
       setError("");
       try {
-        // Fetch GameCreated events for this user
         const contractABI = [
           "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
           "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
           // Use ethers v6 tuple ABI with named output (flawlessStake added)
           "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType) game)"
         ];
+
         const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
         const provider = signer.provider;
         const contract = new ethers.Contract(contractAddress, contractABI, provider);
-        // Query all GameCreated events for this user
+
+        // Query all GameCreated events for this user on the current contract
         const filter = contract.filters.GameCreated(null, account);
-        const events = await contract.queryFilter(filter, 0); // all blocks since contract deployment
+        const events = await contract.queryFilter(filter, 0);
+
         // Always fetch latest status from contract for each game
         const gameList = await Promise.all(events.map(async (ev: any) => {
           const gameId = ev.args.gameId;
@@ -118,6 +120,7 @@ export default function StakedGamesDashboard() {
             actualScore: actualScore !== null ? Number(actualScore) : null,
           };
         }));
+
         setGames(gameList);
       } catch (err: any) {
         setError(err.message || "Failed to fetch games");
@@ -125,6 +128,7 @@ export default function StakedGamesDashboard() {
         setLoading(false);
       }
     };
+
     fetchGames();
   }, [account, signer]);
 
@@ -162,9 +166,10 @@ export default function StakedGamesDashboard() {
                         const scoreNum = g.actualScore;
                         const targetNum = Number(g.targetScore);
                         if (!isNaN(scoreNum) && !isNaN(targetNum)) {
+                          // All supported games currently use reverse scoring (lower-is-better)
                           if (scoreNum < targetNum) return "Won";
                           if (scoreNum > targetNum) return "Lost";
-                          if (scoreNum === targetNum) return "Won";
+                          if (scoreNum === targetNum) return "Lost";
                         }
                       }
                       return "Pending";

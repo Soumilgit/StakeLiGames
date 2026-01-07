@@ -140,6 +140,29 @@
         "internalType": "bytes32",
         "name": "gameId",
         "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "adminTopUpReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "gameId",
+        "type": "bytes32"
       }
     ],
     "name": "cancelGame",
@@ -316,6 +339,30 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "gameType",
+        "type": "string"
+      }
+    ],
+    "name": "getRewardConfig",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "baseRewardBps",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "flawlessBonusBps",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "user",
         "type": "address"
@@ -378,6 +425,25 @@
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "retroRewardProcessed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

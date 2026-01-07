@@ -35,6 +35,8 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     mapping(address => uint256) public userTotalLosses;
     // configurable reverse scoring per game type (keccak256(gameType) => bool)
     mapping(bytes32 => bool) public reverseScoring;
+    // tracking for any owner-triggered retroactive top-ups to avoid double paying
+    mapping(bytes32 => bool) public retroRewardProcessed;
     
     event GameCreated(
         bytes32 indexed gameId,
@@ -66,6 +68,43 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("mini-sudoku"))] = true;
         reverseScoring[keccak256(bytes("tango"))] = true;
         reverseScoring[keccak256(bytes("zip"))] = true;
+    }
+
+    /**
+     * @dev Get base reward and flawless bonus (in basis points) for a given game type.
+     * Base reward is applied to the primary stake amount. Flawless bonus is an
+     * additional reward on the same base amount, only when flawless is claimed
+     * and actually achieved for supported games.
+     */
+    function getRewardConfig(string memory gameType)
+        public
+        pure
+        returns (uint256 baseRewardBps, uint256 flawlessBonusBps)
+    {
+        bytes32 t = keccak256(bytes(gameType));
+
+        // Hard games: Queens, Crossclimb -> 25% base, +10% flawless
+        if (t == keccak256(bytes("queens")) || t == keccak256(bytes("crossclimb"))) {
+            return (2500, 1000);
+        }
+
+        // Medium games: Mini Sudoku, Tango -> 20% base, +8% flawless
+        if (t == keccak256(bytes("mini-sudoku")) || t == keccak256(bytes("tango"))) {
+            return (2000, 800);
+        }
+
+        // Easy game: Zip -> 15% base, +5% flawless
+        if (t == keccak256(bytes("zip"))) {
+            return (1500, 500);
+        }
+
+        // Special game: Pinpoint -> 30% base, no flawless bonus
+        if (t == keccak256(bytes("pinpoint"))) {
+            return (3000, 0);
+        }
+
+        // Default safety fallback (should not normally be hit)
+        return (2000, 0);
     }
 
     /**
@@ -138,6 +177,8 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
 
         // Determine whether this game type uses reverse scoring (lower-is-better)
         bool isReverse = reverseScoring[keccak256(bytes(game.gameType))];
+        // Pinpoint has special rules (no flawless refund/bonus)
+        bool isPinpoint = keccak256(bytes(game.gameType)) == keccak256(bytes("pinpoint"));
         bool won;
         if (isReverse) {
             // reverse scoring: lower is better
@@ -151,12 +192,30 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         uint256 base = game.stakeAmount;
         uint256 flawless = game.flawlessStake;
 
+        // Per-game reward configuration
+        (uint256 baseRewardBps, uint256 flawlessBonusBps) = getRewardConfig(game.gameType);
+
         if (won) {
-            // Player wins: return base stake + reward; for non-Pinpoint games include flawless stake only if claimed
-            uint256 reward = (base * 20) / 100;
-            uint256 totalAmount = base + reward;
-            bool includeFlawless = (!isReverse && flawless > 0 && flawlessClaimed);
-            if (includeFlawless) {
+            // Player wins: return base stake + per-game base reward.
+            // If flawless was staked and successfully claimed (non-Pinpoint), also
+            // return the flawless stake principal plus flawless bonus percentage
+            // on the base stake. All rewards are funded from the pooled stakes
+            // of losing games.
+
+            uint256 baseReward = (base * baseRewardBps) / 10000;
+            uint256 flawlessBonus = 0;
+            bool includeFlawlessPrincipal = false;
+
+            if (!isPinpoint && flawless > 0 && flawlessClaimed) {
+                // Flawless achieved: return extra stake and add flawless bonus
+                includeFlawlessPrincipal = true;
+                if (flawlessBonusBps > 0) {
+                    flawlessBonus = (base * flawlessBonusBps) / 10000;
+                }
+            }
+
+            uint256 totalAmount = base + baseReward + flawlessBonus;
+            if (includeFlawlessPrincipal) {
                 totalAmount += flawless;
             }
 
@@ -164,49 +223,26 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             payout = totalAmount - fee;
 
             game.status = GameStatus.Won;
-            userTotalWinnings[msg.sender] += reward;
+            userTotalWinnings[msg.sender] += (baseReward + flawlessBonus);
 
-            // Transfer payout (base + reward, and flawless stake if included above)
+            // Transfer payout (base + rewards, plus flawless principal when applicable)
             require(usdc.transfer(msg.sender, payout), "Payout failed");
 
-            // Update totals: remove base stake
-            if (totalStaked >= base) {
-                totalStaked -= base;
+            // Remove base and flawless stakes from accounting totals regardless of
+            // whether flawless principal was refunded or forfeited. The underlying
+            // funds remain in the contract (minus payouts) and are effectively
+            // part of the shared reward pool.
+            uint256 totalStakeToRemove = base + flawless;
+            if (totalStaked >= totalStakeToRemove) {
+                totalStaked -= totalStakeToRemove;
             } else {
                 totalStaked = 0;
             }
-            if (userStakedAmount[msg.sender] >= base) {
-                userStakedAmount[msg.sender] -= base;
+
+            if (userStakedAmount[msg.sender] >= totalStakeToRemove) {
+                userStakedAmount[msg.sender] -= totalStakeToRemove;
             } else {
                 userStakedAmount[msg.sender] = 0;
-            }
-
-            // Handle flawless stake totals: if flawless was included in payout remove it from totals; otherwise it's forfeited and should also be removed from totals
-            if (flawless > 0) {
-                if (includeFlawless) {
-                    if (totalStaked >= flawless) {
-                        totalStaked -= flawless;
-                    } else {
-                        totalStaked = 0;
-                    }
-                    if (userStakedAmount[msg.sender] >= flawless) {
-                        userStakedAmount[msg.sender] -= flawless;
-                    } else {
-                        userStakedAmount[msg.sender] = 0;
-                    }
-                } else {
-                    // forfeited flawless stake (or ignored for Pinpoint) -> remove from staked totals
-                    if (totalStaked >= flawless) {
-                        totalStaked -= flawless;
-                    } else {
-                        totalStaked = 0;
-                    }
-                    if (userStakedAmount[msg.sender] >= flawless) {
-                        userStakedAmount[msg.sender] -= flawless;
-                    } else {
-                        userStakedAmount[msg.sender] = 0;
-                    }
-                }
             }
 
         } else {
@@ -214,53 +250,52 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             game.status = GameStatus.Lost;
             userTotalLosses[msg.sender] += base;
 
-            // For non-Pinpoint games, if user claimed flawless they get it back on loss; for Pinpoint or non-claimed, flawless is forfeited
-            bool refundFlawless = (!isReverse && flawless > 0 && flawlessClaimed);
-            if (refundFlawless) {
-                uint256 refund = flawless;
-                require(usdc.transfer(msg.sender, refund), "Flawless refund failed");
-                payout = refund;
+            // On loss, both base and flawless stakes are fully forfeited and
+            // stay in the contract to fund the pooled rewards of winners.
+            // No refund of flawless stake, regardless of whether it was
+            // claimed as flawless or not.
 
-                if (totalStaked >= refund) {
-                    totalStaked -= refund;
-                } else {
-                    totalStaked = 0;
-                }
-                if (userStakedAmount[msg.sender] >= refund) {
-                    userStakedAmount[msg.sender] -= refund;
-                } else {
-                    userStakedAmount[msg.sender] = 0;
-                }
-            } else {
-                // flawless forfeited or ignored for Pinpoint: remove from totals (kept by contract)
-                if (flawless > 0) {
-                    if (totalStaked >= flawless) {
-                        totalStaked -= flawless;
-                    } else {
-                        totalStaked = 0;
-                    }
-                    if (userStakedAmount[msg.sender] >= flawless) {
-                        userStakedAmount[msg.sender] -= flawless;
-                    } else {
-                        userStakedAmount[msg.sender] = 0;
-                    }
-                }
-            }
-
-            // remove base stake from totals
-            if (totalStaked >= base) {
-                totalStaked -= base;
+            uint256 totalStakeToRemoveLoss = base + flawless;
+            if (totalStaked >= totalStakeToRemoveLoss) {
+                totalStaked -= totalStakeToRemoveLoss;
             } else {
                 totalStaked = 0;
             }
-            if (userStakedAmount[msg.sender] >= base) {
-                userStakedAmount[msg.sender] -= base;
+
+            if (userStakedAmount[msg.sender] >= totalStakeToRemoveLoss) {
+                userStakedAmount[msg.sender] -= totalStakeToRemoveLoss;
             } else {
                 userStakedAmount[msg.sender] = 0;
             }
         }
 
         emit GameVerified(gameId, msg.sender, actualScore, won, flawlessClaimed, payout);
+    }
+
+    /**
+     * @dev Owner-only helper to top up rewards for already-completed games.
+     * This is intended for one-off retroactive adjustments where the
+     * reward logic has been improved and early winners should receive
+     * additional payouts without resubmitting their scores.
+     *
+     * Off-chain tooling should compute the extra amount owed for a given
+     * gameId and then call this function once per game.
+     */
+    function adminTopUpReward(bytes32 gameId, address player, uint256 amount)
+        external
+        onlyOwner
+        nonReentrant
+    {
+        require(!retroRewardProcessed[gameId], "Already topped up");
+        Game storage game = games[gameId];
+        require(game.player == player, "Player mismatch");
+        require(
+            game.status == GameStatus.Won || game.status == GameStatus.Lost,
+            "Game not completed"
+        );
+        retroRewardProcessed[gameId] = true;
+
+        require(usdc.transfer(player, amount), "Top-up transfer failed");
     }
     
     /**

@@ -9,7 +9,12 @@ from web3 import Web3
 from eth_account import Account
 from dotenv import load_dotenv
 
+# 1) Load .env in contracts/ (PRIVATE_KEY etc.)
 load_dotenv()
+# 2) Also load ../.env.local (Next.js style) so we can reuse
+# NEXT_PUBLIC_USDC_ADDRESS and other shared settings without duplicating
+# them in contracts/.env. Values in contracts/.env still win if both set.
+load_dotenv(dotenv_path="../.env.local")
 
 # Sepolia RPC endpoints (FREE - no API key needed!)
 SEPOLIA_RPC_URLS = [
@@ -18,8 +23,8 @@ SEPOLIA_RPC_URLS = [
     "https://1rpc.io/sepolia",
 ]
 
-# Sepolia USDC test token address
-import os
+# Sepolia USDC test token address. This is expected to be set either in
+# contracts/.env or in the project root .env.local (loaded above).
 SEPOLIA_USDC = os.environ["NEXT_PUBLIC_USDC_ADDRESS"]
 
 def get_web3():
