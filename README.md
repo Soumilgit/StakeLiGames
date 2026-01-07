@@ -10,11 +10,11 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="1549" height="871" alt="contract-successful-deployment-re" src="https://github.com/user-attachments/assets/55c5303f-4819-469a-925e-c6d8eaee33b9" />
+<img width="1063" height="932" alt="contract-successful-dep-new" src="https://github.com/user-attachments/assets/223cfff8-d88f-4d18-b499-005f45883fc3" />
 <img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/248d9838-307e-493c-a2e2-334175884a9d" />
 <img width="1919" height="881" alt="why" src="https://github.com/user-attachments/assets/77e2e34a-c6e2-45a8-b79d-6a4999346276" />
 <img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
-<img width="1393" height="887" alt="start" src="https://github.com/user-attachments/assets/93730066-20ca-4264-a990-541e55a7867a" />
+<img width="1345" height="877" alt="stake-part" src="https://github.com/user-attachments/assets/7032fa38-f360-4ffa-8100-d4cdb1b85422" />
 <img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
 <img width="1919" height="987" alt="image" src="https://github.com/user-attachments/assets/ab20d310-a9c4-4f21-82cb-c0473258a199" />
 
@@ -146,11 +146,13 @@ The deployment script automatically creates `.env.local`:
 # Ethereum Sepolia Configuration
 NEXT_PUBLIC_CHAIN_ID=
 NEXT_PUBLIC_RPC_URL=https://rpc.sepolia.org
+RPC_URL=https://ethereum-sepolia.publicnode.com
 NEXT_PUBLIC_NETWORK_NAME=Sepolia Testnet
 
 # Smart Contract Addresses
 NEXT_PUBLIC_CONTRACT_ADDRESS=
 NEXT_PUBLIC_USDC_ADDRESS=
+PRIVATE_KEY=
 
 # Application Settings
 NEXT_PUBLIC_APP_NAME=
@@ -350,7 +352,7 @@ Contributions welcome! Please:
 *Turn your gaming confidence into instant liquidity!*
 # Ethereum Sepolia Deployment
 
-- Contract Address: 0x68900B5594De2D84FeE2265b01B3481b090E11e8
+- Contract Address: 0x0F59155e1C4aC71D9f2958b18C81ad8816fCdF8e
 - Chain ID: 11155111
 - Network: Sepolia Testnet
 
