@@ -1,9 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWallet } from "./WalletProvider";
 import { ethers } from "ethers";
 import Link from "next/link";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 // This dashboard lists all games staked by the user and provides a button to submit results for each
 export default function StakedGamesDashboard() {
@@ -11,6 +23,19 @@ export default function StakedGamesDashboard() {
   const [games, setGames] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const updateTheme = () => {
+      setIsDark(html.classList.contains("dark"));
+    };
+    updateTheme();
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -118,8 +143,18 @@ export default function StakedGamesDashboard() {
             flawlessStake: ev.flawlessStake || "0",
             status: typeof status === 'bigint' ? Number(status) : status,
             actualScore: actualScore !== null ? Number(actualScore) : null,
+            createdBlock: Number((ev as any).blockNumber ?? 0),
+            createdLogIndex: Number((ev as any).logIndex ?? (ev as any).index ?? 0),
           };
         }));
+
+        // Sort newest stakes first so latest entries appear at the top
+        gameList.sort((a, b) => {
+          if (a.createdBlock !== b.createdBlock) {
+            return b.createdBlock - a.createdBlock;
+          }
+          return b.createdLogIndex - a.createdLogIndex;
+        });
 
         setGames(gameList);
       } catch (err: any) {
@@ -132,6 +167,137 @@ export default function StakedGamesDashboard() {
     fetchGames();
   }, [account, signer]);
 
+  // Whenever the games list changes (e.g., new stake), reset to page 1
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [games.length]);
+
+  const gameTypeConfig = useMemo(
+    () => [
+      { key: "queens", label: "Queens" },
+      { key: "mini-sudoku", label: "Mini Sudoku" },
+      { key: "tango", label: "Tango" },
+      { key: "zip", label: "Zip" },
+      { key: "crossclimb", label: "Crossclimb" },
+      { key: "pinpoint", label: "Pinpoint" },
+    ],
+    []
+  );
+
+  const chartStats = useMemo(() => {
+    const wins = new Array(gameTypeConfig.length).fill(0);
+    const losses = new Array(gameTypeConfig.length).fill(0);
+
+    games.forEach((g) => {
+      const key = String(g.gameType || "").toLowerCase();
+      const index = gameTypeConfig.findIndex((cfg) => cfg.key === key);
+      if (index === -1) return;
+      if (g.status === 3) return; // cancelled
+
+      const scoreNum = typeof g.actualScore === "number" ? g.actualScore : NaN;
+      const targetNum = Number(g.targetScore);
+      if (isNaN(scoreNum) || isNaN(targetNum)) return;
+
+      if (scoreNum < targetNum) {
+        wins[index] += 1;
+      } else if (scoreNum >= targetNum) {
+        losses[index] += 1;
+      }
+    });
+
+    return {
+      labels: gameTypeConfig.map((g) => g.label),
+      wins,
+      losses,
+    };
+  }, [games, gameTypeConfig]);
+
+  const chartData = useMemo(
+    () => ({
+      labels: chartStats.labels,
+      datasets: [
+        {
+          label: "Wins",
+          data: chartStats.wins,
+          borderColor: "rgba(34,197,94,1)",
+          backgroundColor: "rgba(34,197,94,0.15)",
+          tension: 0.3,
+          pointRadius: 4,
+          yAxisID: "y",
+        },
+        {
+          label: "Losses",
+          data: chartStats.losses,
+          borderColor: "rgba(239,68,68,1)",
+          backgroundColor: "rgba(239,68,68,0.15)",
+          tension: 0.3,
+          pointRadius: 5,
+          borderWidth: 3,
+          yAxisID: "y1",
+        },
+      ],
+    }),
+    [chartStats]
+  );
+
+  const chartOptions = useMemo(() => {
+    const axisColor = isDark ? "rgba(148,163,184,1)" : "rgba(55,65,81,1)";
+    const gridColor = isDark ? "rgba(55,65,81,0.5)" : "rgba(209,213,219,0.5)";
+    const legendLabelColor = isDark ? "rgba(229,231,235,1)" : "rgba(31,41,55,1)";
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom" as const,
+          labels: {
+            color: legendLabelColor,
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          mode: "index" as const,
+          intersect: false,
+        },
+      },
+      interaction: {
+        mode: "index" as const,
+        intersect: false,
+      },
+      scales: {
+        x: {
+          ticks: { color: axisColor },
+          grid: { color: gridColor },
+        },
+        y: {
+          ticks: { color: axisColor },
+          grid: { color: gridColor },
+          grace: "10%",
+        },
+        y1: {
+          position: "right" as const,
+          ticks: { color: axisColor },
+          grid: { drawOnChartArea: false },
+          grace: "10%",
+        },
+      },
+    };
+  }, [isDark]);
+
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(games.length / pageSize));
+
+  const paginatedGames = useMemo(() => {
+    const safePage = Math.min(currentPage, totalPages);
+    const start = (safePage - 1) * pageSize;
+    return games.slice(start, start + pageSize);
+  }, [games, currentPage, totalPages]);
+
+  const windowSize = 5;
+  const windowStart = Math.floor((currentPage - 1) / windowSize) * windowSize + 1;
+  const windowEnd = Math.min(windowStart + windowSize - 1, totalPages);
+
   return (
     <div className="card-modern p-6 mt-8">
       <h2 className="text-2xl font-bold mb-4">Your Staked Games</h2>
@@ -139,7 +305,60 @@ export default function StakedGamesDashboard() {
       {error && <div className="text-red-500">{error}</div>}
       {games.length === 0 && !loading && !error && <div>No staked games found.</div>}
       {games.length > 0 && (
-        <div className="overflow-x-auto">
+        <div className="mb-8">
+          <div className="relative w-full h-64 sm:h-72 md:h-80">
+            <Line data={chartData} options={chartOptions} />
+          </div>
+        </div>
+      )}
+      {games.length > 0 && (
+        <>
+          <div className="flex justify-center mb-4 gap-2">
+            {totalPages > windowSize && windowStart > 1 && (
+              <button
+                type="button"
+                onClick={() => setCurrentPage(Math.max(1, windowStart - windowSize))}
+                className="w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70 transition-colors"
+                aria-label="Previous pages"
+              >
+                {"<<"}
+              </button>
+            )}
+
+            {Array.from({ length: windowEnd - windowStart + 1 }, (_, i) => {
+              const page = windowStart + i;
+              const isActive = page === currentPage;
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  disabled={isActive}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium transition-colors
+                    ${isActive
+                      ? "bg-slate-600 text-white border-slate-300"
+                      : "bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70"}
+                  `}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            {totalPages > windowSize && windowEnd < totalPages && (
+              <button
+                type="button"
+                onClick={() => setCurrentPage(Math.min(totalPages, windowEnd + 1))}
+                className="w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70 transition-colors"
+                aria-label="Next pages"
+              >
+                {">>"}
+              </button>
+            )}
+          </div>
+
+          <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
               <tr>
@@ -152,7 +371,7 @@ export default function StakedGamesDashboard() {
               </tr>
             </thead>
             <tbody>
-              {games.map((g) => (
+              {paginatedGames.map((g) => (
                 <tr key={g.gameId} className="border-b border-border">
                   <td className="px-2 py-1">{g.gameType}</td>
                   <td className="px-2 py-1">{g.targetScore}</td>
@@ -200,7 +419,8 @@ export default function StakedGamesDashboard() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

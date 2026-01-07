@@ -3,6 +3,7 @@
 import { useWallet } from "./WalletProvider";
 import { Wallet } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import Link from "next/link";
 
 export function Header() {
   const { account, connect, disconnect, isConnecting, chainId, switchToSepolia } = useWallet();
@@ -11,23 +12,23 @@ export function Header() {
     <header className="sticky top-0 z-50 navbar">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center text-2xl shadow-glow">
               🎮
             </div>
             <span className="text-2xl font-bold gradient-text">StakeLiGames</span>
-          </div>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="font-medium hover:text-primary transition-colors">
+            <Link href="/#features" className="font-medium hover:text-primary transition-colors">
               Features
-            </a>
-            <a href="#how-it-works" className="font-medium hover:text-primary transition-colors">
+            </Link>
+            <Link href="/#how-it-works" className="font-medium hover:text-primary transition-colors">
               How It Works
-            </a>
-            <a href="#stake" className="font-medium hover:text-primary transition-colors">
+            </Link>
+            <Link href="/#stake" className="font-medium hover:text-primary transition-colors">
               Stake Now
-            </a>
+            </Link>
           </nav>
 
           {/* Responsive wallet controls */}
