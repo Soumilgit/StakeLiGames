@@ -16,7 +16,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 <img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
 <img width="1345" height="877" alt="stake-part" src="https://github.com/user-attachments/assets/7032fa38-f360-4ffa-8100-d4cdb1b85422" />
 <img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
-<img width="1919" height="987" alt="image" src="https://github.com/user-attachments/assets/ab20d310-a9c4-4f21-82cb-c0473258a199" />
+<img width="1442" height="900" alt="dashboard-new-one" src="https://github.com/user-attachments/assets/ec318aee-41be-4ffe-a57e-05f0fa7ab34a" />
 
 ## Features
 
@@ -46,6 +46,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - **TypeScript** - Type-safe development
 - **TailwindCSS** - For the styling
 - **Framer Motion** - Smooth animations
+- **Chart.js** - For the result analytics on dashboard
 - **@txnlab/use-wallet** - Algorand wallet connection
 - **Solidity** - For 1 smart contract
 - **algosdk** - Algorand JavaScript SDK
@@ -339,7 +340,7 @@ Contributions welcome! Please:
 
 ## Links
 
-- **Video Demo**: https://youtu.be/JwrerLWBUw0
+- **Video Demo**: https://youtu.be/MYxh5ZZ6iFs
 - **FirstDollar**: https://firstdollar.money/SoumilMukh6476
 - **Referral**: https://firstdollar.money/?r=k3S11X
 
