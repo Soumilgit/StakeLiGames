@@ -172,12 +172,12 @@ Open http://localhost:3000
 
 1. Connect Wallet - Click "Connect Wallet" (top right)
 2. Select Game:
-   - Queens (Hard) - Complete in under 40 seconds → 25% reward
-   - Crossclimb (Hard) - Complete in under 50 seconds → 25% reward
-   - Mini Sudoku (Medium) - Complete in under 80 seconds → 20% reward
-   - Tango (Medium) - Complete in under 90 seconds → 20% reward
-   - Zip (Easy) - Complete in under 120 seconds → 15% reward
-   - Pinpoint (Special) - Score 1-5 or NA → 30% reward
+   - Queens (Hard) → 25% reward
+   - Crossclimb (Hard) → 25% reward
+   - Mini Sudoku (Medium) → 20% reward
+   - Tango (Medium) → 20% reward
+   - Zip (Easy) → 15% reward
+   - Pinpoint (Special) → 30% reward
 
 3. Configure Stake:
    - Enter USDC amount (min: 0.01 USDC)

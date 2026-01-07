@@ -15,6 +15,7 @@ export default function GamePage() {
   const [gameData, setGameData] = useState<any>(null);
   const [flawlessAvailable, setFlawlessAvailable] = useState(false);
   const [isPinpoint, setIsPinpoint] = useState(false);
+    const [gameType, setGameType] = useState<string>("");
   const [platformFee, setPlatformFee] = useState<number | null>(null);
   const [payoutPreview, setPayoutPreview] = useState<string>("0");
   const [explanation, setExplanation] = useState<string>("");
@@ -68,6 +69,7 @@ export default function GamePage() {
         const flawless = g.flawlessStake ? BigInt(g.flawlessStake.toString()) : BigInt(0);
         const gameType = g.gameType || "";
         setGameData(g);
+        setGameType(gameType);
         setFlawlessAvailable(flawless > 0n);
         setIsPinpoint(ethers.keccak256(ethers.toUtf8Bytes(gameType)) === ethers.keccak256(ethers.toUtf8Bytes("pinpoint")));
         // default: only allow claiming flawless if it was staked
@@ -114,49 +116,71 @@ export default function GamePage() {
     const target = BigInt(gameData.targetScore.toString());
 
     let won = false;
-    if (isPin) {
-      won = actual < target;
-    } else {
-      won = actual >= target;
+    // All configured games currently use reverse scoring (lower is better)
+    // via the reverseScoring mapping in the contract.
+    won = actual < target;
+
+    // Mirror on-chain per-game reward configuration
+    const typeKey = gameType.toLowerCase();
+    let baseRewardBps = 2000n; // default safety
+    let flawlessBonusBps = 0n;
+
+    if (typeKey === "queens" || typeKey === "crossclimb") {
+      baseRewardBps = 2500n;
+      flawlessBonusBps = 1000n;
+    } else if (typeKey === "mini-sudoku" || typeKey === "tango") {
+      baseRewardBps = 2000n;
+      flawlessBonusBps = 800n;
+    } else if (typeKey === "zip") {
+      baseRewardBps = 1500n;
+      flawlessBonusBps = 500n;
+    } else if (typeKey === "pinpoint") {
+      baseRewardBps = 3000n;
+      flawlessBonusBps = 0n;
     }
 
-    const reward = (base * 20n) / 100n; // contract uses 20%
+    const reward = (base * baseRewardBps) / 10000n;
 
     let payout = 0n;
     let expl = "";
 
     if (won) {
-      // base + reward always returned on win
-      let totalAmount = base + reward;
-      const includeFlawless = (!isPin && flawless > 0n && flawlessClaimed);
-      if (includeFlawless) totalAmount += flawless;
+      // base + per-game reward always returned on win
+      let flawlessBonus = 0n;
+      let includeFlawlessPrincipal = false;
+
+      if (!isPin && flawless > 0n && flawlessClaimed && flawlessBonusBps > 0n) {
+        flawlessBonus = (base * flawlessBonusBps) / 10000n;
+        includeFlawlessPrincipal = true;
+      } else if (!isPin && flawless > 0n && flawlessClaimed) {
+        // Flawless claimed but no bonus for this game (e.g. Pinpoint-style)
+        includeFlawlessPrincipal = true;
+      }
+
+      let totalAmount = base + reward + flawlessBonus;
+      if (includeFlawlessPrincipal) totalAmount += flawless;
 
       const fee = (totalAmount * BigInt(platformFee)) / 10000n;
       payout = totalAmount - fee;
 
-      if (includeFlawless) {
-        expl = `Win: returns base + reward + flawless (fee ${platformFee} bps). Flawless stake returned.`;
+      if (includeFlawlessPrincipal && flawlessBonus > 0n) {
+        expl = `Win: returns base + reward + flawless principal + flawless bonus (fee ${platformFee} bps).`;
+      } else if (includeFlawlessPrincipal) {
+        expl = `Win: returns base + reward + flawless principal (fee ${platformFee} bps).`;
       } else if (flawless > 0n) {
-        expl = `Win: returns base + reward (fee ${platformFee} bps). Flawless stake is forfeited because you did not claim flawless.`;
+        expl = `Win: returns base + reward (fee ${platformFee} bps). Flawless stake is forfeited because flawless was not successfully claimed.`;
       } else {
         expl = `Win: returns base + reward (fee ${platformFee} bps). No flawless stake involved.`;
       }
     } else {
-      // lost
-      const refundFlawless = (!isPin && flawless > 0n && flawlessClaimed);
-      if (refundFlawless) {
-        payout = flawless;
-        expl = `Loss: base stake forfeited. Flawless stake refunded because you claimed flawless.`;
+      // lost: both base and flawless stakes are forfeited into the pool
+      payout = 0n;
+      if (flawless > 0n && !isPin) {
+        expl = `Loss: base stake and flawless stake are both forfeited into the shared reward pool.`;
+      } else if (isPin && flawless > 0n) {
+        expl = `Loss: base stake forfeited. Pinpoint ignores flawless stake and it is forfeited into the pool.`;
       } else {
-        payout = 0n;
-        if (flawless > 0n && !isPin) {
-          expl = `Loss: base stake forfeited. Flawless stake also forfeited (not claimed).`;
-        } else if (isPin && flawless > 0n) {
-          // Pinpoint ignores flawless
-          expl = `Loss: base stake forfeited. Pinpoint ignores flawless stake and it is forfeited.`;
-        } else {
-          expl = `Loss: base stake forfeited. No flawless stake to refund.`;
-        }
+        expl = `Loss: base stake forfeited (no flawless stake set).`;
       }
     }
 
@@ -206,6 +230,12 @@ export default function GamePage() {
         {submitting ? "Submitting..." : "Submit Result"}
       </button>
       {message && <div className="mt-6 text-lg font-mono whitespace-pre-line">{message}</div>}
+      {payoutPreview !== "0" && (
+        <div className="mt-6 text-sm text-muted">
+          Estimated payout (after platform fee): {formatUSDC(payoutPreview)} USDC
+          {explanation && <div className="mt-2 whitespace-pre-line">{explanation}</div>}
+        </div>
+      )}
       {!account && <div className="mt-4 text-red-500 font-mono">Please connect your wallet.</div>}
     </div>
   );

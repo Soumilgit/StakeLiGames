@@ -11,24 +11,25 @@
     "contracts:deploy": "cd contracts && python deploy_sepolia.py"
   },
   "dependencies": {
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "clsx": "^2.1.0",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.378.0",
     "next": "14.2.35",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "typescript": "^5.4.0",
-    "@types/react": "^18.3.0",
-    "@types/node": "^20.12.0",
-    "@types/react-dom": "^18.3.0",
-    "ethers": "^6.11.0",
-    "framer-motion": "^11.0.0",
-    "lucide-react": "^0.378.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.3.0"
+    "tailwind-merge": "^2.3.0",
+    "typescript": "^5.4.0"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.0"
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0"
   }
 }

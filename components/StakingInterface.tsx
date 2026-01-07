@@ -347,8 +347,8 @@ function SelectedGameBox({ selectedGame }: { selectedGame: SelectedGame }) {
       <div className="text-sm text-muted mb-2">Difficulty: {selectedGame.difficulty}</div>
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <span className="text-sm font-semibold text-muted">Target:</span>
-        <span className="font-bold text-primary">
-          {selectedGame.id === "pinpoint" ? `≤${selectedGame.targetTime} score` : `<${selectedGame.targetTime} sec`}
+        <span className="text-sm text-primary font-medium">
+          Set by you under "Configure Your Stake"
         </span>
       </div>
       <div className="flex items-center justify-between pt-1">
