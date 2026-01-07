@@ -348,7 +348,7 @@ function SelectedGameBox({ selectedGame }: { selectedGame: SelectedGame }) {
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <span className="text-sm font-semibold text-muted">Target:</span>
         <span className="text-sm text-primary font-medium">
-          Set by you under "Configure Your Stake"
+          Set by you under Configure Your Stake
         </span>
       </div>
       <div className="flex items-center justify-between pt-1">

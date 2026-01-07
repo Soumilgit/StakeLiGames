@@ -186,7 +186,7 @@ export default function GamePage() {
 
     setPayoutPreview(payout.toString());
     setExplanation(expl);
-  }, [gameData, platformFee, actualScore, flawlessClaimed, isPinpoint]);
+  }, [gameData, platformFee, actualScore, flawlessClaimed, isPinpoint, gameType]);
 
   return (
     <div className="container mx-auto px-4 py-10">

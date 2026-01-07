@@ -2,6 +2,7 @@
 
 import { TrendingUp, Shield, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export function Hero() {
   return (
@@ -47,7 +48,7 @@ export function Hero() {
                 className="inline-block ml-2"
                 aria-label="StakeLiGames on Product Hunt"
               >
-                <img
+                <Image
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1044696&theme=neutral&t=1764664965863"
                   alt="StakeLiGames - Product Hunt"
                   width={250}
