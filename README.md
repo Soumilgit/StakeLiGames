@@ -16,7 +16,8 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 <img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
 <img width="1345" height="877" alt="stake-part" src="https://github.com/user-attachments/assets/7032fa38-f360-4ffa-8100-d4cdb1b85422" />
 <img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
-<img width="1442" height="900" alt="dashboard-new-one" src="https://github.com/user-attachments/assets/ec318aee-41be-4ffe-a57e-05f0fa7ab34a" />
+<img width="1451" height="892" alt="dashboard-1" src="https://github.com/user-attachments/assets/06507dab-bfd7-4134-ade3-ed80b134982d" />
+<img width="1454" height="240" alt="dashboard-4" src="https://github.com/user-attachments/assets/2746bc61-9466-4d12-a67d-6b5c9d60afc9" />
 
 ## Features
 
