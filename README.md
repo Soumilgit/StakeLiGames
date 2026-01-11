@@ -222,7 +222,7 @@ python compile_solidity.py    # Compile contracts
 python deploy_sepolia.py     # Deploy to testnet
 ```
 
-## Algorand Testnet Resources
+## Testnet Resources
 
 - **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
 - **Explorer Options**:
@@ -335,6 +335,7 @@ Contributions welcome! Please:
 
 ## Support
 
+- **Sepolia Docs**: https://sepolia.dev/
 - **Algorand Discord**: https://discord.gg/algorand
 - **PyTeal Docs**: https://pyteal.readthedocs.ionot
 - **Next.js Docs**: https://nextjs.org/docs
@@ -344,14 +345,14 @@ Contributions welcome! Please:
 - **Video Demo**: https://youtu.be/MYxh5ZZ6iFs
 - **FirstDollar**: https://firstdollar.money/SoumilMukh6476
 - **Referral**: https://firstdollar.money/?r=k3S11X
-
 - **Blockchain Python**: https://github.com/topics/blockchain-python
 
 ---
 
-**Built with love using Algorand + PyTeal + Next.js**
+**Built with love using Algorand + Sepolia + PyTeal + Next.js**
 
 *Turn your gaming confidence into instant liquidity!*
+
 # Ethereum Sepolia Deployment
 
 - Contract Address: 0x0F59155e1C4aC71D9f2958b18C81ad8816fCdF8e
@@ -361,8 +362,7 @@ Contributions welcome! Please:
 ## Project Structure
 
 ```
-📦 StakeLiGames
-├─ .env.example
+├─ .env.local
 ├─ .eslintrc.json
 ├─ .gitignore
 ├─ GAME_CONFIGURATIONS.md
@@ -391,343 +391,61 @@ Contributions welcome! Please:
 │  ├─ UserDashboard.tsx
 │  └─ WalletProvider.tsx
 ├─ contracts
-│  ├─ .env.example
+│  ├─ .env
 │  ├─ @openzeppelin
 │  │  └─ contracts
-│  │     ├─ access
-│  │     │  ├─ AccessControl.sol
-│  │     │  ├─ AccessControlCrossChain.sol
-│  │     │  ├─ AccessControlDefaultAdminRules.sol
-│  │     │  ├─ AccessControlEnumerable.sol
-│  │     │  ├─ IAccessControl.sol
-│  │     │  ├─ IAccessControlDefaultAdminRules.sol
-│  │     │  ├─ IAccessControlEnumerable.sol
-│  │     │  ├─ Ownable.sol
-│  │     │  ├─ Ownable2Step.sol
-│  │     │  └─ README.adoc
 │  │     ├─ crosschain
-│  │     │  ├─ CrossChainEnabled.sol
-│  │     │  ├─ README.adoc
 │  │     │  ├─ amb
-│  │     │  │  ├─ CrossChainEnabledAMB.sol
-│  │     │  │  └─ LibAMB.sol
 │  │     │  ├─ arbitrum
-│  │     │  │  ├─ CrossChainEnabledArbitrumL1.sol
-│  │     │  │  ├─ CrossChainEnabledArbitrumL2.sol
-│  │     │  │  ├─ LibArbitrumL1.sol
-│  │     │  │  └─ LibArbitrumL2.sol
 │  │     │  ├─ errors.sol
 │  │     │  ├─ optimism
-│  │     │  │  ├─ CrossChainEnabledOptimism.sol
-│  │     │  │  └─ LibOptimism.sol
 │  │     │  └─ polygon
-│  │     │     └─ CrossChainEnabledPolygonChild.sol
 │  │     ├─ finance
-│  │     │  ├─ PaymentSplitter.sol
-│  │     │  ├─ README.adoc
-│  │     │  └─ VestingWallet.sol
 │  │     ├─ governance
-│  │     │  ├─ Governor.sol
-│  │     │  ├─ IGovernor.sol
-│  │     │  ├─ README.adoc
-│  │     │  ├─ TimelockController.sol
 │  │     │  ├─ compatibility
-│  │     │  │  ├─ GovernorCompatibilityBravo.sol
-│  │     │  │  └─ IGovernorCompatibilityBravo.sol
 │  │     │  ├─ extensions
-│  │     │  │  ├─ GovernorCountingSimple.sol
-│  │     │  │  ├─ GovernorPreventLateQuorum.sol
-│  │     │  │  ├─ GovernorProposalThreshold.sol
-│  │     │  │  ├─ GovernorSettings.sol
-│  │     │  │  ├─ GovernorTimelockCompound.sol
-│  │     │  │  ├─ GovernorTimelockControl.sol
-│  │     │  │  ├─ GovernorVotes.sol
-│  │     │  │  ├─ GovernorVotesComp.sol
-│  │     │  │  ├─ GovernorVotesQuorumFraction.sol
-│  │     │  │  └─ IGovernorTimelock.sol
 │  │     │  └─ utils
-│  │     │     ├─ IVotes.sol
-│  │     │     └─ Votes.sol
 │  │     ├─ interfaces
-│  │     │  ├─ IERC1155.sol
-│  │     │  ├─ IERC1155MetadataURI.sol
-│  │     │  ├─ IERC1155Receiver.sol
-│  │     │  ├─ IERC1271.sol
-│  │     │  ├─ IERC1363.sol
-│  │     │  ├─ IERC1363Receiver.sol
-│  │     │  ├─ IERC1363Spender.sol
-│  │     │  ├─ IERC165.sol
-│  │     │  ├─ IERC1820Implementer.sol
-│  │     │  ├─ IERC1820Registry.sol
-│  │     │  ├─ IERC1967.sol
-│  │     │  ├─ IERC20.sol
-│  │     │  ├─ IERC20Metadata.sol
-│  │     │  ├─ IERC2309.sol
-│  │     │  ├─ IERC2612.sol
-│  │     │  ├─ IERC2981.sol
-│  │     │  ├─ IERC3156.sol
-│  │     │  ├─ IERC3156FlashBorrower.sol
-│  │     │  ├─ IERC3156FlashLender.sol
-│  │     │  ├─ IERC4626.sol
-│  │     │  ├─ IERC4906.sol
-│  │     │  ├─ IERC5267.sol
-│  │     │  ├─ IERC5313.sol
-│  │     │  ├─ IERC5805.sol
-│  │     │  ├─ IERC6372.sol
-│  │     │  ├─ IERC721.sol
-│  │     │  ├─ IERC721Enumerable.sol
-│  │     │  ├─ IERC721Metadata.sol
-│  │     │  ├─ IERC721Receiver.sol
-│  │     │  ├─ IERC777.sol
-│  │     │  ├─ IERC777Recipient.sol
-│  │     │  ├─ IERC777Sender.sol
-│  │     │  ├─ README.adoc
-│  │     │  ├─ draft-IERC1822.sol
-│  │     │  └─ draft-IERC2612.sol
 │  │     ├─ metatx
-│  │     │  ├─ ERC2771Context.sol
-│  │     │  ├─ MinimalForwarder.sol
-│  │     │  └─ README.adoc
 │  │     ├─ mocks
-│  │     │  ├─ AccessControlCrossChainMock.sol
-│  │     │  ├─ ArraysMock.sol
-│  │     │  ├─ CallReceiverMock.sol
-│  │     │  ├─ ConditionalEscrowMock.sol
-│  │     │  ├─ ContextMock.sol
-│  │     │  ├─ DummyImplementation.sol
-│  │     │  ├─ EIP712Verifier.sol
-│  │     │  ├─ ERC1271WalletMock.sol
 │  │     │  ├─ ERC165
-│  │     │  │  ├─ ERC165MaliciousData.sol
-│  │     │  │  ├─ ERC165MissingData.sol
-│  │     │  │  ├─ ERC165NotSupported.sol
-│  │     │  │  └─ ERC165ReturnBomb.sol
-│  │     │  ├─ ERC20Mock.sol
-│  │     │  ├─ ERC20Reentrant.sol
-│  │     │  ├─ ERC2771ContextMock.sol
-│  │     │  ├─ ERC3156FlashBorrowerMock.sol
-│  │     │  ├─ ERC4626Mock.sol
-│  │     │  ├─ EtherReceiverMock.sol
-│  │     │  ├─ InitializableMock.sol
-│  │     │  ├─ MulticallTest.sol
-│  │     │  ├─ MultipleInheritanceInitializableMocks.sol
-│  │     │  ├─ PausableMock.sol
-│  │     │  ├─ PullPaymentMock.sol
-│  │     │  ├─ ReentrancyAttack.sol
-│  │     │  ├─ ReentrancyMock.sol
-│  │     │  ├─ RegressionImplementation.sol
-│  │     │  ├─ SafeMathMemoryCheck.sol
-│  │     │  ├─ SingleInheritanceInitializableMocks.sol
-│  │     │  ├─ StorageSlotMock.sol
-│  │     │  ├─ TimelockReentrant.sol
-│  │     │  ├─ TimersBlockNumberImpl.sol
-│  │     │  ├─ TimersTimestampImpl.sol
-│  │     │  ├─ VotesMock.sol
 │  │     │  ├─ compound
-│  │     │  │  └─ CompTimelock.sol
 │  │     │  ├─ crosschain
-│  │     │  │  ├─ bridges.sol
-│  │     │  │  └─ receivers.sol
 │  │     │  ├─ docs
-│  │     │  │  └─ ERC4626Fees.sol
 │  │     │  ├─ governance
-│  │     │  │  ├─ GovernorCompMock.sol
-│  │     │  │  ├─ GovernorCompatibilityBravoMock.sol
-│  │     │  │  ├─ GovernorMock.sol
-│  │     │  │  ├─ GovernorPreventLateQuorumMock.sol
-│  │     │  │  ├─ GovernorTimelockCompoundMock.sol
-│  │     │  │  ├─ GovernorTimelockControlMock.sol
-│  │     │  │  ├─ GovernorVoteMock.sol
-│  │     │  │  └─ GovernorWithParamsMock.sol
 │  │     │  ├─ proxy
-│  │     │  │  ├─ BadBeacon.sol
-│  │     │  │  ├─ ClashingImplementation.sol
-│  │     │  │  ├─ UUPSLegacy.sol
-│  │     │  │  └─ UUPSUpgradeableMock.sol
 │  │     │  ├─ token
-│  │     │  │  ├─ ERC1155ReceiverMock.sol
-│  │     │  │  ├─ ERC20DecimalsMock.sol
-│  │     │  │  ├─ ERC20ExcessDecimalsMock.sol
-│  │     │  │  ├─ ERC20FlashMintMock.sol
-│  │     │  │  ├─ ERC20ForceApproveMock.sol
-│  │     │  │  ├─ ERC20MulticallMock.sol
-│  │     │  │  ├─ ERC20NoReturnMock.sol
-│  │     │  │  ├─ ERC20PermitNoRevertMock.sol
-│  │     │  │  ├─ ERC20ReturnFalseMock.sol
-│  │     │  │  ├─ ERC20VotesLegacyMock.sol
-│  │     │  │  ├─ ERC4626OffsetMock.sol
-│  │     │  │  ├─ ERC4646FeesMock.sol
-│  │     │  │  ├─ ERC721ConsecutiveEnumerableMock.sol
-│  │     │  │  ├─ ERC721ConsecutiveMock.sol
-│  │     │  │  ├─ ERC721ReceiverMock.sol
-│  │     │  │  ├─ ERC721URIStorageMock.sol
-│  │     │  │  ├─ ERC777Mock.sol
-│  │     │  │  ├─ ERC777SenderRecipientMock.sol
-│  │     │  │  └─ VotesTimestamp.sol
 │  │     │  └─ wizard
-│  │     │     ├─ MyGovernor1.sol
-│  │     │     ├─ MyGovernor2.sol
-│  │     │     └─ MyGovernor3.sol
 │  │     ├─ package.json
 │  │     ├─ proxy
-│  │     │  ├─ Clones.sol
 │  │     │  ├─ ERC1967
-│  │     │  │  ├─ ERC1967Proxy.sol
-│  │     │  │  └─ ERC1967Upgrade.sol
-│  │     │  ├─ Proxy.sol
-│  │     │  ├─ README.adoc
 │  │     │  ├─ beacon
-│  │     │  │  ├─ BeaconProxy.sol
-│  │     │  │  ├─ IBeacon.sol
-│  │     │  │  └─ UpgradeableBeacon.sol
 │  │     │  ├─ transparent
-│  │     │  │  ├─ ProxyAdmin.sol
-│  │     │  │  └─ TransparentUpgradeableProxy.sol
 │  │     │  └─ utils
-│  │     │     ├─ Initializable.sol
-│  │     │     └─ UUPSUpgradeable.sol
 │  │     ├─ security
-│  │     │  ├─ Pausable.sol
-│  │     │  ├─ PullPayment.sol
-│  │     │  ├─ README.adoc
-│  │     │  └─ ReentrancyGuard.sol
 │  │     ├─ token
 │  │     │  ├─ ERC1155
-│  │     │  │  ├─ ERC1155.sol
-│  │     │  │  ├─ IERC1155.sol
-│  │     │  │  ├─ IERC1155Receiver.sol
-│  │     │  │  ├─ README.adoc
 │  │     │  │  ├─ extensions
-│  │     │  │  │  ├─ ERC1155Burnable.sol
-│  │     │  │  │  ├─ ERC1155Pausable.sol
-│  │     │  │  │  ├─ ERC1155Supply.sol
-│  │     │  │  │  ├─ ERC1155URIStorage.sol
-│  │     │  │  │  └─ IERC1155MetadataURI.sol
 │  │     │  │  ├─ presets
-│  │     │  │  │  ├─ ERC1155PresetMinterPauser.sol
-│  │     │  │  │  └─ README.md
 │  │     │  │  └─ utils
-│  │     │  │     ├─ ERC1155Holder.sol
-│  │     │  │     └─ ERC1155Receiver.sol
 │  │     │  ├─ ERC20
-│  │     │  │  ├─ ERC20.sol
-│  │     │  │  ├─ IERC20.sol
-│  │     │  │  ├─ README.adoc
 │  │     │  │  ├─ extensions
-│  │     │  │  │  ├─ ERC20Burnable.sol
-│  │     │  │  │  ├─ ERC20Capped.sol
-│  │     │  │  │  ├─ ERC20FlashMint.sol
-│  │     │  │  │  ├─ ERC20Pausable.sol
-│  │     │  │  │  ├─ ERC20Permit.sol
-│  │     │  │  │  ├─ ERC20Snapshot.sol
-│  │     │  │  │  ├─ ERC20Votes.sol
-│  │     │  │  │  ├─ ERC20VotesComp.sol
-│  │     │  │  │  ├─ ERC20Wrapper.sol
-│  │     │  │  │  ├─ ERC4626.sol
-│  │     │  │  │  ├─ IERC20Metadata.sol
-│  │     │  │  │  ├─ IERC20Permit.sol
-│  │     │  │  │  ├─ draft-ERC20Permit.sol
-│  │     │  │  │  └─ draft-IERC20Permit.sol
 │  │     │  │  ├─ presets
-│  │     │  │  │  ├─ ERC20PresetFixedSupply.sol
-│  │     │  │  │  ├─ ERC20PresetMinterPauser.sol
-│  │     │  │  │  └─ README.md
 │  │     │  │  └─ utils
-│  │     │  │     ├─ SafeERC20.sol
-│  │     │  │     └─ TokenTimelock.sol
 │  │     │  ├─ ERC721
-│  │     │  │  ├─ ERC721.sol
-│  │     │  │  ├─ IERC721.sol
-│  │     │  │  ├─ IERC721Receiver.sol
-│  │     │  │  ├─ README.adoc
 │  │     │  │  ├─ extensions
-│  │     │  │  │  ├─ ERC721Burnable.sol
-│  │     │  │  │  ├─ ERC721Consecutive.sol
-│  │     │  │  │  ├─ ERC721Enumerable.sol
-│  │     │  │  │  ├─ ERC721Pausable.sol
-│  │     │  │  │  ├─ ERC721Royalty.sol
-│  │     │  │  │  ├─ ERC721URIStorage.sol
-│  │     │  │  │  ├─ ERC721Votes.sol
-│  │     │  │  │  ├─ ERC721Wrapper.sol
-│  │     │  │  │  ├─ IERC721Enumerable.sol
-│  │     │  │  │  ├─ IERC721Metadata.sol
-│  │     │  │  │  └─ draft-ERC721Votes.sol
 │  │     │  │  ├─ presets
-│  │     │  │  │  ├─ ERC721PresetMinterPauserAutoId.sol
-│  │     │  │  │  └─ README.md
 │  │     │  │  └─ utils
-│  │     │  │     └─ ERC721Holder.sol
 │  │     │  ├─ ERC777
-│  │     │  │  ├─ ERC777.sol
-│  │     │  │  ├─ IERC777.sol
-│  │     │  │  ├─ IERC777Recipient.sol
-│  │     │  │  ├─ IERC777Sender.sol
-│  │     │  │  ├─ README.adoc
 │  │     │  │  └─ presets
-│  │     │  │     └─ ERC777PresetFixedSupply.sol
 │  │     │  └─ common
-│  │     │     ├─ ERC2981.sol
-│  │     │     └─ README.adoc
 │  │     ├─ utils
-│  │     │  ├─ Address.sol
-│  │     │  ├─ Arrays.sol
-│  │     │  ├─ Base64.sol
-│  │     │  ├─ Checkpoints.sol
-│  │     │  ├─ Context.sol
-│  │     │  ├─ Counters.sol
-│  │     │  ├─ Create2.sol
-│  │     │  ├─ Multicall.sol
-│  │     │  ├─ README.adoc
-│  │     │  ├─ ShortStrings.sol
-│  │     │  ├─ StorageSlot.sol
-│  │     │  ├─ Strings.sol
-│  │     │  ├─ Timers.sol
 │  │     │  ├─ cryptography
-│  │     │  │  ├─ ECDSA.sol
-│  │     │  │  ├─ EIP712.sol
-│  │     │  │  ├─ MerkleProof.sol
-│  │     │  │  ├─ SignatureChecker.sol
-│  │     │  │  └─ draft-EIP712.sol
 │  │     │  ├─ escrow
-│  │     │  │  ├─ ConditionalEscrow.sol
-│  │     │  │  ├─ Escrow.sol
-│  │     │  │  └─ RefundEscrow.sol
 │  │     │  ├─ introspection
-│  │     │  │  ├─ ERC165.sol
-│  │     │  │  ├─ ERC165Checker.sol
-│  │     │  │  ├─ ERC165Storage.sol
-│  │     │  │  ├─ ERC1820Implementer.sol
-│  │     │  │  ├─ IERC165.sol
-│  │     │  │  ├─ IERC1820Implementer.sol
-│  │     │  │  └─ IERC1820Registry.sol
 │  │     │  ├─ math
-│  │     │  │  ├─ Math.sol
-│  │     │  │  ├─ SafeCast.sol
-│  │     │  │  ├─ SafeMath.sol
-│  │     │  │  ├─ SignedMath.sol
-│  │     │  │  └─ SignedSafeMath.sol
 │  │     │  └─ structs
-│  │     │     ├─ BitMaps.sol
-│  │     │     ├─ DoubleEndedQueue.sol
-│  │     │     ├─ EnumerableMap.sol
-│  │     │     └─ EnumerableSet.sol
 │  │     └─ vendor
-│  │        ├─ amb
-│  │        │  └─ IAMB.sol
-│  │        ├─ arbitrum
-│  │        │  ├─ IArbSys.sol
-│  │        │  ├─ IBridge.sol
-│  │        │  ├─ IDelayedMessageProvider.sol
-│  │        │  ├─ IInbox.sol
-│  │        │  └─ IOutbox.sol
-│  │        ├─ compound
-│  │        │  ├─ ICompoundTimelock.sol
-│  │        │  └─ LICENSE
-│  │        ├─ optimism
-│  │        │  ├─ ICrossDomainMessenger.sol
-│  │        │  └─ LICENSE
-│  │        └─ polygon
-│  │           └─ IFxMessageProcessor.sol
 │  ├─ StakeLiGames.sol
 │  ├─ abi.json
 │  ├─ bytecode.txt
