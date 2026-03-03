@@ -297,6 +297,8 @@ export default function StakedGamesDashboard() {
   const windowSize = 5;
   const windowStart = Math.floor((currentPage - 1) / windowSize) * windowSize + 1;
   const windowEnd = Math.min(windowStart + windowSize - 1, totalPages);
+  const hasPrevPage = currentPage > 1;
+  const hasNextPage = currentPage < totalPages;
 
   return (
     <div className="card-modern p-6 mt-8">
@@ -314,16 +316,20 @@ export default function StakedGamesDashboard() {
       {games.length > 0 && (
         <>
           <div className="flex justify-center mb-4 gap-2">
-            {totalPages > windowSize && windowStart > 1 && (
-              <button
-                type="button"
-                onClick={() => setCurrentPage(Math.max(1, windowStart - windowSize))}
-                className="w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70 transition-colors"
-                aria-label="Previous pages"
-              >
-                {"<<"}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => hasPrevPage && setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={!hasPrevPage}
+              className={`w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium transition-colors
+                ${hasPrevPage
+                  ? "bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70"
+                  : "bg-slate-800/40 text-slate-500 border-slate-600/60 cursor-not-allowed"}
+              `}
+              aria-label="Previous page"
+              aria-disabled={!hasPrevPage}
+            >
+              {"<<"}
+            </button>
 
             {Array.from({ length: windowEnd - windowStart + 1 }, (_, i) => {
               const page = windowStart + i;
@@ -346,16 +352,20 @@ export default function StakedGamesDashboard() {
               );
             })}
 
-            {totalPages > windowSize && windowEnd < totalPages && (
-              <button
-                type="button"
-                onClick={() => setCurrentPage(Math.min(totalPages, windowEnd + 1))}
-                className="w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70 transition-colors"
-                aria-label="Next pages"
-              >
-                {">>"}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => hasNextPage && setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={!hasNextPage}
+              className={`w-8 h-8 flex items-center justify-center rounded-md border text-xs font-medium transition-colors
+                ${hasNextPage
+                  ? "bg-slate-500/40 text-slate-100 border-slate-400/70 hover:bg-slate-400/70"
+                  : "bg-slate-800/40 text-slate-500 border-slate-600/60 cursor-not-allowed"}
+              `}
+              aria-label="Next page"
+              aria-disabled={!hasNextPage}
+            >
+              {">>"}
+            </button>
           </div>
 
           <div className="overflow-x-auto">
