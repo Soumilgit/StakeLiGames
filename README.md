@@ -86,13 +86,6 @@ npm install
 
 ```bash
 cd contracts
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS/Linux
-source venv/bin/activate
 
 pip install -r requirements.txt
 ```
@@ -123,7 +116,7 @@ The testnet now uses Sepolia USDC (ERC20) for simulation and staking.
 ### 5. Deploy Smart Contract
 
 ```bash
-# From contracts directory (with venv activated)
+# From contracts directory
 python deploy_sepolia.py
 ```
 
@@ -193,6 +186,7 @@ Open http://localhost:3000
    - Tango (Medium) → 20% reward
    - Zip (Easy) → 15% reward
    - Pinpoint (Special) → 30% reward
+   - Patches (Easy) → 10% reward
 
 3. Configure Stake:
    - Enter USDC amount (min: 0.01 USDC)
@@ -353,7 +347,7 @@ Contributions welcome! Please:
 
 ## Links
 
-- **Video Demo**: https://youtu.be/MYxh5ZZ6iFs
+- **Video Demo**: https://youtu.be/J26eRUxOx74
 - **FirstDollar**: https://firstdollar.money/SoumilMukh6476
 - **Referral**: https://firstdollar.money/?r=k3S11X
 - **Blockchain Python**: https://github.com/topics/blockchain-python
