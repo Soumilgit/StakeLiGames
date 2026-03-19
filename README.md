@@ -10,15 +10,16 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="1063" height="932" alt="contract-successful-dep-new" src="https://github.com/user-attachments/assets/223cfff8-d88f-4d18-b499-005f45883fc3" />
-<img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/248d9838-307e-493c-a2e2-334175884a9d" />
-<img width="1919" height="881" alt="why" src="https://github.com/user-attachments/assets/77e2e34a-c6e2-45a8-b79d-6a4999346276" />
-<img width="1919" height="858" alt="info" src="https://github.com/user-attachments/assets/c185a564-b375-41f7-a872-cb4cb03ae24e" />
-<img width="1345" height="877" alt="stake-part" src="https://github.com/user-attachments/assets/7032fa38-f360-4ffa-8100-d4cdb1b85422" />
-<img width="1919" height="812" alt="foot" src="https://github.com/user-attachments/assets/53bb4d6b-6fa9-4ba4-95a5-2a9c214627de" />
-<img width="1427" height="881" alt="image" src="https://github.com/user-attachments/assets/97b9c110-ac34-4612-8dad-669589a8efd7" />
-<img width="1390" height="371" alt="image" src="https://github.com/user-attachments/assets/6c862456-b2eb-4c11-b066-d4aacec06f13" />
-<img width="1388" height="247" alt="image" src="https://github.com/user-attachments/assets/68c0d741-e642-4d64-981e-6baa8fabd9c0" />
+<img width="933" height="968" alt="updated-contract-depl" src="https://github.com/user-attachments/assets/2df16a71-fd08-4146-bfee-6f033dd8df12" />
+<img width="1919" height="991" alt="updated-hero-section" src="https://github.com/user-attachments/assets/5b9a618d-0fbb-4735-a381-b578ff3ddb44" />
+<img width="1919" height="882" alt="updated-why" src="https://github.com/user-attachments/assets/9c519abe-44e3-4b15-a51b-ac5423e5f7b1" />
+<img width="1919" height="809" alt="updated-pipeline" src="https://github.com/user-attachments/assets/bff4fb93-4fee-4fa6-9276-0b438b2ef4cc" />
+<img width="1136" height="905" alt="updated-staking" src="https://github.com/user-attachments/assets/739e3c9a-e2aa-44fb-8875-f612b578259b" />
+<img width="1759" height="641" alt="updated-footer" src="https://github.com/user-attachments/assets/947dcbbf-de33-4d45-a0ac-3cf588e455fa" />
+<img width="1442" height="882" alt="updated-dashboard" src="https://github.com/user-attachments/assets/85f2ad01-9789-4978-ac96-cad27adff061" />
+<img width="1595" height="498" alt="dashboard-l-2" src="https://github.com/user-attachments/assets/5d27228d-2c0b-496f-9c10-bc173cbdaf1c" />
+<img width="1638" height="503" alt="dashboard-l-3" src="https://github.com/user-attachments/assets/7fb360f6-ec27-47d7-aecb-1885c715c9cb" />
+<img width="1632" height="421" alt="dashboard-l-4" src="https://github.com/user-attachments/assets/12034a45-3538-4973-92fc-5d8ebacbea5a" />
 
 
 
