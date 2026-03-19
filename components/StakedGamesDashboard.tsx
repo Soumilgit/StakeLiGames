@@ -49,114 +49,152 @@ export default function StakedGamesDashboard() {
           // Use ethers v6 tuple ABI with named output (flawlessStake added)
           "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType) game)"
         ];
+        const primaryAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
+        const legacyAddressesRaw = process.env.NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES || "";
+        const legacyAddresses = legacyAddressesRaw
+          .split(",")
+          .map((addr) => addr.trim())
+          .filter((addr) => addr.length > 0);
 
-        const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
+        const allAddresses = [primaryAddress, ...legacyAddresses].filter((addr, index, self) =>
+          addr && self.indexOf(addr) === index
+        );
+
         const provider = signer.provider;
-        const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-        // Query all GameCreated events for this user on the current contract
-        const filter = contract.filters.GameCreated(null, account);
-        const events = await contract.queryFilter(filter, 0);
+        const allGames: any[] = [];
 
-        // Always fetch latest status from contract for each game
-        const gameList = await Promise.all(events.map(async (ev: any) => {
-          const gameId = ev.args.gameId;
-          let gameData;
-          let actualScore = null;
+        for (const addr of allAddresses) {
           try {
-            gameData = await contract.getGame(gameId);
-            // Fetch GameVerified event for this gameId
-            const verifiedFilter = contract.filters.GameVerified(gameId);
-            const verifiedEvents = await contract.queryFilter(verifiedFilter, 0);
-            if (verifiedEvents.length > 0) {
-              // Use the last GameVerified event (should only be one per game)
-              const last = verifiedEvents[verifiedEvents.length - 1];
-              // ethers v6: args may not exist on Log/EventLog in production, so decode if needed
-              let actualScoreRaw = null;
-              if ('args' in last && last.args && typeof last.args === 'object') {
-                actualScoreRaw = last.args.actualScore;
-              } else if (last.data && last.topics) {
-                // decode log manually
-                const iface = new ethers.Interface([
-                  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)"
-                ]);
-                const decoded = iface.decodeEventLog("GameVerified", last.data, last.topics);
-                actualScoreRaw = decoded.actualScore;
-              }
-              actualScore = actualScoreRaw?.toString?.() || actualScoreRaw;
-            }
-            // Convert ethers.js Result (Proxy) to plain object
-            let gameObj: { [key: string]: any };
-            if (gameData && typeof gameData === "object" && typeof gameData.toObject === "function") {
-              gameObj = gameData.toObject();
-            } else if (gameData && typeof gameData === "object") {
-              gameObj = {};
-              for (const key of Object.keys(gameData)) {
-                gameObj[key] = gameData[key];
-              }
-              for (const key in gameData) {
-                if (!isNaN(Number(key))) {
-                  gameObj[key] = gameData[key];
+            const contract = new ethers.Contract(addr, contractABI, provider);
+
+            // Query all GameCreated events for this user on this contract
+            const filter = contract.filters.GameCreated(null, account);
+            const events = await contract.queryFilter(filter, 0);
+
+            const gamesForContract = await Promise.all(
+              events.map(async (ev: any) => {
+                const gameId = ev.args.gameId;
+                let gameData;
+                let actualScore = null;
+                try {
+                  gameData = await contract.getGame(gameId);
+                  // Fetch GameVerified event for this gameId
+                  const verifiedFilter = contract.filters.GameVerified(gameId);
+                  const verifiedEvents = await contract.queryFilter(verifiedFilter, 0);
+                  if (verifiedEvents.length > 0) {
+                    // Use the last GameVerified event (should only be one per game)
+                    const last = verifiedEvents[verifiedEvents.length - 1];
+                    // ethers v6: args may not exist on Log/EventLog in production, so decode if needed
+                    let actualScoreRaw = null;
+                    if ("args" in last && last.args && typeof last.args === "object") {
+                      actualScoreRaw = (last as any).args.actualScore;
+                    } else if ((last as any).data && (last as any).topics) {
+                      // decode log manually
+                      const iface = new ethers.Interface([
+                        "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
+                      ]);
+                      const decoded = iface.decodeEventLog(
+                        "GameVerified",
+                        (last as any).data,
+                        (last as any).topics
+                      );
+                      actualScoreRaw = (decoded as any).actualScore;
+                    }
+                    actualScore = (actualScoreRaw as any)?.toString?.() || actualScoreRaw;
+                  }
+                  // Convert ethers.js Result (Proxy) to plain object
+                  let gameObj: { [key: string]: any };
+                  if (gameData && typeof gameData === "object" && typeof (gameData as any).toObject === "function") {
+                    gameObj = (gameData as any).toObject();
+                  } else if (gameData && typeof gameData === "object") {
+                    gameObj = {};
+                    for (const key of Object.keys(gameData as any)) {
+                      (gameObj as any)[key] = (gameData as any)[key];
+                    }
+                    for (const key in gameData as any) {
+                      if (!isNaN(Number(key))) {
+                        (gameObj as any)[key] = (gameData as any)[key];
+                      }
+                    }
+                  } else {
+                    gameObj = gameData as any;
+                  }
+                  // Log all properties for debugging
+                  console.log("dashboard row", ev.args.gameId, gameObj, { actualScore, addr });
+                } catch (err) {
+                  console.warn("getGame failed", gameId, addr, err);
                 }
-              }
-            } else {
-              gameObj = gameData;
-            }
-            // Log all properties for debugging
-            console.log("dashboard row", ev.args.gameId, gameObj, { actualScore });
+                let gameType, targetScore, stakeAmount, status;
+                if (gameData && typeof gameData === "object" && "gameType" in (gameData as any)) {
+                  gameType = (gameData as any).gameType || ev.args.gameType;
+                  targetScore =
+                    (gameData as any).targetScore?.toString?.() ||
+                    ev.args.targetScore?.toString?.() ||
+                    "";
+                  try {
+                    stakeAmount = (gameData as any).stakeAmount
+                      ? ethers.formatUnits((gameData as any).stakeAmount, 6)
+                      : ethers.formatUnits(ev.args.stakeAmount, 6);
+                  } catch {
+                    stakeAmount =
+                      (gameData as any).stakeAmount?.toString?.() ||
+                      ev.args.stakeAmount?.toString?.() ||
+                      "0";
+                  }
+                  // read flawlessStake if present
+                  let flawlessStake = "0";
+                  try {
+                    flawlessStake = (gameData as any).flawlessStake
+                      ? ethers.formatUnits((gameData as any).flawlessStake, 6)
+                      : "0";
+                  } catch {
+                    flawlessStake = (gameData as any).flawlessStake?.toString?.() || "0";
+                  }
+                  status = typeof (gameData as any).status !== "undefined" ? Number((gameData as any).status) : 0;
+                  // attach flawless info to object for UI
+                  (ev as any).flawlessStake = flawlessStake;
+                } else {
+                  gameType = ev.args.gameType;
+                  targetScore = ev.args.targetScore?.toString?.() || "";
+                  try {
+                    stakeAmount = ethers.formatUnits(ev.args.stakeAmount, 6);
+                  } catch {
+                    stakeAmount = ev.args.stakeAmount?.toString?.() || "0";
+                  }
+                  (ev as any).flawlessStake = "0";
+                  status = typeof ev.args.status !== "undefined" ? Number(ev.args.status) : 0;
+                }
+                return {
+                  contractAddress: addr,
+                  gameId,
+                  gameType,
+                  targetScore,
+                  stakeAmount,
+                  flawlessStake: (ev as any).flawlessStake || "0",
+                  status: typeof status === "bigint" ? Number(status) : status,
+                  actualScore: actualScore !== null ? Number(actualScore) : null,
+                  createdBlock: Number((ev as any).blockNumber ?? 0),
+                  createdLogIndex: Number((ev as any).logIndex ?? (ev as any).index ?? 0),
+                };
+              })
+            );
+
+            allGames.push(...gamesForContract);
           } catch (err) {
-            console.warn('getGame failed', gameId, err);
+            console.warn("Failed to fetch games for contract", addr, err);
           }
-          let gameType, targetScore, stakeAmount, status;
-          if (gameData && typeof gameData === "object" && "gameType" in gameData) {
-            gameType = gameData.gameType || ev.args.gameType;
-            targetScore = gameData.targetScore?.toString?.() || ev.args.targetScore?.toString?.() || "";
-            try {
-              stakeAmount = gameData.stakeAmount ? ethers.formatUnits(gameData.stakeAmount, 6) : ethers.formatUnits(ev.args.stakeAmount, 6);
-            } catch {
-              stakeAmount = gameData.stakeAmount?.toString?.() || ev.args.stakeAmount?.toString?.() || "0";
-            }
-            // read flawlessStake if present
-            let flawlessStake = "0";
-            try {
-              flawlessStake = gameData.flawlessStake ? ethers.formatUnits(gameData.flawlessStake, 6) : "0";
-            } catch { flawlessStake = gameData.flawlessStake?.toString?.() || "0"; }
-            status = typeof gameData.status !== "undefined" ? Number(gameData.status) : 0;
-            // attach flawless info to object for UI
-            ev.flawlessStake = flawlessStake;
-          } else {
-            gameType = ev.args.gameType;
-            targetScore = ev.args.targetScore?.toString?.() || "";
-            try {
-              stakeAmount = ethers.formatUnits(ev.args.stakeAmount, 6);
-            } catch {
-              stakeAmount = ev.args.stakeAmount?.toString?.() || "0";
-            }
-            ev.flawlessStake = "0";
-            status = typeof ev.args.status !== "undefined" ? Number(ev.args.status) : 0;
-          }
-          return {
-            gameId,
-            gameType,
-            targetScore,
-            stakeAmount,
-            flawlessStake: ev.flawlessStake || "0",
-            status: typeof status === 'bigint' ? Number(status) : status,
-            actualScore: actualScore !== null ? Number(actualScore) : null,
-            createdBlock: Number((ev as any).blockNumber ?? 0),
-            createdLogIndex: Number((ev as any).logIndex ?? (ev as any).index ?? 0),
-          };
-        }));
+        }
 
         // Sort newest stakes first so latest entries appear at the top
-        gameList.sort((a, b) => {
+        allGames.sort((a, b) => {
           if (a.createdBlock !== b.createdBlock) {
             return b.createdBlock - a.createdBlock;
           }
           return b.createdLogIndex - a.createdLogIndex;
         });
 
-        setGames(gameList);
+        setGames(allGames);
       } catch (err: any) {
         setError(err.message || "Failed to fetch games");
       } finally {
@@ -402,6 +440,11 @@ export default function StakedGamesDashboard() {
                     {(() => {
                       // Status logic matches the status column above
                       if (g.status === 3) return null; // Cancelled
+                      // Only allow submitting results for games on the primary (current) contract
+                      const primaryAddress = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "").toLowerCase();
+                      if (!primaryAddress || (g.contractAddress || "").toLowerCase() !== primaryAddress) {
+                        return null;
+                      }
                       if (typeof g.actualScore === 'number' && typeof g.targetScore !== 'undefined') {
                         const scoreNum = g.actualScore;
                         const targetNum = Number(g.targetScore);

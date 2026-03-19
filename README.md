@@ -159,6 +159,13 @@ NEXT_PUBLIC_CONTRACT_ADDRESS=
 NEXT_PUBLIC_USDC_ADDRESS=
 PRIVATE_KEY=
 
+# Historical / Legacy Contracts (optional)
+# Comma-separated list of previous contract addresses to include
+# in the read-only dashboard and charts. This is only used for
+# displaying historical stakes; new stakes always go to
+# NEXT_PUBLIC_CONTRACT_ADDRESS.
+NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES=
+
 # Application Settings
 NEXT_PUBLIC_APP_NAME=
 
