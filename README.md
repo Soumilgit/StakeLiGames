@@ -358,7 +358,7 @@ Contributions welcome! Please:
 
 # Ethereum Sepolia Deployment
 
-- Contract Address: 0x0F59155e1C4aC71D9f2958b18C81ad8816fCdF8e
+- Contract Address: 0xEe1CAE5AE62084Ed655e11d9811662EB063f9d02
 - Chain ID: 11155111
 - Network: Sepolia Testnet
 

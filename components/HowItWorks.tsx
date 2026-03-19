@@ -6,26 +6,26 @@ const steps = [
   {
     number: "01",
     title: "Connect Your Wallet",
-    description: "Link your MetaMask wallet to access the Ethereum Sepolia testnet. Get free test ETH and USDC instantly.",
-    emoji: "👛",
+    description:
+      "Link your MetaMask wallet to access the Ethereum Sepolia testnet. Get free test ETH and USDC instantly.",
   },
   {
     number: "02",
     title: "Choose Your LinkedIn Game",
-    description: "Select a LinkedIn Game (Queens, Crossclimb, etc.) and set your target time for staking.",
-    emoji: "🎮",
+    description:
+      "Select a LinkedIn Game (Queens, Crossclimb, etc.) and set your target time for staking.",
   },
   {
     number: "03",
     title: "Stake Your USDC",
-    description: "Lock in your stake amount. The smart contract securely holds your funds until your LinkedIn Game is complete.",
-    emoji: "💰",
+    description:
+      "Lock in your stake amount. The smart contract securely holds your funds until your LinkedIn Game is complete.",
   },
   {
     number: "04",
     title: "Play & Verify",
-    description: "Complete your LinkedIn Game and verify your time. If you meet the target, earn up to 35% rewards on your stake!",
-    emoji: "🏆",
+    description:
+      "Complete your LinkedIn Game and verify your time. If you meet the target, earn up to 35% rewards on your stake!",
   },
 ];
 
@@ -73,19 +73,12 @@ export function HowItWorks() {
               className="relative"
             >
               <div className="card-modern bg-white h-full hover:shadow-glow transition-all">
-                <div className="text-6xl mb-4">{step.emoji}</div>
-                <div className="inline-block px-3 py-1 bg-primary/10 rounded-full text-sm font-bold text-primary mb-3">
-                  STEP {step.number}
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary text-sm font-bold mb-3">
+                  {step.number}
                 </div>
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
                 <p className="text-muted text-sm leading-relaxed">{step.description}</p>
               </div>
-              
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 text-2xl text-primary">
-                  →
-                </div>
-              )}
             </motion.div>
           ))}
         </div>

@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NotificationBar } from "@/components/NotificationBar";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -20,7 +19,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/")}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-600 text-sm font-medium text-black dark:text-white hover:bg-slate-600 hover:text-primary transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-gray-200" />
+            <span className="text-lg leading-none">&#8592;</span>
             <span>Back to Home</span>
           </button>
         </div>

@@ -17,7 +17,7 @@ export default function Home() {
       <Features />
       <HowItWorks />
       <StakingInterface />
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-10 mb-16">
         <Link href="/dashboard">
           <button className="btn-primary">Open Dashboard</button>
         </Link>

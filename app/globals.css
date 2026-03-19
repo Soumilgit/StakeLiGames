@@ -5,9 +5,9 @@
 :root {
   --background: #ffffff;
   --foreground: #18181b;
-  --primary: #7c3aed;
-  --secondary: #ec4899;
-  --accent: #10b981;
+  --primary: #0a66c2; /* LinkedIn blue */
+  --secondary: #004182; /* navy blue */
+  --accent: #0f4c81; /* supporting blue */
   --border: #e5e7eb;
   --card: #ffffff;
   --card-hover: #f3f4f6;
@@ -20,9 +20,9 @@
 .dark {
   --background: #0a0a0f;
   --foreground: #f8f9fa;
-  --primary: #7c3aed;
-  --secondary: #ec4899;
-  --accent: #10b981;
+  --primary: #0a66c2;
+  --secondary: #1f2933;
+  --accent: #0f4c81;
   --border: #1f1f2e;
   --card: #181825;
   --card-hover: #232336;
@@ -96,8 +96,8 @@
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg
-           shadow-glow hover:shadow-glow-lg hover:scale-105
+      @apply px-6 py-3 bg-primary text-white font-semibold rounded-lg
+        shadow-card hover:bg-secondary hover:scale-105
            active:scale-95 transition-all duration-300;
   }
   
@@ -119,8 +119,8 @@
   }
   
   .badge-modern {
-    @apply inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
-           bg-accent/10 text-accent border border-accent/20;
+      @apply inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
+        bg-primary/10 text-primary border border-primary/20;
   }
 
   .gradient-text {
@@ -175,7 +175,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary);
+  background: var(--accent);
 }
 
 /* Selection */

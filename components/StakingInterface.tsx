@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useWallet } from "./WalletProvider";
-import { Gamepad2, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { ethers } from "ethers";
 
 const games = [
-  { id: "queens", name: "Queens", emoji: "👑", difficulty: "Hard", targetTime: 40, unit: "sec", reward: "25%", flawlessBonus: "10%" },
-  { id: "crossclimb", name: "Crossclimb", emoji: "🧗", difficulty: "Hard", targetTime: 50, unit: "sec", reward: "25%", flawlessBonus: "10%" },
-  { id: "mini-sudoku", name: "Mini Sudoku", emoji: "🔢", difficulty: "Medium", targetTime: 80, unit: "sec", reward: "20%", flawlessBonus: "8%" },
-  { id: "tango", name: "Tango", emoji: "💃", difficulty: "Medium", targetTime: 90, unit: "sec", reward: "20%", flawlessBonus: "8%" },
-  { id: "zip", name: "Zip", emoji: "⚡", difficulty: "Easy", targetTime: 120, unit: "sec", reward: "15%", flawlessBonus: "5%" },
-  { id: "pinpoint", name: "Pinpoint", emoji: "🎯", difficulty: "Special", targetTime: 5, unit: "score", reward: "30%", flawlessBonus: "0%", note: "Score: 1-5 or NA", hideFlawless: true },
+  { id: "queens", name: "Queens", image: "/queens.jpg", difficulty: "Hard", targetTime: 40, unit: "sec", reward: "25%", flawlessBonus: "10%" },
+  { id: "crossclimb", name: "Crossclimb", image: "/crossclimb.jpg", difficulty: "Hard", targetTime: 50, unit: "sec", reward: "25%", flawlessBonus: "10%" },
+  { id: "mini-sudoku", name: "Mini Sudoku", image: "/minisudoku.jpg", difficulty: "Medium", targetTime: 80, unit: "sec", reward: "20%", flawlessBonus: "8%" },
+  { id: "tango", name: "Tango", image: "/tango.jpg", difficulty: "Medium", targetTime: 90, unit: "sec", reward: "20%", flawlessBonus: "8%" },
+  { id: "zip", name: "Zip", image: "/zip.jpg", difficulty: "Easy", targetTime: 120, unit: "sec", reward: "15%", flawlessBonus: "5%" },
+  { id: "pinpoint", name: "Pinpoint", image: "/pinpoint.jpg", difficulty: "Special", targetTime: 5, unit: "score", reward: "30%", flawlessBonus: "0%", note: "Score: 1-5 or NA", hideFlawless: true },
+  // New Patches game, centered on third row in grid via col-start
+  { id: "patches", name: "Patches", image: "/patches.jpg", difficulty: "Special", targetTime: 40, unit: "sec", reward: "10%", flawlessBonus: "10%" },
 ];
 
 export function StakingInterface() {
@@ -22,6 +24,7 @@ export function StakingInterface() {
   const [targetTime, setTargetTime] = useState("");
   const [isFlawless, setIsFlawless] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sectionBg, setSectionBg] = useState("#f3f4f6");
 
   const formatUSDC = (v: number) => {
     if (!isFinite(v) || isNaN(v)) return "0.00";
@@ -104,11 +107,23 @@ export function StakingInterface() {
     }
   };
 
+  useEffect(() => {
+    const html = document.documentElement;
+    const updateBg = () => {
+      setSectionBg(html.classList.contains("dark") ? "#050509" : "#f3f4f6");
+    };
+    updateBg();
+    const observer = new MutationObserver(updateBg);
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="stake" className="py-20 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5" />
-      
+    <section
+      id="stake"
+      className="py-20 relative overflow-hidden"
+      style={{ backgroundColor: sectionBg, color: "inherit" }}
+    >
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -130,8 +145,7 @@ export function StakingInterface() {
             viewport={{ once: true }}
             className="card-modern"
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Gamepad2 className="w-6 h-6 text-primary" />
+            <h3 className="text-2xl font-bold mb-6">
               Select Your Game
             </h3>
 
@@ -142,14 +156,22 @@ export function StakingInterface() {
                   onClick={() => setSelectedGame(game)}
                   className={`p-3 rounded-lg border transition-all ${
                     selectedGame.id === game.id
-                      ? "bg-gradient-primary border-primary shadow-glow scale-105"
-                      : "bg-card/50 border-border hover:border-primary/50 hover:shadow-glow-sm hover:scale-105"
-                  }`}
+                      ? "bg-primary/10 border-primary shadow-card scale-105"
+                      : "bg-card/50 border-border hover:border-primary/60 hover:shadow-card hover:scale-105"
+                  } ${game.id === "patches" ? "md:col-start-2" : ""}`}
                 >
-                  <div className="text-2xl mb-1">{game.emoji}</div>
-                  <div className={`font-bold text-sm mb-1 ${selectedGame.id === game.id ? 'text-white' : ''}`}>{game.name}</div>
-                  <div className={`text-xs ${selectedGame.id === game.id ? 'text-white/80' : 'text-muted'}`}>{game.difficulty}</div>
-                  <div className={`text-xs font-bold mt-1 ${selectedGame.id === game.id ? 'text-white' : 'text-primary'}`}>+{game.reward}</div>
+                  <div className="mb-2 flex justify-center">
+                    <Image
+                      src={game.image}
+                      alt={game.name}
+                      width={40}
+                      height={40}
+                      className="rounded-md object-cover"
+                    />
+                  </div>
+                  <div className="font-bold text-sm mb-1 text-[var(--foreground)]">{game.name}</div>
+                  <div className="text-xs text-[var(--foreground)]/70">{game.difficulty}</div>
+                  <div className="text-xs font-bold mt-1 text-[var(--foreground)]">+{game.reward}</div>
                 </button>
               ))}
             </div>
@@ -164,10 +186,7 @@ export function StakingInterface() {
             viewport={{ once: true }}
             className="card-modern"
           >
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6 text-secondary" />
-              Configure Your Stake
-            </h3>
+            <h3 className="text-2xl font-bold mb-6">Configure Your Stake</h3>
 
             <div className="space-y-6">
               <div>
@@ -205,7 +224,7 @@ export function StakingInterface() {
               </div>
 
               {!selectedGame.hideFlawless && (
-                <div className="bg-gradient-to-r from-secondary/10 to-accent/10 p-4 rounded-lg border border-secondary/20">
+                <div className="bg-card/50 p-4 rounded-lg border border-primary/30">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -215,8 +234,8 @@ export function StakingInterface() {
                     />
                     <div className="flex-1">
                       <div className="font-bold text-sm flex items-center gap-2">
-                        ✨ Flawless Solve Commitment
-                        <span className="text-xs bg-secondary text-white px-2 py-0.5 rounded-full">+{selectedGame.flawlessBonus}</span>
+                        Flawless Solve Commitment
+                        <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">+{selectedGame.flawlessBonus}</span>
                       </div>
                       <div className="text-xs text-muted mt-1">
                         No hints, no mistakes - pure skill! Earn extra rewards for honest solving.
@@ -227,7 +246,7 @@ export function StakingInterface() {
               )}
 
               {stakeAmount && targetTime && (
-                <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 rounded-lg border border-primary/20">
+                <div className="bg-card/50 p-4 rounded-lg border border-primary/20">
                   <div className="text-sm font-semibold text-muted mb-3">Estimated Returns</div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
@@ -242,7 +261,7 @@ export function StakingInterface() {
                     </div>
                     {isFlawless && !selectedGame.hideFlawless && (
                       <div className="flex justify-between">
-                        <span className="text-sm flex items-center gap-1">✨ Flawless Bonus ({selectedGame.flawlessBonus}):</span>
+                        <span className="text-sm flex items-center gap-1">Flawless Bonus ({selectedGame.flawlessBonus}):</span>
                         <span className="font-bold text-secondary">
                           +{formatUSDC(parseFloat(stakeAmount) * parseFloat(selectedGame.flawlessBonus) / 100)} USDC
                         </span>
@@ -266,7 +285,7 @@ export function StakingInterface() {
                 disabled={!account || loading || !stakeAmount || !targetTime}
                 className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Processing..." : account ? "🚀 Create Stake" : "Connect Wallet First"}
+                {loading ? "Processing..." : account ? "Create Stake" : "Connect Wallet First"}
               </button>
 
               {!account && (
@@ -281,21 +300,18 @@ export function StakingInterface() {
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
           <div className="card-modern bg-white hover:bg-cardHover">
-            <div className="text-3xl mb-3">⚡</div>
             <h4 className="font-bold mb-2">Time-Based & Score Scoring</h4>
             <p className="text-sm text-muted">
               Beat the clock for 5 games! Pinpoint uses score (1-5 or NA if unsolved).
             </p>
           </div>
           <div className="card-modern bg-card/50 hover:bg-cardHover">
-            <div className="text-3xl mb-3">✨</div>
             <h4 className="font-bold mb-2">Flawless Bonuses</h4>
             <p className="text-sm text-muted">
               No hints, no mistakes! Honest solvers earn extra rewards up to 12% bonus.
             </p>
           </div>
           <div className="card-modern bg-card/50 hover:bg-cardHover">
-            <div className="text-3xl mb-3">🔒</div>
             <h4 className="font-bold mb-2">Secure & Transparent</h4>
             <p className="text-sm text-muted">
               All stakes are locked in audited smart contracts on Ethereum Sepolia testnet.
@@ -312,7 +328,7 @@ export function StakingInterface() {
 type SelectedGame = {
   id: string;
   name: string;
-  emoji: string;
+  image: string;
   difficulty: string;
   targetTime: number;
   unit: string;
@@ -341,7 +357,13 @@ function SelectedGameBox({ selectedGame }: { selectedGame: SelectedGame }) {
     >
       <div className="flex items-center justify-between mb-2">
         <span className="font-semibold text-muted">Selected Game:</span>
-        <span className="text-xl">{selectedGame.emoji}</span>
+        <Image
+          src={selectedGame.image}
+          alt={selectedGame.name}
+          width={32}
+          height={32}
+          className="rounded-md object-cover"
+        />
       </div>
       <div className="font-bold text-lg mb-1 gradient-text">{selectedGame.name}</div>
       <div className="text-sm text-muted mb-2">Difficulty: {selectedGame.difficulty}</div>
