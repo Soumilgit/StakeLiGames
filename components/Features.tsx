@@ -1,36 +1,30 @@
 "use client";
 
-import { Shield, Zap, TrendingUp, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const features = [
   {
-    icon: Shield,
     title: "Smart Risk Assessment",
-    description: "Smart algorithms analyze your LinkedIn Games performance and help you stake for the best possible rewards.",
-    gradient: "from-primary to-secondary",
+    description:
+      "Smart algorithms analyze your LinkedIn Games performance and help you stake for the best possible rewards.",
   },
   {
-    icon: Zap,
     title: "Instant Rewards",
-    description: "Get instant rewards based on your LinkedIn Games results. No waiting, no intermediaries.",
-    gradient: "from-secondary to-accent",
+    description:
+      "Get instant rewards based on your LinkedIn Games results. No waiting, no intermediaries.",
   },
   {
-    icon: TrendingUp,
     title: "Global Asset Network",
-    description: "Stake on LinkedIn Games scores with verified, on-chain results. Transparency and fairness guaranteed by blockchain.",
-    gradient: "from-accent to-primary",
+    description:
+      "Stake on LinkedIn Games scores with verified, on-chain results. Transparency and fairness guaranteed by blockchain.",
   },
   {
-    icon: Lock,
     title: "Real-Time Analytics",
-    description: "Track your LinkedIn Games stakes, earnings, and performance metrics in real-time with our comprehensive dashboard.",
-    gradient: "from-primary to-accent",
+    description:
+      "Track your LinkedIn Games stakes, earnings, and performance metrics in real-time with our comprehensive dashboard.",
   },
 ];
-
-import { useEffect, useState } from "react";
 
 export function Features() {
   const [bg, setBg] = useState('white');
@@ -74,8 +68,8 @@ export function Features() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="card-modern bg-white group hover:scale-105 cursor-pointer"
             >
-              <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center mb-6 shadow-glow`}>
-                <feature.icon className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 border border-primary/40 bg-primary/5 text-primary font-semibold text-xl">
+                {index + 1}
               </div>
               <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
               <p className="text-muted leading-relaxed">{feature.description}</p>

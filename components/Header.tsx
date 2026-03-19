@@ -1,9 +1,9 @@
 "use client";
 
 import { useWallet } from "./WalletProvider";
-import { Wallet } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Header() {
   const { account, connect, disconnect, isConnecting, chainId, switchToSepolia } = useWallet();
@@ -13,10 +13,16 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center text-2xl shadow-glow">
-              🎮
+            <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-background flex items-center justify-center">
+              <Image
+                src="/favicon.jpg"
+                alt="StakeLiGames"
+                width={40}
+                height={40}
+                className="object-cover"
+              />
             </div>
-            <span className="text-2xl font-bold gradient-text">StakeLiGames</span>
+            <span className="text-2xl font-bold">StakeLiGames</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -28,6 +34,9 @@ export function Header() {
             </Link>
             <Link href="/#stake" className="font-medium hover:text-primary transition-colors">
               Stake Now
+            </Link>
+            <Link href="/dashboard" className="font-medium hover:text-primary transition-colors">
+              Dashboard
             </Link>
           </nav>
 
@@ -55,7 +64,6 @@ export function Header() {
             {account ? (
               <>
                 <div className="flex items-center gap-2 px-4 py-2 card-modern border border-border rounded-lg w-full sm:w-auto justify-center">
-                  <Wallet className="w-4 h-4 text-primary" />
                   <span className="font-mono text-sm truncate max-w-[120px] sm:max-w-none">
                     {account.slice(0, 6)}...{account.slice(-4)}
                   </span>
@@ -70,7 +78,6 @@ export function Header() {
                 disabled={isConnecting}
                 className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
               >
-                <Wallet className="w-5 h-5" />
                 {isConnecting ? "Connecting..." : "Connect Wallet"}
               </button>
             )}

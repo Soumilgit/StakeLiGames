@@ -180,6 +180,7 @@ export default function StakedGamesDashboard() {
       { key: "zip", label: "Zip" },
       { key: "crossclimb", label: "Crossclimb" },
       { key: "pinpoint", label: "Pinpoint" },
+      { key: "patches", label: "Patches" },
     ],
     []
   );
@@ -223,7 +224,6 @@ export default function StakedGamesDashboard() {
           backgroundColor: "rgba(34,197,94,0.15)",
           tension: 0.3,
           pointRadius: 4,
-          yAxisID: "y",
         },
         {
           label: "Losses",
@@ -233,7 +233,6 @@ export default function StakedGamesDashboard() {
           tension: 0.3,
           pointRadius: 5,
           borderWidth: 3,
-          yAxisID: "y1",
         },
       ],
     }),
@@ -273,12 +272,6 @@ export default function StakedGamesDashboard() {
         y: {
           ticks: { color: axisColor },
           grid: { color: gridColor },
-          grace: "10%",
-        },
-        y1: {
-          position: "right" as const,
-          ticks: { color: axisColor },
-          grid: { drawOnChartArea: false },
           grace: "10%",
         },
       },
