@@ -10,18 +10,17 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="933" height="968" alt="updated-contract-depl" src="https://github.com/user-attachments/assets/2df16a71-fd08-4146-bfee-6f033dd8df12" />
+<img width="1069" height="931" alt="newlyupdated-contract-successfuldepl" src="https://github.com/user-attachments/assets/bcb75960-cd17-4dc5-ba11-9ee4e3077d54" />
 <img width="1919" height="991" alt="updated-hero-section" src="https://github.com/user-attachments/assets/5b9a618d-0fbb-4735-a381-b578ff3ddb44" />
 <img width="1919" height="882" alt="updated-why" src="https://github.com/user-attachments/assets/9c519abe-44e3-4b15-a51b-ac5423e5f7b1" />
 <img width="1919" height="809" alt="updated-pipeline" src="https://github.com/user-attachments/assets/bff4fb93-4fee-4fa6-9276-0b438b2ef4cc" />
-<img width="1136" height="905" alt="updated-staking" src="https://github.com/user-attachments/assets/739e3c9a-e2aa-44fb-8875-f612b578259b" />
+<img width="1125" height="894" alt="staking-updated" src="https://github.com/user-attachments/assets/ce2678eb-be47-48ce-be8b-631d52c4b9d2" />
 <img width="1759" height="641" alt="updated-footer" src="https://github.com/user-attachments/assets/947dcbbf-de33-4d45-a0ac-3cf588e455fa" />
 <img width="1442" height="882" alt="updated-dashboard" src="https://github.com/user-attachments/assets/85f2ad01-9789-4978-ac96-cad27adff061" />
+<img width="491" height="355" alt="score-submit" src="https://github.com/user-attachments/assets/d0a78d24-2d45-4a18-bcb3-8233019c61cb" />
 <img width="1595" height="498" alt="dashboard-l-2" src="https://github.com/user-attachments/assets/5d27228d-2c0b-496f-9c10-bc173cbdaf1c" />
 <img width="1638" height="503" alt="dashboard-l-3" src="https://github.com/user-attachments/assets/7fb360f6-ec27-47d7-aecb-1885c715c9cb" />
 <img width="1632" height="421" alt="dashboard-l-4" src="https://github.com/user-attachments/assets/12034a45-3538-4973-92fc-5d8ebacbea5a" />
-
-
 
 ## Features
 
