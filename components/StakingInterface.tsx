@@ -18,7 +18,8 @@ const games = [
 ];
 
 export function StakingInterface() {
-  const { account, signer } = useWallet();
+  const { account, signer, chainId, switchToSepolia } = useWallet();
+  const SEPOLIA_CHAIN_ID = "11155111";
   const [selectedGame, setSelectedGame] = useState(games[0]);
   const [stakeAmount, setStakeAmount] = useState("");
   const [targetTime, setTargetTime] = useState("");
@@ -33,10 +34,35 @@ export function StakingInterface() {
     return v.toFixed(6);
   };
 
+  const getPlayNowUrl = (gameId: string) => {
+    const map: Record<string, string> = {
+      queens: "http://lnkd.in/queens",
+      crossclimb: "http://lnkd.in/crossclimb",
+      tango: "http://lnkd.in/tango",
+      "mini-sudoku": "http://lnkd.in/minisudoku",
+      zip: "http://lnkd.in/zip",
+      patches: "http://lnkd.in/patches",
+      pinpoint: "http://lnkd.in/pinpoint",
+    };
+
+    return map[gameId] || "https://www.linkedin.com/games/";
+  };
+
   const handleStake = async () => {
     if (!account || !signer || !stakeAmount || !targetTime) {
       alert("Please connect wallet and fill all fields");
       return;
+    }
+
+    if (chainId !== SEPOLIA_CHAIN_ID) {
+      await switchToSepolia();
+      if (window.ethereum) {
+        const currentChainHex = await window.ethereum.request({ method: "eth_chainId" });
+        if (parseInt(currentChainHex, 16).toString() !== SEPOLIA_CHAIN_ID) {
+          alert("Please switch to Sepolia to create a stake.");
+          return;
+        }
+      }
     }
 
     setLoading(true);
@@ -189,6 +215,17 @@ export function StakingInterface() {
             <h3 className="text-2xl font-bold mb-6">Configure Your Stake</h3>
 
             <div className="space-y-6">
+              <div>
+                <a
+                  href={getPlayNowUrl(selectedGame.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary inline-flex items-center px-5 py-2"
+                >
+                  Play Now
+                </a>
+              </div>
+
               <div>
                 <label className="block text-sm font-bold mb-2">Stake Amount (USDC)</label>
                 <input

@@ -32,6 +32,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [chainId, setChainId] = useState<string | null>(null);
+  const SEPOLIA_CHAIN_ID = "11155111";
 
   const connect = async () => {
     if (typeof window.ethereum === "undefined") {
@@ -43,7 +44,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const browserProvider = new ethers.BrowserProvider(window.ethereum);
       const accounts = await browserProvider.send("eth_requestAccounts", []);
       const userSigner = await browserProvider.getSigner();
-      const network = await browserProvider.getNetwork();
+      let network = await browserProvider.getNetwork();
+
+      // Try to keep users on Sepolia automatically after they connect.
+      if (network.chainId.toString() !== SEPOLIA_CHAIN_ID) {
+        await switchToSepolia();
+        network = await browserProvider.getNetwork();
+      }
+
       setProvider(browserProvider);
       setSigner(userSigner);
       setAccount(accounts[0]);
@@ -63,6 +71,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: "0xAA36A7" }], // 11155111 in hex
       });
+      setChainId(SEPOLIA_CHAIN_ID);
     } catch (switchError: any) {
       // If the chain is not added to MetaMask, add it
       if (switchError.code === 4902) {
@@ -83,6 +92,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               },
             ],
           });
+          setChainId(SEPOLIA_CHAIN_ID);
         } catch (addError) {
           console.error("Failed to add Sepolia network:", addError);
         }

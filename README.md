@@ -1,10 +1,10 @@
 # StakeLiGames - Stake on LinkedIn Games Scores
 <a href="https://www.producthunt.com/products/stakeligames?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-stakeligames" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1044696&theme=neutral&t=1764664965863" alt="StakeLiGames - Protocol&#0032;to&#0032;stake&#0032;on&#0032;your&#0032;LinkedIn&#0032;games&#0032;performance | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans using **Algorand blockchain** logic on **Sepolia** testnet, **PyTeal (Python smart contracts)**, **Solidity**, **TypeScript**, **TailWind** and **Next.js**.
+Stake on your LinkedIn Games performance using stablecoins and earn rewards based on real, verified results. Built for LinkedIn Games fans on **Ethereum Sepolia** using **Solidity**, **TypeScript**, **Tailwind**, and **Next.js**.
 
 ![StakeLiGames](https://img.shields.io/badge/chain-Sepolia-00D4AA?style=for-the-badge)
-![PyTeal](https://img.shields.io/badge/contracts-PyTeal-6366F1?style=for-the-badge)
+![Solidity](https://img.shields.io/badge/contracts-Solidity-363636?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/frontend-Next.js-000000?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?style=for-the-badge)
 
@@ -27,22 +27,24 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 - Sepolia Testnet - All staking and rewards use the Ethereum Sepolia testnet for fast, low-cost testing
 - USDC Stablecoin - Stake and earn rewards using Sepolia USDC (ERC20)
-- Algorand Blockchain - Fast, secure, and near-zero transaction fees
-- Python Smart Contracts - PyTeal for readable, Python-based blockchain logic
+- Auto Sepolia Switch - Wallet auto-prompts network switch during connect/stake/submit flows
+- Play Now Links - Per-game quick launch buttons open LinkedIn game links in a new tab
 - USDC Staking - Stake stablecoins on your LinkedIn Games scores
-- Score Verification - On-chain verification of game performance
-- Instant Rewards - Earn up to 20% APY when you meet your target score
-- Pera/Defly Wallet - Easy wallet integration for Algorand
+- Attested Verification - Result settlement requires server-signed attestation (nonce + deadline + signature)
+- Historical Dashboard Aggregation - Charts aggregate across current, second-last, and legacy contracts
+- Instant Rewards - Earn rewards when you meet your target score
+- MetaMask Wallet - Browser wallet integration for Sepolia
 - Pleasant UI - Clean, minimal design inspired by competitive gaming and LinkedIn Games
 - Zero Gas Fees - Free testnet transactions, minimal mainnet costs
 
 ## How It Works
 
-1. Connect Wallet - Link your MetaMask wallet (Sepolia testnet)
-2. Choose Game - Select a LinkedIn Game (Queens, Crossword, Pinpoint, Tango, Zip & Mini Sudoku)
+1. Connect Wallet - Link your MetaMask wallet (app auto-prompts Sepolia switch if needed)
+2. Choose Game - Select a LinkedIn Game (Queens, Crossclimb, Pinpoint, Tango, Zip, Mini Sudoku, Patches)
 3. Stake USDC - Set your target and stake amount (minimum: 0.01 USDC)
-4. Play & Verify - Complete the game and verify your result on-chain
-5. Earn Rewards - Meet your target = get your stake back + 20% APY!
+4. Play Now - Use the in-app Play Now button to open the selected LinkedIn game in a new tab
+5. Verify Result - Submit your score/time; app requests nonce, gets verifier attestation, then settles on-chain
+6. Earn Rewards - Meet your target and receive payout based on game reward configuration
 
 ## Tech Stack
 
@@ -52,19 +54,17 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - **TailwindCSS** - For the styling
 - **Framer Motion** - Smooth animations
 - **Chart.js** - For the result analytics on dashboard
-- **@txnlab/use-wallet** - Algorand wallet connection
+- **ethers** - Wallet interaction and contract calls
 - **Solidity** - For 1 smart contract
-- **algosdk** - Algorand JavaScript SDK
 
 ### Smart Contracts (Blockchain)
-- **PyTeal** - Python for Algorand smart contracts
-- **Sepolia Testnet** - Free, fast blockchain (3.7s finality)
-- **TEAL** - Algorand's compiled contract language
-- **Box Storage** - Scalable on-chain data storage
+- **Solidity** - On-chain staking and payout contract
+- **OpenZeppelin** - Security primitives (Ownable, ReentrancyGuard, ECDSA)
+- **Sepolia Testnet** - Fast and low-cost Ethereum test network
 
 ### Backend/Scripts
-- **Python 3.8+** - Contract compilation & deployment
-- **py-sepolia-sdk** - Python SDK for Sepolia
+- **Next.js API Routes** - Nonce issuance and attestation endpoints
+- **Python 3.8+** - Existing contract compilation/deployment scripts
 
 ## Prerequisites
 
@@ -90,7 +90,7 @@ cd contracts
 pip install -r requirements.txt
 ```
 
-### 3. Compile Smart Contracts (PyTeal → TEAL)
+### 3. Compile Smart Contracts (Solidity)
 
 ```bash
 # From contracts directory
@@ -98,8 +98,9 @@ python compile_solidity.py
 ```
 
 This generates:
-- `staking_approval.teal` - Main contract logic
-- `staking_clear.teal` - Clear state program
+- `abi.json` - Contract ABI
+- `bytecode.txt` - Compiled bytecode
+- `compiled_contract.json` - Full compilation artifact
 
 ### 4. Get Testnet USDC (Sepolia)
 
@@ -125,16 +126,15 @@ python deploy_sepolia.py
 - **Press Enter** to generate a new account (you'll need to fund it)
 
 The deployment script will:
-- Compile PyTeal → TEAL
-- Deploy to Algorand testnet
-- Generate Application ID
-- Create `.env.local` with config
+- Compile Solidity contract
+- Deploy to Ethereum Sepolia testnet
+- Output deployed contract address
+- Create/update `.env.local` with config
 
 **Output:**
 ```
 Contract deployed successfully!
-Application ID: 123456789
-Application Address: XXXX...
+Contract Address: 0x...
 ```
 
 ### 6. Configure Frontend
@@ -152,8 +152,13 @@ NEXT_PUBLIC_NETWORK_NAME=Sepolia Testnet
 NEXT_PUBLIC_CONTRACT_ADDRESS=
 NEXT_PUBLIC_USDC_ADDRESS=
 PRIVATE_KEY=
+VERIFIER_PRIVATE_KEY=
 
 # Historical / Legacy Contracts (optional)
+# Direct previous deployment (2nd last). Dashboard/chart reads this
+# alongside NEXT_PUBLIC_CONTRACT_ADDRESS.
+NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS=
+
 # Comma-separated list of previous contract addresses to include
 # in the read-only dashboard and charts. This is only used for
 # displaying historical stakes; new stakes always go to
@@ -193,20 +198,19 @@ Open http://localhost:3000
    - Set your target (time or score, as per game)
    - Review estimated returns
 
-4. Create Stake - Approve transaction in wallet
+4. Create Stake - Approve USDC then create stake transaction
 
-5. Play Game - Complete your LinkedIn Game
+5. Play Game - Use Play Now and complete your LinkedIn Game
 
-6. Verify Result - Submit your result to claim rewards
+6. Verify Result - Submit result (nonce + signed attestation) to claim rewards
 
 ### Verify & Claim Rewards
 
 ```javascript
-// Example: Verify score and claim rewards
-// This functionality will trigger the smart contract to:
-// - Check if score >= target
-// - If YES: Return stake + 20% reward
-// - If NO: Stake goes to reward pool
+// Frontend flow before settlement call:
+// 1) POST /api/verification/nonce
+// 2) POST /api/verification/attest
+// 3) call verifyAndPayoutWithAttestation(...) on contract
 ```
 
 ## Available Scripts
@@ -219,7 +223,7 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 
 # Smart Contracts
-npm run contracts:compile   # Compile PyTeal contracts
+npm run contracts:compile   # Compile Solidity contract
 npm run contracts:deploy    # Deploy to Sepolia
 
 # Python (from contracts/)
@@ -231,12 +235,9 @@ python deploy_sepolia.py     # Deploy to testnet
 
 - **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
 - **Explorer Options**:
-  - https://testnet.explorer.perawallet.app (Pera Explorer - Recommended)
-  - https://testnet.explorer.lora.algokit.io (Lora Explorer)
-  - https://app.dappflow.org/explorer (Dappflow)
-- **Docs**: https://developer.algorand.org (Algorand dev docs)
-- **PyTeal Guide**: https://pyteal.readthedocs.io (Smart contract docs)
-- **AlgoNode API**: https://testnet-api.algonode.cloud (Free RPC node - Most reliable)
+   - https://sepolia.etherscan.io (Etherscan)
+- **Sepolia Docs**: https://ethereum.org/en/developers/docs/networks/#sepolia
+- **OpenZeppelin Contracts**: https://docs.openzeppelin.com/contracts
 
 ## Smart Contract Details
 
@@ -254,23 +255,26 @@ python deploy_sepolia.py     # Deploy to testnet
 - `total_winnings` - Cumulative winnings
 - `total_losses` - Cumulative losses
 
-**Box Storage (scalable):**
-- Game data: player, target score, stake amount, timestamp, status
+**Game Storage:**
+- Game data: player, target score, stake amount, flawless stake, timestamp, status
+- Security data: verifier signer, used nonces, attestation window
 
 ### Contract Methods
 
-1. `create_game` - Create new stake on game result
-   - Args: game_id, target_score, stake_amount
+1. `createGame` - Create new stake on game result
+   - Args: gameId, gameType, targetScore, stakeAmount, flawlessStake
    - Requires: USDC transfer to contract (min: 0.01 USDC)
 
-2. `verify_payout` - Verify result and distribute rewards
-   - Args: game_id, actual_score
-   - Logic: If result meets/exceeds target → return stake + reward (see above)
-   - Else: stake → reward pool
+2. `verifyAndPayoutWithAttestation` - Verify signed result and distribute rewards
+   - Args: gameId, actualScore, flawlessClaimed, nonce, deadline, signature
+   - Requires: valid verifier signature + unused nonce + unexpired deadline
+   - Logic: If result meets target rule for game type -> payout, else stake flows to pool
 
-3. `withdraw_fees` - Owner withdraws platform fees
+3. `setVerifierSigner` / `setDefaultAttestationWindow`
+   - Owner-configurable verifier and attestation policy
+
+4. `withdrawFees` - Owner withdraws platform fees
    - Args: amount
-   - Requires: Owner signature
 
 ## UI Design Philosophy
 
@@ -280,10 +284,11 @@ python deploy_sepolia.py     # Deploy to testnet
 
 ## Security Features
 
-- **OpenZeppelin patterns** (Algorand equivalent)
-- **Reentrancy protection** via atomic transactions
+- **OpenZeppelin patterns** for access control and signature recovery
+- **Reentrancy protection** via ReentrancyGuard
+- **ECDSA attestation checks** with nonce replay protection
 - **Access control** for admin functions
-- **Box storage** for scalability
+- **Nonce + deadline validation** for result submissions
 - **Testnet first** - Deploy safely before mainnet
 
 ## Deployment to Production
@@ -341,8 +346,8 @@ Contributions welcome! Please:
 ## Support
 
 - **Sepolia Docs**: https://sepolia.dev/
-- **Algorand Discord**: https://discord.gg/algorand
-- **PyTeal Docs**: https://pyteal.readthedocs.ionot
+- **Ethers Docs**: https://docs.ethers.org
+- **OpenZeppelin Docs**: https://docs.openzeppelin.com/contracts
 - **Next.js Docs**: https://nextjs.org/docs
 
 ## Links
@@ -354,13 +359,13 @@ Contributions welcome! Please:
 
 ---
 
-**Built with love using Algorand + Sepolia + PyTeal + Next.js**
+**Built with love using Sepolia + Solidity + Next.js**
 
 *Turn your gaming confidence into instant liquidity!*
 
 # Ethereum Sepolia Deployment
 
-- Contract Address: 0xEe1CAE5AE62084Ed655e11d9811662EB063f9d02
+- Contract Address: 0x029EF7bCEC712a440cfAbFA9d65c7D01786FD8A2
 - Chain ID: 11155111
 - Network: Sepolia Testnet
 

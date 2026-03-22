@@ -4,12 +4,15 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title StakeLiGames
  * @dev Stake USDC on LinkedIn Games scores and earn rewards based on verified results
  */
 contract StakeLiGames is Ownable, ReentrancyGuard {
+    using ECDSA for bytes32;
+
     IERC20 public usdc;
     
     uint256 public totalStaked;
@@ -37,6 +40,9 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     mapping(bytes32 => bool) public reverseScoring;
     // tracking for any owner-triggered retroactive top-ups to avoid double paying
     mapping(bytes32 => bool) public retroRewardProcessed;
+    address public verifierSigner;
+    mapping(address => mapping(bytes32 => bool)) public usedNonces;
+    uint256 public defaultAttestationWindow = 30 minutes;
     
     event GameCreated(
         bytes32 indexed gameId,
@@ -57,9 +63,12 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     );
     
     event FeesWithdrawn(address indexed owner, uint256 amount);
+    event VerifierSignerUpdated(address indexed newSigner);
+    event AttestationWindowUpdated(uint256 newWindow);
     
     constructor(address _usdcAddress) {
         usdc = IERC20(_usdcAddress);
+        verifierSigner = msg.sender;
         // default: pinpoint uses reverse scoring (lower-is-better)
         // enable reverse scoring (lower-is-better) for time/score based games
         reverseScoring[keccak256(bytes("pinpoint"))] = true;
@@ -69,6 +78,41 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("tango"))] = true;
         reverseScoring[keccak256(bytes("zip"))] = true;
         reverseScoring[keccak256(bytes("patches"))] = true;
+    }
+
+    function setVerifierSigner(address newSigner) external onlyOwner {
+        require(newSigner != address(0), "Invalid verifier signer");
+        verifierSigner = newSigner;
+        emit VerifierSignerUpdated(newSigner);
+    }
+
+    function setDefaultAttestationWindow(uint256 newWindow) external onlyOwner {
+        require(newWindow >= 5 minutes, "Window too short");
+        require(newWindow <= 1 days, "Window too long");
+        defaultAttestationWindow = newWindow;
+        emit AttestationWindowUpdated(newWindow);
+    }
+
+    function getAttestationDigest(
+        address player,
+        bytes32 gameId,
+        uint256 actualScore,
+        bool flawlessClaimed,
+        bytes32 nonce,
+        uint256 deadline
+    ) public view returns (bytes32) {
+        return keccak256(
+            abi.encodePacked(
+                address(this),
+                block.chainid,
+                player,
+                gameId,
+                actualScore,
+                flawlessClaimed,
+                nonce,
+                deadline
+            )
+        );
     }
 
     /**
@@ -176,6 +220,42 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         uint256 actualScore,
         bool flawlessClaimed
     ) external nonReentrant {
+        revert("Use verifyAndPayoutWithAttestation");
+    }
+
+    function verifyAndPayoutWithAttestation(
+        bytes32 gameId,
+        uint256 actualScore,
+        bool flawlessClaimed,
+        bytes32 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) external nonReentrant {
+        require(block.timestamp <= deadline, "Attestation expired");
+        require(deadline <= block.timestamp + defaultAttestationWindow, "Deadline too far");
+        require(!usedNonces[msg.sender][nonce], "Nonce already used");
+
+        bytes32 digest = getAttestationDigest(
+            msg.sender,
+            gameId,
+            actualScore,
+            flawlessClaimed,
+            nonce,
+            deadline
+        );
+        bytes32 messageHash = digest.toEthSignedMessageHash();
+        address recoveredSigner = ECDSA.recover(messageHash, signature);
+        require(recoveredSigner == verifierSigner, "Invalid attestation signer");
+
+        usedNonces[msg.sender][nonce] = true;
+        _verifyAndPayout(gameId, actualScore, flawlessClaimed);
+    }
+
+    function _verifyAndPayout(
+        bytes32 gameId,
+        uint256 actualScore,
+        bool flawlessClaimed
+    ) internal {
         Game storage game = games[gameId];
 
         require(game.player == msg.sender, "Only player can verify");
