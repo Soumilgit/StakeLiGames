@@ -50,13 +50,14 @@ export default function StakedGamesDashboard() {
           "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType) game)"
         ];
         const primaryAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
+        const secondLastAddress = process.env.NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS || "";
         const legacyAddressesRaw = process.env.NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES || "";
         const legacyAddresses = legacyAddressesRaw
           .split(",")
           .map((addr) => addr.trim())
           .filter((addr) => addr.length > 0);
 
-        const allAddresses = [primaryAddress, ...legacyAddresses].filter((addr, index, self) =>
+        const allAddresses = [primaryAddress, secondLastAddress, ...legacyAddresses].filter((addr, index, self) =>
           addr && self.indexOf(addr) === index
         );
 

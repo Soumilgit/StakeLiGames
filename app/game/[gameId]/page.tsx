@@ -9,7 +9,8 @@ import { useParams } from "next/navigation";
 export default function GamePage() {
   const router = useRouter();
   const params = useParams();
-  const { account, signer } = useWallet();
+  const { account, signer, chainId, switchToSepolia } = useWallet();
+  const SEPOLIA_CHAIN_ID = "11155111";
   const [actualScore, setActualScore] = useState("");
   const [flawlessClaimed, setFlawlessClaimed] = useState(false);
   const [gameData, setGameData] = useState<any>(null);
@@ -31,18 +32,71 @@ export default function GamePage() {
       setMessage("Please connect wallet and fill all fields.");
       return;
     }
+
+    if (chainId !== SEPOLIA_CHAIN_ID) {
+      setMessage("Switching to Sepolia...");
+      await switchToSepolia();
+      if (window.ethereum) {
+        const currentChainHex = await window.ethereum.request({ method: "eth_chainId" });
+        if (parseInt(currentChainHex, 16).toString() !== SEPOLIA_CHAIN_ID) {
+          setMessage("Please switch to Sepolia to submit your result.");
+          return;
+        }
+      }
+    }
+
     setSubmitting(true);
     setMessage("");
     try {
       const contractABI = [
-        "function verifyAndPayout(bytes32 gameId, uint256 actualScore, bool flawlessClaimed) external"
+        "function verifyAndPayoutWithAttestation(bytes32 gameId, uint256 actualScore, bool flawlessClaimed, bytes32 nonce, uint256 deadline, bytes signature) external"
       ];
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      // gameIdParam is already bytes32 (from dashboard link)
-      const tx = await contract.verifyAndPayout(gameIdParam, parseInt(actualScore), flawlessClaimed);
+
+      const nonceResponse = await fetch("/api/verification/nonce", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player: account, gameId: gameIdParam }),
+      });
+
+      if (!nonceResponse.ok) {
+        const err = await nonceResponse.json();
+        throw new Error(err.error || "Failed to request nonce");
+      }
+
+      const nonceData = await nonceResponse.json();
+
+      const attestResponse = await fetch("/api/verification/attest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          player: account,
+          gameId: gameIdParam,
+          actualScore: parseInt(actualScore),
+          flawlessClaimed,
+          nonce: nonceData.nonce,
+          deadline: nonceData.deadline,
+        }),
+      });
+
+      if (!attestResponse.ok) {
+        const err = await attestResponse.json();
+        throw new Error(err.error || "Failed to attest score");
+      }
+
+      const attestData = await attestResponse.json();
+
+      const tx = await contract.verifyAndPayoutWithAttestation(
+        gameIdParam,
+        parseInt(actualScore),
+        flawlessClaimed,
+        nonceData.nonce,
+        nonceData.deadline,
+        attestData.signature
+      );
       await tx.wait();
-      setMessage("🎉 Result submitted and payout processed!");
+      setMessage("Result submitted and payout processed.");
       // Redirect to dashboard after short delay
       setTimeout(() => {
         router.push("/dashboard");
@@ -188,9 +242,35 @@ export default function GamePage() {
     setExplanation(expl);
   }, [gameData, platformFee, actualScore, flawlessClaimed, isPinpoint, gameType]);
 
+  const getLinkedInGameUrl = (type: string) => {
+    const map: Record<string, string> = {
+      queens: "http://lnkd.in/queens",
+      crossclimb: "http://lnkd.in/crossclimb",
+      "mini-sudoku": "http://lnkd.in/minisudoku",
+      tango: "http://lnkd.in/tango",
+      zip: "http://lnkd.in/zip",
+      pinpoint: "http://lnkd.in/pinpoint",
+      patches: "http://lnkd.in/patches",
+    };
+
+    return map[type.toLowerCase()] || "https://www.linkedin.com/games/";
+  };
+
+  const playNowUrl = getLinkedInGameUrl(gameType);
+
   return (
     <div className="container mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-6">Submit Your Game Result</h1>
+      <div className="mb-4">
+        <a
+          href={playNowUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary inline-flex items-center px-5 py-2"
+        >
+          Play Now
+        </a>
+      </div>
       <div className="mb-4">
         <label className="block mb-2 font-semibold">Your Score / Time</label>
         <input
