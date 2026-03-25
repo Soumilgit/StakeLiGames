@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 function XIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -63,9 +64,21 @@ export function Footer() {
           <div>
             <h4 className="font-bold mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#features" className="text-muted hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="text-muted hover:text-primary transition-colors">How It Works</a></li>
-              <li><a href="#stake" className="text-muted hover:text-primary transition-colors">Start Staking</a></li>
+              <li>
+                <Link href="/#features" className="text-muted hover:text-primary transition-colors">
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link href="/#how-it-works" className="text-muted hover:text-primary transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/#stake" className="text-muted hover:text-primary transition-colors">
+                  Start Staking
+                </Link>
+              </li>
             </ul>
           </div>
 
