@@ -3,19 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-function XIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-      <path
-        d="M5 5l14 14M19 5L5 19"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
@@ -95,29 +82,29 @@ export function Footer() {
             <h4 className="font-bold mb-4">Community</h4>
             <div className="flex gap-4">
               <a
-                href="https://twitter.com"
+                href="https://x.com/SoumilMukh6476/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X (Twitter)"
-                className="w-16 h-16 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
+                className="w-14 h-14 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
               >
-                <XIcon className="w-8 h-8" />
+                <i className="fa-brands fa-x-twitter text-2xl" aria-hidden="true" />
               </a>
               <a
-                href="https://github.com"
+                href="https://github.com/Soumilgit"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="w-16 h-16 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
+                className="w-14 h-14 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
               >
                 <GithubIcon className="w-8 h-8" />
               </a>
               <a
-                href="https://t.me"
+                href="https://t.me/soumilmuk"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
-                className="w-16 h-16 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
+                className="w-14 h-14 rounded-lg border border-border bg-card text-white flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 transition-all text-sm"
               >
                 <TelegramIcon className="w-8 h-8" />
               </a>
