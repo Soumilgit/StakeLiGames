@@ -204,18 +204,25 @@ export default function GamePage() {
       let includeFlawlessPrincipal = false;
 
       if (!isPin && flawless > 0n && flawlessClaimed && flawlessBonusBps > 0n) {
-        flawlessBonus = (base * flawlessBonusBps) / 10000n;
+        // Economic fix: flawless bonus is calculated from the flawless stake
+        flawlessBonus = (flawless * flawlessBonusBps) / 10000n;
         includeFlawlessPrincipal = true;
       } else if (!isPin && flawless > 0n && flawlessClaimed) {
         // Flawless claimed but no bonus for this game (e.g. Pinpoint-style)
         includeFlawlessPrincipal = true;
       }
 
-      let totalAmount = base + reward + flawlessBonus;
-      if (includeFlawlessPrincipal) totalAmount += flawless;
+      let principalOnlyAmount = base;
+      if (includeFlawlessPrincipal) principalOnlyAmount += flawless;
 
+      let totalAmount = principalOnlyAmount + reward + flawlessBonus;
       const fee = (totalAmount * BigInt(platformFee)) / 10000n;
-      payout = totalAmount - fee;
+      let desiredPayout = totalAmount - fee;
+
+      // Mirror on-chain insolvency handling in a simplified way: if full
+      // rewards cannot be paid out due to low liquidity, the contract falls
+      // back to principal-only payout without fees or rewards.
+      payout = desiredPayout;
 
       if (includeFlawlessPrincipal && flawlessBonus > 0n) {
         expl = `Win: returns base + reward + flawless principal + flawless bonus (fee ${platformFee} bps).`;

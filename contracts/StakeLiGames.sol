@@ -18,6 +18,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     uint256 public totalStaked;
     uint256 public totalGames;
     uint256 public platformFee = 250; // 2.5% in basis points
+    uint256 public accumulatedFees; // explicitly tracked platform fees
     
     struct Game {
         address player;
@@ -38,11 +39,16 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     mapping(address => uint256) public userTotalLosses;
     // configurable reverse scoring per game type (keccak256(gameType) => bool)
     mapping(bytes32 => bool) public reverseScoring;
+    // optional per-game-type maximum target score (for reverse-scoring games)
+    mapping(bytes32 => uint256) public maxTargetScore;
     // tracking for any owner-triggered retroactive top-ups to avoid double paying
     mapping(bytes32 => bool) public retroRewardProcessed;
     address public verifierSigner;
+    address public pendingVerifierSigner;
     mapping(address => mapping(bytes32 => bool)) public usedNonces;
     uint256 public defaultAttestationWindow = 30 minutes;
+    // per-player nonce used to derive unique, onchain gameIds
+    mapping(address => uint256) public userGameNonce;
     
     event GameCreated(
         bytes32 indexed gameId,
@@ -69,6 +75,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     constructor(address _usdcAddress) {
         usdc = IERC20(_usdcAddress);
         verifierSigner = msg.sender;
+        pendingVerifierSigner = address(0);
         // default: pinpoint uses reverse scoring (lower-is-better)
         // enable reverse scoring (lower-is-better) for time/score based games
         reverseScoring[keccak256(bytes("pinpoint"))] = true;
@@ -80,10 +87,18 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("patches"))] = true;
     }
 
+    // two-step verifier signer update to avoid accidentally setting wrong address
     function setVerifierSigner(address newSigner) external onlyOwner {
         require(newSigner != address(0), "Invalid verifier signer");
-        verifierSigner = newSigner;
-        emit VerifierSignerUpdated(newSigner);
+        require(verifierSigner != newSigner, "Already verifierSigner");
+        pendingVerifierSigner = newSigner;
+    }
+
+    function acceptVerifierSigner() external {
+        require(msg.sender == pendingVerifierSigner, "Not pending signer");
+        verifierSigner = pendingVerifierSigner;
+        pendingVerifierSigner = address(0);
+        emit VerifierSignerUpdated(verifierSigner);
     }
 
     function setDefaultAttestationWindow(uint256 newWindow) external onlyOwner {
@@ -91,6 +106,17 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         require(newWindow <= 1 days, "Window too long");
         defaultAttestationWindow = newWindow;
         emit AttestationWindowUpdated(newWindow);
+    }
+
+    /**
+     * @dev Owner can configure a maximum targetScore for a given game type.
+     * This is primarily intended for reverse-scoring games to avoid
+     * unbounded target scores that would guarantee wins.
+     */
+    function setMaxTargetScore(string calldata gameType, uint256 maxScore) external onlyOwner {
+        require(maxScore > 0, "Max target must be > 0");
+        bytes32 key = keccak256(bytes(gameType));
+        maxTargetScore[key] = maxScore;
     }
 
     function getAttestationDigest(
@@ -167,23 +193,31 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Create a new game stake
-     * @param gameId Unique identifier for the game
+     * @dev Create a new game stake. The gameId is derived onchain from
+     * the player address and a per-player nonce to avoid front-running
+     * attacks on user-supplied identifiers.
      * @param gameType Type of LinkedIn game (queens, crossword, etc.)
      * @param targetScore Score player aims to achieve
      * @param stakeAmount Amount of USDC to stake (in wei, 6 decimals)
      */
     function createGame(
-        bytes32 gameId,
         string memory gameType,
         uint256 targetScore,
         uint256 stakeAmount,
         uint256 flawlessStake
-    ) external nonReentrant {
-        require(games[gameId].player == address(0), "Game ID already exists");
+    ) external nonReentrant returns (bytes32 gameId) {
         require(stakeAmount >= 1e4, "Minimum stake is 0.01 USDC");
         require(targetScore > 0, "Target score must be greater than 0");
         // 1e4 = 0.01 USDC in 6 decimals
+
+        bytes32 gameTypeKey = keccak256(bytes(gameType));
+        // For reverse-scoring (lower-is-better) games, enforce an owner-set
+        // maximum targetScore to avoid guaranteed wins via huge targets.
+        if (reverseScoring[gameTypeKey]) {
+            uint256 maxScore = maxTargetScore[gameTypeKey];
+            require(maxScore > 0, "Max target score not set");
+            require(targetScore <= maxScore, "Target score too high");
+        }
         
         // Transfer USDC (base + optional flawless) from player to contract
         uint256 totalToTransfer = stakeAmount + flawlessStake;
@@ -192,6 +226,10 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             "USDC transfer failed"
         );
         
+        // derive unique gameId onchain using per-player nonce
+        gameId = keccak256(abi.encodePacked(msg.sender, userGameNonce[msg.sender]++));
+        require(games[gameId].player == address(0), "Game ID collision");
+
         games[gameId] = Game({
             player: msg.sender,
             targetScore: targetScore,
@@ -285,8 +323,8 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             // Player wins: return base stake + per-game base reward.
             // If flawless was staked and successfully claimed (non-Pinpoint), also
             // return the flawless stake principal plus flawless bonus percentage
-            // on the base stake. All rewards are funded from the pooled stakes
-            // of losing games.
+            // on the *flawless stake* itself. All rewards are funded from the
+            // pooled stakes of losing games.
 
             uint256 baseReward = (base * baseRewardBps) / 10000;
             uint256 flawlessBonus = 0;
@@ -296,22 +334,53 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
                 // Flawless achieved: return extra stake and add flawless bonus
                 includeFlawlessPrincipal = true;
                 if (flawlessBonusBps > 0) {
-                    flawlessBonus = (base * flawlessBonusBps) / 10000;
+                    // Economic fix: bonus is calculated from the flawless stake
+                    flawlessBonus = (flawless * flawlessBonusBps) / 10000;
                 }
             }
 
-            uint256 totalAmount = base + baseReward + flawlessBonus;
+            // principal-only component (always desired on win)
+            uint256 principalOnlyAmount = base;
             if (includeFlawlessPrincipal) {
-                totalAmount += flawless;
+                principalOnlyAmount += flawless;
             }
 
-            uint256 fee = (totalAmount * platformFee) / 10000;
-            payout = totalAmount - fee;
+            // full reward-inclusive amount before fees
+            uint256 fullRewardAmount = principalOnlyAmount + baseReward + flawlessBonus;
+            uint256 feeOnFull = (fullRewardAmount * platformFee) / 10000;
+            uint256 desiredPayout = fullRewardAmount - feeOnFull;
+
+            uint256 contractBalance = usdc.balanceOf(address(this));
+            uint256 rewardGranted;
+            uint256 feeCollected;
+
+            if (contractBalance >= desiredPayout) {
+                // happy path: full rewards and fees can be paid
+                payout = desiredPayout;
+                rewardGranted = baseReward + flawlessBonus;
+                feeCollected = feeOnFull;
+            } else {
+                // insolvency handling: if there is enough liquidity for at least
+                // principal-only payout, allow users to withdraw their stake
+                // without any rewards or fees.
+                require(
+                    contractBalance >= principalOnlyAmount,
+                    "Insufficient liquidity for principal"
+                );
+                payout = principalOnlyAmount;
+                rewardGranted = 0;
+                feeCollected = 0;
+            }
 
             game.status = GameStatus.Won;
-            userTotalWinnings[msg.sender] += (baseReward + flawlessBonus);
+            if (rewardGranted > 0) {
+                userTotalWinnings[msg.sender] += rewardGranted;
+            }
+            if (feeCollected > 0) {
+                accumulatedFees += feeCollected;
+            }
 
-            // Transfer payout (base + rewards, plus flawless principal when applicable)
+            // Transfer payout (base + rewards/principal, plus flawless principal when applicable)
             require(usdc.transfer(msg.sender, payout), "Payout failed");
 
             // Remove base and flawless stakes from accounting totals regardless of
@@ -388,22 +457,29 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
      * @dev Cancel a pending game and refund stake (emergency only)
      * @param gameId ID of the game to cancel
      */
-    function cancelGame(bytes32 gameId) external nonReentrant {
+    function cancelGame(bytes32 gameId) external onlyOwner nonReentrant {
         Game storage game = games[gameId];
         
-        require(game.player == msg.sender, "Only player can cancel");
+        // now owner-controlled emergency cancel; players can no longer
+        // strategically cancel to avoid a loss
+        require(game.player != address(0), "Game does not exist");
         require(game.status == GameStatus.Pending, "Game not pending");
         require(block.timestamp - game.timestamp < 7 days, "Game too old to cancel");
         
         game.status = GameStatus.Cancelled;
-        totalStaked -= game.stakeAmount;
-        userStakedAmount[msg.sender] -= game.stakeAmount;
+        uint256 totalStake = game.stakeAmount + game.flawlessStake;
+        totalStaked -= totalStake;
+        userStakedAmount[game.player] -= totalStake;
         
-        // Refund with 1% cancellation fee
-        uint256 fee = game.stakeAmount / 100;
-        uint256 refund = game.stakeAmount - fee;
+        // Refund with 1% cancellation fee on the combined stake (base + flawless)
+        uint256 fee = totalStake / 100;
+        uint256 refund = totalStake - fee;
+
+        if (fee > 0) {
+            accumulatedFees += fee;
+        }
         
-        require(usdc.transfer(msg.sender, refund), "Refund failed");
+        require(usdc.transfer(game.player, refund), "Refund failed");
     }
     
     /**
@@ -412,9 +488,10 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
      */
     function withdrawFees(uint256 amount) external onlyOwner {
         uint256 contractBalance = usdc.balanceOf(address(this));
-        uint256 availableFees = contractBalance - totalStaked;
-        
-        require(amount <= availableFees, "Insufficient fees available");
+        require(amount <= accumulatedFees, "Insufficient fees available");
+        require(amount <= contractBalance, "Insufficient contract balance");
+
+        accumulatedFees -= amount;
         require(usdc.transfer(owner(), amount), "Withdrawal failed");
         
         emit FeesWithdrawn(owner(), amount);

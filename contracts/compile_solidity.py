@@ -78,6 +78,9 @@ def compile_contract():
                         "*": ["abi", "metadata", "evm.bytecode", "evm.sourceMap"]
                     }
                 },
+                # Use the IR-based pipeline to avoid "stack too deep" errors
+                # on larger functions while keeping optimizer enabled.
+                "viaIR": True,
                 "optimizer": {
                     "enabled": True,
                     "runs": 200
