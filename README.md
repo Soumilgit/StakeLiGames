@@ -10,7 +10,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="1069" height="931" alt="newlyupdated-contract-successfuldepl" src="https://github.com/user-attachments/assets/bcb75960-cd17-4dc5-ba11-9ee4e3077d54" />
+<img width="1189" height="937" alt="contract-updated" src="https://github.com/user-attachments/assets/d7069eb4-5b21-404a-ace7-5037acb256b9" />
 <img width="1919" height="991" alt="updated-hero-section" src="https://github.com/user-attachments/assets/5b9a618d-0fbb-4735-a381-b578ff3ddb44" />
 <img width="1919" height="882" alt="updated-why" src="https://github.com/user-attachments/assets/9c519abe-44e3-4b15-a51b-ac5423e5f7b1" />
 <img width="1919" height="809" alt="updated-pipeline" src="https://github.com/user-attachments/assets/bff4fb93-4fee-4fa6-9276-0b438b2ef4cc" />
