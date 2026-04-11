@@ -67,9 +67,10 @@ export function StakingInterface() {
 
     setLoading(true);
     try {
-      // Contract ABI (corrected - createGame expects bytes32 gameId)
+      // Contract ABI: gameId is now derived onchain from player + nonce
       const contractABI = [
-        "function createGame(bytes32 gameId, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external"
+        "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
+        "function createGame(string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external returns (bytes32 gameId)"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -79,10 +80,6 @@ export function StakingInterface() {
 
       // Create contract instance
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-      // Create game ID as bytes32
-      const gameIdString = `${selectedGame.id}_${account}_${Date.now()}`;
-      const gameId = ethers.id(gameIdString); // ethers.id returns bytes32
 
       // Convert stake amount to USDC smallest unit (6 decimals)
       const microAmount = ethers.parseUnits(stakeAmount, 6);
@@ -101,7 +98,6 @@ export function StakingInterface() {
       // Call createGame function
       // For Pinpoint: targetTime is tries (1-5), for others: time in seconds
       const tx = await contract.createGame(
-        gameId,
         selectedGame.id,
         parseInt(targetTime),
         microAmount,
@@ -111,15 +107,34 @@ export function StakingInterface() {
       console.log("Transaction sent:", tx.hash);
       alert(`⏳ Transaction submitted! Hash: ${tx.hash}\n\nWaiting for confirmation...`);
 
-      // Wait for confirmation
+      // Wait for confirmation and try to extract the derived gameId from the
+      // GameCreated event for UX purposes.
       const receipt = await tx.wait();
       
       console.log("Stake successful! Receipt:", receipt);
+      let createdGameId: string | null = null;
+      try {
+        const iface = new ethers.Interface(contractABI);
+        for (const log of receipt.logs) {
+          try {
+            const parsed = iface.parseLog(log);
+            if (parsed && parsed.name === "GameCreated") {
+              createdGameId = parsed.args.gameId as string;
+              break;
+            }
+          } catch {
+            // ignore non-matching logs
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to parse GameCreated event", e);
+      }
       const performanceMsg = selectedGame.id === "pinpoint" 
         ? `score of ${targetTime} or lower (1-5, or NA if unsolved)`
         : `under ${targetTime} seconds`;
       const bonusMsg = isFlawless && !selectedGame.hideFlawless ? " (+ Flawless Bonus!)" : "";
-      alert(`🎉 Stake created successfully!\n\nNow play ${selectedGame.name} and complete it with ${performanceMsg}${bonusMsg}!`);
+      const idMsg = createdGameId ? `\n\nYour game ID is: ${createdGameId}` : "";
+      alert(`🎉 Stake created successfully!${idMsg}\n\nNow play ${selectedGame.name} and complete it with ${performanceMsg}${bonusMsg}!`);
 
       // Reset form
       setStakeAmount("");
