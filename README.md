@@ -10,17 +10,14 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="1189" height="937" alt="contract-updated" src="https://github.com/user-attachments/assets/d7069eb4-5b21-404a-ace7-5037acb256b9" />
-<img width="1919" height="991" alt="updated-hero-section" src="https://github.com/user-attachments/assets/5b9a618d-0fbb-4735-a381-b578ff3ddb44" />
-<img width="1919" height="882" alt="updated-why" src="https://github.com/user-attachments/assets/9c519abe-44e3-4b15-a51b-ac5423e5f7b1" />
-<img width="1919" height="809" alt="updated-pipeline" src="https://github.com/user-attachments/assets/bff4fb93-4fee-4fa6-9276-0b438b2ef4cc" />
-<img width="1125" height="894" alt="staking-updated" src="https://github.com/user-attachments/assets/ce2678eb-be47-48ce-be8b-631d52c4b9d2" />
-<img width="1759" height="641" alt="updated-footer" src="https://github.com/user-attachments/assets/947dcbbf-de33-4d45-a0ac-3cf588e455fa" />
-<img width="1442" height="882" alt="updated-dashboard" src="https://github.com/user-attachments/assets/85f2ad01-9789-4978-ac96-cad27adff061" />
-<img width="491" height="355" alt="score-submit" src="https://github.com/user-attachments/assets/d0a78d24-2d45-4a18-bcb3-8233019c61cb" />
-<img width="1595" height="498" alt="dashboard-l-2" src="https://github.com/user-attachments/assets/5d27228d-2c0b-496f-9c10-bc173cbdaf1c" />
-<img width="1638" height="503" alt="dashboard-l-3" src="https://github.com/user-attachments/assets/7fb360f6-ec27-47d7-aecb-1885c715c9cb" />
-<img width="1632" height="421" alt="dashboard-l-4" src="https://github.com/user-attachments/assets/12034a45-3538-4973-92fc-5d8ebacbea5a" />
+<img width="850" height="751" alt="deployedcontract" src="https://github.com/user-attachments/assets/3a23cbfc-a9a1-4da7-a502-615ff078111a" />
+<img width="1532" height="786" alt="hero-section-light" src="https://github.com/user-attachments/assets/118e47a6-919b-478d-b0ab-3453e30a7ebd" />
+<img width="1536" height="704" alt="why-stake-light" src="https://github.com/user-attachments/assets/25b3ef27-eec0-437f-8841-941866280f6f" />
+<img width="1536" height="598" alt="cashflow-light" src="https://github.com/user-attachments/assets/1a699617-85de-4baf-ab5f-ea5c5743ae5a" />
+<img width="913" height="716" alt="staking-interface-light" src="https://github.com/user-attachments/assets/f896d427-9ca0-4106-8a2b-db05eb295b39" />
+<img width="1536" height="709" alt="footer-light" src="https://github.com/user-attachments/assets/8c2dc2d2-2fb5-4323-ac60-80832a4e33ce" />
+<img width="1027" height="723" alt="dashboard-light" src="https://github.com/user-attachments/assets/b3f84364-e79f-4c9a-87ab-5e430348e7aa" />
+<img width="491" height="355" alt="submit-light" src="https://github.com/user-attachments/assets/3fb37d4b-d7b7-4cc4-b045-d1902e589216" />
 
 ## Features
 
