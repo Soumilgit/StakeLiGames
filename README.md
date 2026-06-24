@@ -11,11 +11,11 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ## Demo pics
 
 <img width="850" height="751" alt="deployedcontract" src="https://github.com/user-attachments/assets/3a23cbfc-a9a1-4da7-a502-615ff078111a" />
-<img width="1532" height="786" alt="hero-section-light" src="https://github.com/user-attachments/assets/118e47a6-919b-478d-b0ab-3453e30a7ebd" />
+<img width="1536" height="776" alt="stakeligames-new-hero-light" src="https://github.com/user-attachments/assets/0283ef57-a70c-4a1e-bfe8-c797eea9cee5" />
 <img width="1536" height="704" alt="why-stake-light" src="https://github.com/user-attachments/assets/25b3ef27-eec0-437f-8841-941866280f6f" />
 <img width="1536" height="598" alt="cashflow-light" src="https://github.com/user-attachments/assets/1a699617-85de-4baf-ab5f-ea5c5743ae5a" />
 <img width="913" height="716" alt="staking-interface-light" src="https://github.com/user-attachments/assets/f896d427-9ca0-4106-8a2b-db05eb295b39" />
-<img width="1536" height="709" alt="footer-light" src="https://github.com/user-attachments/assets/8c2dc2d2-2fb5-4323-ac60-80832a4e33ce" />
+<img width="1536" height="696" alt="stakeligames-new-footer-light" src="https://github.com/user-attachments/assets/3e28473f-6659-4b7b-afea-88d166c53ba3" />
 <img width="1027" height="723" alt="dashboard-light" src="https://github.com/user-attachments/assets/b3f84364-e79f-4c9a-87ab-5e430348e7aa" />
 <img width="491" height="355" alt="submit-light" src="https://github.com/user-attachments/assets/3fb37d4b-d7b7-4cc4-b045-d1902e589216" />
 
