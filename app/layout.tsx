@@ -30,11 +30,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Standard favicon (jpg) */}
-        <link rel="icon" type="image/jpeg" sizes="32x32" href="/favicon.jpg" />
+        <link rel="icon" type="image/jpeg" sizes="32x32" href="/favicon.jpg?v=2" />
         {/* Fallback for .ico */}
         <link rel="icon" href="/favicon.ico" />
         {/* Apple touch icon for iOS */}
-        <link rel="apple-touch-icon" href="/favicon.jpg" />
+        <link rel="apple-touch-icon" href="/favicon.jpg?v=2" />
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}

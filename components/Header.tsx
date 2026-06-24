@@ -14,8 +14,8 @@ export function Header() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-background flex items-center justify-center">
-              <Image
-                src="/favicon.jpg"
+              <img
+                src="/favicon.jpg?v=2"
                 alt="StakeLiGames"
                 width={40}
                 height={40}

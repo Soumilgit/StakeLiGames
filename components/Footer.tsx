@@ -33,8 +33,8 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-lg border border-border flex items-center justify-center bg-background overflow-hidden">
-                <Image
-                  src="/favicon.jpg"
+                <img
+                  src="/favicon.jpg?v=2"
                   alt="StakeLiGames"
                   width={28}
                   height={28}
