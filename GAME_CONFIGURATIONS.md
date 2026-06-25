@@ -155,5 +155,5 @@ Shows 2 featured games:
 
 ---
 
-**Contract Address:** 0x6DBFe362FD128CD34CA0435f211cb4B405B2A016
+**Contract Address:** 0x60D96e2290CB500E315cE3f6eDf742afd6601663
 **Network:** Ethereum Sepolia Testnet
