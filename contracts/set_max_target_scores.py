@@ -93,6 +93,7 @@ def main() -> None:
         "mini-sudoku": 600,
         "tango": 600,
         "zip": 600,
+        "wend": 600,
         "patches": 600,
         "pinpoint": 5,
     }

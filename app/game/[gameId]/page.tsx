@@ -22,14 +22,24 @@ export default function GamePage() {
   const [explanation, setExplanation] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [submittedResultStatus, setSubmittedResultStatus] = useState<"Won" | "Lost" | "">("");
 
   // Get gameId from dynamic route
   const gameIdParam = params?.gameId || "";
+
+  const getResultStatus = () => {
+    if (!gameData || actualScore === "") return "";
+    const scoreNum = Number(actualScore);
+    const targetNum = Number(gameData.targetScore?.toString?.() || gameData.targetScore);
+    if (isNaN(scoreNum) || isNaN(targetNum)) return "";
+    return scoreNum < targetNum ? "Won" : "Lost";
+  };
 
   // Submit result handler
   const handleSubmit = async () => {
     if (!account || !signer || !gameIdParam || !actualScore) {
       setMessage("Please connect wallet and fill all fields.");
+      setSubmittedResultStatus("");
       return;
     }
 
@@ -40,6 +50,7 @@ export default function GamePage() {
         const currentChainHex = await window.ethereum.request({ method: "eth_chainId" });
         if (parseInt(currentChainHex, 16).toString() !== SEPOLIA_CHAIN_ID) {
           setMessage("Please switch to Sepolia to submit your result.");
+          setSubmittedResultStatus("");
           return;
         }
       }
@@ -47,6 +58,7 @@ export default function GamePage() {
 
     setSubmitting(true);
     setMessage("");
+    setSubmittedResultStatus("");
     try {
       const contractABI = [
         "function verifyAndPayoutWithAttestation(bytes32 gameId, uint256 actualScore, bool flawlessClaimed, bytes32 nonce, uint256 deadline, bytes signature) external"
@@ -96,13 +108,16 @@ export default function GamePage() {
         attestData.signature
       );
       await tx.wait();
+      const finalResultStatus = getResultStatus();
       setMessage("Result submitted and payout processed.");
+      setSubmittedResultStatus(finalResultStatus);
       // Redirect to dashboard after short delay
       setTimeout(() => {
         router.push("/dashboard");
       }, 1800);
     } catch (error: any) {
       setMessage("Submission failed: " + (error.message || error.toString()));
+      setSubmittedResultStatus(getResultStatus());
     } finally {
       setSubmitting(false);
     }
@@ -188,6 +203,9 @@ export default function GamePage() {
     } else if (typeKey === "zip") {
       baseRewardBps = 1500n;
       flawlessBonusBps = 500n;
+    } else if (typeKey === "wend") {
+      baseRewardBps = 2000n;
+      flawlessBonusBps = 1500n;
     } else if (typeKey === "pinpoint") {
       baseRewardBps = 3000n;
       flawlessBonusBps = 0n;
@@ -257,6 +275,7 @@ export default function GamePage() {
       tango: "http://lnkd.in/tango",
       zip: "http://lnkd.in/zip",
       pinpoint: "http://lnkd.in/pinpoint",
+      wend: "http://lnkd.in/wend",
       patches: "http://lnkd.in/patches",
     };
 
@@ -316,7 +335,19 @@ export default function GamePage() {
       >
         {submitting ? "Submitting..." : "Submit Result"}
       </button>
-      {message && <div className="mt-6 text-lg font-mono whitespace-pre-line">{message}</div>}
+      {message && (
+        <div className="mt-6 text-lg font-mono whitespace-pre-line">
+          {message}
+          {submittedResultStatus && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 font-sans text-sm">
+              <span className="font-semibold text-foreground">Status:</span>
+              <span className={`status-pill ${submittedResultStatus === "Won" ? "status-pill-won" : "status-pill-lost"}`}>
+                {submittedResultStatus}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
       {payoutPreview !== "0" && (
         <div className="mt-6 text-sm text-muted">
           Estimated payout (after platform fee): {formatUSDC(payoutPreview)} USDC

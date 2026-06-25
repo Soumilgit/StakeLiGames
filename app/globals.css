@@ -8,7 +8,7 @@
   --primary: #0a66c2; /* LinkedIn blue */
   --secondary: #004182; /* navy blue */
   --accent: #0f4c81; /* supporting blue */
-  --border: #e5e7eb;
+  --border: #9ca3af;
   --card: #ffffff;
   --card-hover: #f3f4f6;
   --muted: #444444;
@@ -23,7 +23,7 @@
   --primary: #0a66c2;
   --secondary: #1f2933;
   --accent: #0f4c81;
-  --border: #1f1f2e;
+  --border: #4b5563;
   --card: #181825;
   --card-hover: #232336;
   --muted: #a1a1aa;
@@ -70,14 +70,14 @@
   :root .bg-cardHover {
     background: #fff !important;
     color: #18181b !important;
-    border-color: #e5e7eb !important;
+    border-color: #9ca3af !important;
   }
   .dark .card-modern,
   .dark .bg-card\/50,
   .dark .bg-cardHover {
     background: #181825 !important;
     color: #f8f9fa !important;
-    border-color: #1f1f2e !important;
+    border-color: #4b5563 !important;
   }
   .navbar {
     background: var(--navbar) !important;
@@ -121,6 +121,35 @@
   .badge-modern {
       @apply inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
         bg-primary/10 text-primary border border-primary/20;
+  }
+
+  .status-pill {
+    @apply inline-flex items-center justify-center rounded-md border px-2.5 py-1 text-xs font-bold leading-none sm:text-sm;
+    min-width: 3.25rem;
+  }
+
+  .status-pill-won {
+    background-color: rgba(22, 163, 74, 0.16);
+    border-color: rgba(22, 163, 74, 0.72);
+    color: #166534;
+  }
+
+  .status-pill-lost {
+    background-color: rgba(220, 38, 38, 0.16);
+    border-color: rgba(220, 38, 38, 0.72);
+    color: #991b1b;
+  }
+
+  .dark .status-pill-won {
+    background-color: rgba(34, 197, 94, 0.18);
+    border-color: rgba(74, 222, 128, 0.74);
+    color: #bbf7d0;
+  }
+
+  .dark .status-pill-lost {
+    background-color: rgba(239, 68, 68, 0.18);
+    border-color: rgba(248, 113, 113, 0.74);
+    color: #fecaca;
   }
 
   .gradient-text {

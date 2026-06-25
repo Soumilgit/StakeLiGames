@@ -13,7 +13,7 @@ const games = [
   { id: "tango", name: "Tango", image: "/tango.jpg", difficulty: "Medium", targetTime: 90, unit: "sec", reward: "20%", flawlessBonus: "8%" },
   { id: "zip", name: "Zip", image: "/zip.jpg", difficulty: "Easy", targetTime: 120, unit: "sec", reward: "15%", flawlessBonus: "5%" },
   { id: "pinpoint", name: "Pinpoint", image: "/pinpoint.jpg", difficulty: "Special", targetTime: 5, unit: "score", reward: "30%", flawlessBonus: "0%", note: "Score: 1-5 or NA", hideFlawless: true },
-  // New Patches game, centered on third row in grid via col-start
+  { id: "wend", name: "Wend", image: "/wend.jpg", difficulty: "Hard", targetTime: 40, unit: "sec", reward: "20%", flawlessBonus: "15%" },
   { id: "patches", name: "Patches", image: "/patches.jpg", difficulty: "Special", targetTime: 40, unit: "sec", reward: "10%", flawlessBonus: "10%" },
 ];
 
@@ -42,6 +42,7 @@ export function StakingInterface() {
       "mini-sudoku": "http://lnkd.in/minisudoku",
       zip: "http://lnkd.in/zip",
       patches: "http://lnkd.in/patches",
+      wend: "http://lnkd.in/wend",
       pinpoint: "http://lnkd.in/pinpoint",
     };
 
@@ -354,13 +355,13 @@ export function StakingInterface() {
           <div className="card-modern bg-white hover:bg-cardHover">
             <h4 className="font-bold mb-2">Time-Based & Score Scoring</h4>
             <p className="text-sm text-muted">
-              Beat the clock for 5 games! Pinpoint uses score (1-5 or NA if unsolved).
+              Stake across 8 games! Pinpoint uses score (1-5 or NA if unsolved).
             </p>
           </div>
           <div className="card-modern bg-card/50 hover:bg-cardHover">
             <h4 className="font-bold mb-2">Flawless Bonuses</h4>
             <p className="text-sm text-muted">
-              No hints, no mistakes! Honest solvers earn extra rewards up to 12% bonus.
+              No hints, no mistakes! Honest solvers earn extra rewards up to 15% bonus.
             </p>
           </div>
           <div className="card-modern bg-card/50 hover:bg-cardHover">
