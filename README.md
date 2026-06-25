@@ -86,6 +86,15 @@ cd contracts
 pip install -r requirements.txt
 ```
 
+Also, create `.env ` here:
+
+```env
+PRIVATE_KEY=
+SEPOLIA_RPC_URL=https://rpc.sepolia.org
+NEXT_PUBLIC_USDC_ADDRESS=
+
+```
+
 ### 3. Compile Smart Contracts (Solidity)
 
 ```bash
@@ -117,6 +126,12 @@ The testnet now uses Sepolia USDC (ERC20) for simulation and staking.
 python deploy_sepolia.py
 ```
 
+### 6. Set Maximum Target Score
+
+```bash
+python set_max_target_scores.py
+```
+
 **Options:**
 - **Enter existing mnemonic** (25 words from your wallet) OR
 - **Press Enter** to generate a new account (you'll need to fund it)
@@ -138,31 +153,17 @@ Contract Address: 0x...
 The deployment script automatically creates `.env.local`:
 
 ```env
-# Ethereum Sepolia Configuration
-NEXT_PUBLIC_CHAIN_ID=
-NEXT_PUBLIC_RPC_URL=https://rpc.sepolia.org
-RPC_URL=https://ethereum-sepolia.publicnode.com
-NEXT_PUBLIC_NETWORK_NAME=Sepolia Testnet
-
-# Smart Contract Addresses
-NEXT_PUBLIC_CONTRACT_ADDRESS=
-NEXT_PUBLIC_USDC_ADDRESS=
-PRIVATE_KEY=
-VERIFIER_PRIVATE_KEY=
-
-# Historical / Legacy Contracts (optional)
-# Direct previous deployment (2nd last). Dashboard/chart reads this
-# alongside NEXT_PUBLIC_CONTRACT_ADDRESS.
-NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS=
-
-# Comma-separated list of previous contract addresses to include
-# in the read-only dashboard and charts. This is only used for
-# displaying historical stakes; new stakes always go to
-# NEXT_PUBLIC_CONTRACT_ADDRESS.
-NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES=
-
-# Application Settings
-NEXT_PUBLIC_APP_NAME=
+PRIVATE_KEY=""
+NEXT_PUBLIC_APP_NAME=""
+NEXT_PUBLIC_CHAIN_ID="11155111"
+NEXT_PUBLIC_CONTRACT_ADDRESS=""
+NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES=""
+NEXT_PUBLIC_NETWORK_NAME="Sepolia Testnet"
+NEXT_PUBLIC_RPC_URL="https://rpc.sepolia.org"
+NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS=""
+NEXT_PUBLIC_THIRD_LAST_CONTRACT_ADDRESSES=""
+NEXT_PUBLIC_USDC_ADDRESS=""
+RPC_URL="https://ethereum-sepolia.publicnode.com"
 
 ```
 
@@ -369,12 +370,20 @@ Contributions welcome! Please:
 ## Project Structure
 
 ```
-├─ .env.local
+├─ .env.example
+├─ .env.local
 ├─ .eslintrc.json
 ├─ .gitignore
 ├─ GAME_CONFIGURATIONS.md
 ├─ README.md
+├─ StakeLiGames_flat.sol
 ├─ app
+│  ├─ api
+│  │  └─ verification
+│  │     ├─ attest
+│  │     │  └─ route.ts
+│  │     └─ nonce
+│  │        └─ route.ts
 │  ├─ dashboard
 │  │  └─ page.tsx
 │  ├─ game
@@ -461,19 +470,34 @@ Contributions welcome! Please:
 │  ├─ compiled_contract.json
 │  ├─ deploy.py
 │  ├─ deploy_sepolia.py
-│  ├─ deployment.json
 │  ├─ hardhat.config.js
 │  ├─ package.json
 │  ├─ requirements.txt
 │  ├─ scripts
 │  │  └─ deploy.js
+│  ├─ set_max_target_scores.py
 │  └─ staking_contract.py
+├─ lib
+│  └─ verificationStore.ts
 ├─ next.config.js
 ├─ package-lock.json
 ├─ package.json
 ├─ postcss.config.js
 ├─ public
-│  └─ favicon.jpg
+│  ├─ crossclimb.jpg
+│  ├─ favicon.jpg
+│  ├─ minisudoku.jpg
+│  ├─ patches.jpg
+│  ├─ pinpoint.jpg
+│  ├─ queens.jpg
+│  ├─ tango.jpg
+│  ├─ wend.jpg
+│  └─ zip.jpg
+├─ scripts
+│  ├─ check_balances.js
+│  ├─ inspect_game.js
+│  ├─ retroactive_topup.js
+│  └─ set_reverse.js
 ├─ tailwind.config.ts
 ├─ tsconfig.json
 └─ types
