@@ -340,7 +340,7 @@ export default function GamePage() {
           {message}
           {submittedResultStatus && (
             <div className="mt-3 flex flex-wrap items-center gap-2 font-sans text-sm">
-              <span className="font-semibold text-foreground">Status:</span>
+              <span className="font-semibold">Status:</span>
               <span className={`status-pill ${submittedResultStatus === "Won" ? "status-pill-won" : "status-pill-lost"}`}>
                 {submittedResultStatus}
               </span>
