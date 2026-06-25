@@ -13,11 +13,11 @@ export default function DashboardPage() {
     <main className="min-h-screen">
       <Header />
       <div className="border-b border-transparent bg-transparent">
-        <div className="container mx-auto px-4 pt-6">
+        <div className="container mx-auto px-4 pt-9">
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-600 text-sm font-medium text-black dark:text-white hover:bg-slate-600 hover:text-primary transition-colors"
+            className="inline-flex translate-y-3 sm:translate-y-5 items-center gap-2 px-3 py-1 rounded-full bg-slate-600 text-sm font-medium text-white hover:bg-slate-600 hover:text-sky-400 transition-colors"
           >
             <span className="text-lg leading-none">&#8592;</span>
             <span>Back to Home</span>

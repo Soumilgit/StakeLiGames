@@ -1,6 +1,6 @@
 # StakeLiGames - Game Configurations
 
-## Official 7 LinkedIn Games
+## Official 8 LinkedIn Games
 
 ### 1. **Queens**
 - **Difficulty:** Hard
@@ -45,7 +45,14 @@
 - **Total Max:** 30%
 - **Note:** Only game without flawless bonus option
 
-### 7. **Patches**
+### 7. **Wend**
+- **Difficulty:** Hard
+- **Scoring:** Time-based
+- **Base Reward:** 20%
+- **Flawless Bonus:** +15%
+- **Total Max:** 35%
+
+### 8. **Patches**
 - **Difficulty:** Easy
 - **Scoring:** Time-based
 - **Base Reward:** 10%
@@ -56,8 +63,8 @@
 
 ## Scoring Systems
 
-### Time-Based Games (6 games)
-- Queens, Crossclimb, Mini Sudoku, Tango, Zip, Patches
+### Time-Based Games (7 games)
+- Queens, Crossclimb, Mini Sudoku, Tango, Zip, Wend, Patches
 - **Metric:** Completion time in seconds
 - **Flawless Option:** Available (no hints, no mistakes)
 
@@ -73,7 +80,7 @@
 
 | Difficulty | Base Reward | Flawless Bonus | Total Max |
 |------------|-------------|----------------|-----------|
-| Hard       | 25%         | +10%           | **35%**   |
+| Hard       | 20-25%      | +10% to +15%   | **35%**   |
 | Medium     | 20%         | +8%            | **28%**   |
 | Easy       | 10-15%      | +5% to +10%    | **20%**   |
 | Special    | 30%         | N/A            | **30%**   |
@@ -89,7 +96,7 @@
 - Pure skill and knowledge
 
 ### Benefits for Honest Solvers
-- Extra rewards up to +10%
+- Extra rewards up to +15%
 - Recognition for legitimate gameplay
 - Higher total payouts (up to 35% vs 30%)
 
@@ -121,6 +128,11 @@ function createGame(
 - Flawless: Yes
 - Potential Return: 120 USDC (10% + 10% bonus)
 
+**Wend (Hard, Time-based with Flawless):**
+- Stake: 100 USDC
+- Flawless: Yes
+- Potential Return: 135 USDC (20% + 15% bonus)
+
 **Pinpoint (Special, Score-based, no Flawless):**
 - Stake: 100 USDC
 - Flawless: N/A
@@ -136,12 +148,12 @@ Shows 2 featured games:
 - Crossclimb: +25% reward
 
 ### Staking Interface
-- 4-column grid showing all 7 games
+- Responsive grid showing all 8 games
 - Dynamic labels (seconds vs score)
 - Conditional flawless checkbox (hidden for Pinpoint)
 - Real-time reward calculations
 
 ---
 
-**Contract Address:** 0xE31f18224f3A4ac3A0c4F30AC283D22c7571203A
+**Contract Address:** 0x6DBFe362FD128CD34CA0435f211cb4B405B2A016
 **Network:** Ethereum Sepolia Testnet

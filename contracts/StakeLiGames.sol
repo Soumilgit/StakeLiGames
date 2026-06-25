@@ -84,6 +84,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("mini-sudoku"))] = true;
         reverseScoring[keccak256(bytes("tango"))] = true;
         reverseScoring[keccak256(bytes("zip"))] = true;
+        reverseScoring[keccak256(bytes("wend"))] = true;
         reverseScoring[keccak256(bytes("patches"))] = true;
     }
 
@@ -172,6 +173,11 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         // Patches: balanced challenge -> 10% base, +10% flawless
         if (t == keccak256(bytes("patches"))) {
             return (1000, 1000);
+        }
+
+        // Wend: hard time challenge -> 20% base, +15% flawless
+        if (t == keccak256(bytes("wend"))) {
+            return (2000, 1500);
         }
 
         // Special game: Pinpoint -> 30% base, no flawless bonus

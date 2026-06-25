@@ -39,7 +39,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 ## How It Works
 
 1. Connect Wallet - Link your MetaMask wallet (app auto-prompts Sepolia switch if needed)
-2. Choose Game - Select a LinkedIn Game (Queens, Crossclimb, Pinpoint, Tango, Zip, Mini Sudoku, Patches)
+2. Choose Game - Select from 8 LinkedIn Games (Queens, Crossclimb, Pinpoint, Tango, Zip, Mini Sudoku, Wend, Patches)
 3. Stake USDC - Set your target and stake amount (minimum: 0.01 USDC)
 4. Play Now - Use the in-app Play Now button to open the selected LinkedIn game in a new tab
 5. Verify Result - Submit your score/time; app requests nonce, gets verifier attestation, then settles on-chain
@@ -190,6 +190,7 @@ Open http://localhost:3000
    - Tango (Medium) → 20% reward
    - Zip (Easy) → 15% reward
    - Pinpoint (Special) → 30% reward
+   - Wend (Hard) → 20% reward
    - Patches (Easy) → 10% reward
 
 3. Configure Stake:
@@ -364,7 +365,7 @@ Contributions welcome! Please:
 
 # Ethereum Sepolia Deployment
 
-- Contract Address: 0xE31f18224f3A4ac3A0c4F30AC283D22c7571203A
+- Contract Address: 0x6DBFe362FD128CD34CA0435f211cb4B405B2A016
 - Chain ID: 11155111
 - Network: Sepolia Testnet
 

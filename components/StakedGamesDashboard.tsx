@@ -220,6 +220,7 @@ export default function StakedGamesDashboard() {
       { key: "zip", label: "Zip" },
       { key: "crossclimb", label: "Crossclimb" },
       { key: "pinpoint", label: "Pinpoint" },
+      { key: "wend", label: "Wend" },
       { key: "patches", label: "Patches" },
     ],
     []
@@ -332,6 +333,19 @@ export default function StakedGamesDashboard() {
   const windowEnd = Math.min(windowStart + windowSize - 1, totalPages);
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
+  const getGameResultStatus = (g: any) => {
+    if (g.status === 3) return "Cancelled";
+    if (typeof g.actualScore === "number" && typeof g.targetScore !== "undefined") {
+      const scoreNum = g.actualScore;
+      const targetNum = Number(g.targetScore);
+      if (!isNaN(scoreNum) && !isNaN(targetNum)) {
+        // All supported games currently use reverse scoring (lower-is-better)
+        if (scoreNum < targetNum) return "Won";
+        if (scoreNum >= targetNum) return "Lost";
+      }
+    }
+    return "Pending";
+  };
 
   return (
     <div className="card-modern p-6 mt-8">
@@ -422,19 +436,15 @@ export default function StakedGamesDashboard() {
                   <td className="px-2 py-1">{g.flawlessStake} USDC</td>
                   <td className="px-2 py-1">
                     {(() => {
-                      // Use actualScore from GameVerified event if available
-                      if (g.status === 3) return "Cancelled";
-                      if (typeof g.actualScore === 'number' && typeof g.targetScore !== 'undefined') {
-                        const scoreNum = g.actualScore;
-                        const targetNum = Number(g.targetScore);
-                        if (!isNaN(scoreNum) && !isNaN(targetNum)) {
-                          // All supported games currently use reverse scoring (lower-is-better)
-                          if (scoreNum < targetNum) return "Won";
-                          if (scoreNum > targetNum) return "Lost";
-                          if (scoreNum === targetNum) return "Lost";
-                        }
+                      const status = getGameResultStatus(g);
+                      if (status === "Won" || status === "Lost") {
+                        return (
+                          <span className={`status-pill ${status === "Won" ? "status-pill-won" : "status-pill-lost"}`}>
+                            {status}
+                          </span>
+                        );
                       }
-                      return "Pending";
+                      return status;
                     })()}
                   </td>
                   <td className="px-2 py-1">
