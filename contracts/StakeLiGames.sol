@@ -86,6 +86,15 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("zip"))] = true;
         reverseScoring[keccak256(bytes("wend"))] = true;
         reverseScoring[keccak256(bytes("patches"))] = true;
+
+        maxTargetScore[keccak256(bytes("pinpoint"))] = 5;
+        maxTargetScore[keccak256(bytes("queens"))] = 600;
+        maxTargetScore[keccak256(bytes("crossclimb"))] = 600;
+        maxTargetScore[keccak256(bytes("mini-sudoku"))] = 600;
+        maxTargetScore[keccak256(bytes("tango"))] = 600;
+        maxTargetScore[keccak256(bytes("zip"))] = 600;
+        maxTargetScore[keccak256(bytes("wend"))] = 600;
+        maxTargetScore[keccak256(bytes("patches"))] = 600;
     }
 
     // two-step verifier signer update to avoid accidentally setting wrong address

@@ -71,7 +71,9 @@ export function StakingInterface() {
       // Contract ABI: gameId is now derived onchain from player + nonce
       const contractABI = [
         "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
-        "function createGame(string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external returns (bytes32 gameId)"
+        "function createGame(string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external returns (bytes32 gameId)",
+        "function reverseScoring(bytes32 gameType) view returns (bool)",
+        "function maxTargetScore(bytes32 gameType) view returns (uint256)"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -81,6 +83,20 @@ export function StakingInterface() {
 
       // Create contract instance
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+      const gameTypeKey = ethers.keccak256(ethers.toUtf8Bytes(selectedGame.id));
+      const usesReverseScoring = await contract.reverseScoring(gameTypeKey);
+      if (usesReverseScoring) {
+        const maxTargetScore = await contract.maxTargetScore(gameTypeKey);
+        if (maxTargetScore === 0n) {
+          throw new Error(
+            `The ${selectedGame.name} contract max target is not configured yet. The contract owner must run setMaxTargetScore("${selectedGame.id}", 600) before ${selectedGame.name} stakes can be created.`
+          );
+        }
+        if (BigInt(parseInt(targetTime)) > maxTargetScore) {
+          throw new Error(`Target is too high for ${selectedGame.name}. Maximum allowed target is ${maxTargetScore.toString()}.`);
+        }
+      }
 
       // Convert stake amount to USDC smallest unit (6 decimals)
       const microAmount = ethers.parseUnits(stakeAmount, 6);
