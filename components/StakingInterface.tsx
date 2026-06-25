@@ -34,6 +34,18 @@ export function StakingInterface() {
     return v.toFixed(6);
   };
 
+  const formatUSDCUnits = (v: bigint) => {
+    return ethers.formatUnits(v, 6).replace(/\.?0+$/, "");
+  };
+
+  const getStakeErrorMessage = (error: any) => {
+    const raw = String(error?.shortMessage || error?.reason || error?.message || error?.toString?.() || "");
+    if (raw.includes("missing revert data") || raw.includes("CALL_EXCEPTION")) {
+      return "The staking transaction was rejected by the contract. Please confirm your Sepolia USDC balance covers the stake plus any flawless stake, then try again.";
+    }
+    return raw;
+  };
+
   const getPlayNowUrl = (gameId: string) => {
     const map: Record<string, string> = {
       queens: "http://lnkd.in/queens",
@@ -73,7 +85,8 @@ export function StakingInterface() {
         "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
         "function createGame(string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake) external returns (bytes32 gameId)",
         "function reverseScoring(bytes32 gameType) view returns (bool)",
-        "function maxTargetScore(bytes32 gameType) view returns (uint256)"
+        "function maxTargetScore(bytes32 gameType) view returns (uint256)",
+        "function usdc() view returns (address)"
       ];
 
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
@@ -101,16 +114,33 @@ export function StakingInterface() {
       // Convert stake amount to USDC smallest unit (6 decimals)
       const microAmount = ethers.parseUnits(stakeAmount, 6);
       const flawlessMicro = isFlawless ? microAmount : ethers.parseUnits("0", 6);
+      const totalToApprove = microAmount + flawlessMicro;
 
       // Approve USDC transfer (base + flawless) to contract if necessary
       const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS || "";
       if (!usdcAddress) throw new Error("USDC address not configured");
-      const usdcAbi = ["function approve(address spender, uint256 amount) public returns (bool)"];
+      const contractUsdcAddress = await contract.usdc();
+      if (contractUsdcAddress.toLowerCase() !== usdcAddress.toLowerCase()) {
+        throw new Error("Configured USDC address does not match the deployed staking contract token address.");
+      }
+      const usdcAbi = [
+        "function approve(address spender, uint256 amount) public returns (bool)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function balanceOf(address account) view returns (uint256)"
+      ];
       const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
-      const totalToApprove = microAmount + flawlessMicro;
-      // Request approval
-      const approveTx = await usdcContract.approve(contractAddress, totalToApprove);
-      await approveTx.wait();
+      const usdcBalance = await usdcContract.balanceOf(account);
+      if (usdcBalance < totalToApprove) {
+        throw new Error(
+          `Insufficient Sepolia USDC balance. This stake needs ${formatUSDCUnits(totalToApprove)} USDC${isFlawless ? " including the flawless stake" : ""}, but your wallet has ${formatUSDCUnits(usdcBalance)} USDC.`
+        );
+      }
+
+      const currentAllowance = await usdcContract.allowance(account, contractAddress);
+      if (currentAllowance < totalToApprove) {
+        const approveTx = await usdcContract.approve(contractAddress, totalToApprove);
+        await approveTx.wait();
+      }
 
       // Call createGame function
       // For Pinpoint: targetTime is tries (1-5), for others: time in seconds
@@ -159,7 +189,7 @@ export function StakingInterface() {
       setIsFlawless(false);
     } catch (error: any) {
       console.error("Staking failed:", error);
-      alert("Staking failed: " + (error.message || error.toString()));
+      alert("Staking failed: " + getStakeErrorMessage(error));
     } finally {
       setLoading(false);
     }
