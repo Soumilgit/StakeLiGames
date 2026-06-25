@@ -111,11 +111,12 @@ This generates:
 
 The testnet now uses Sepolia USDC (ERC20) for simulation and staking.
 
-1. Visit the official Circle Sepolia USDC faucet: https://faucet.circle.com/
-2. Connect your wallet (e.g., MetaMask) and select the Sepolia network.
-3. Paste your wallet address and request testnet USDC.
-4. Confirm the transaction in your wallet.
-5. You will receive Sepolia USDC directly to your wallet (no asset opt-in required).
+1. Get free Sepolia ETH from https://sepolia-faucet.pk910.de/#/ via your wallet address
+2. Visit https://faucet.circle.com/ - the official Circle Sepolia USDC faucet
+3. Connect your wallet (e.g., MetaMask) and select the Sepolia network
+4. Paste your latest contract/wallet address and request testnet USDC
+5. Confirm the transaction in your wallet
+6. You will receive Sepolia USDC directly to your wallet (no asset opt-in required)
 
 **Note:** The old Algorand testnet asset (ID 10458941) is no longer used. All staking and rewards now use Sepolia USDC.
 
@@ -231,7 +232,6 @@ python deploy_sepolia.py     # Deploy to testnet
 
 ## Testnet Resources
 
-- **Faucet**: https://sepolia-faucet.pk910.de/#/ (Get free Sepolia ETH - Official)
 - **Explorer Options**:
    - https://sepolia.etherscan.io (Etherscan)
 - **Sepolia Docs**: https://ethereum.org/en/developers/docs/networks/#sepolia
