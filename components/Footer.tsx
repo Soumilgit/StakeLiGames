@@ -113,7 +113,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted bg-transparent">
-          <p>© 2025 StakeLiGames. Built for LinkedIn Games fans on Ethereum blockchain.</p>
+          <p>© 2026 StakeLiGames. Built for LinkedIn Games fans on Ethereum blockchain.</p>
           <p className="mt-2">
             Developed by{" "}
             <a href="https://soumilm.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">

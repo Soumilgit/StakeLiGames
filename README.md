@@ -15,7 +15,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 <img width="1536" height="704" alt="why-stake-light" src="https://github.com/user-attachments/assets/25b3ef27-eec0-437f-8841-941866280f6f" />
 <img width="1536" height="598" alt="cashflow-light" src="https://github.com/user-attachments/assets/1a699617-85de-4baf-ab5f-ea5c5743ae5a" />
 <img width="913" height="716" alt="staking-interface-light" src="https://github.com/user-attachments/assets/f896d427-9ca0-4106-8a2b-db05eb295b39" />
-<img width="1536" height="696" alt="stakeligames-new-footer-light" src="https://github.com/user-attachments/assets/3e28473f-6659-4b7b-afea-88d166c53ba3" />
+<img width="1536" height="694" alt="footer-light" src="https://github.com/user-attachments/assets/d70913d1-0844-44cd-a362-a0875028e0f1" />
 <img width="1027" height="723" alt="dashboard-light" src="https://github.com/user-attachments/assets/b3f84364-e79f-4c9a-87ab-5e430348e7aa" />
 <img width="491" height="355" alt="submit-light" src="https://github.com/user-attachments/assets/3fb37d4b-d7b7-4cc4-b045-d1902e589216" />
 
