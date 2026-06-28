@@ -16,47 +16,87 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("system");
   const [effectiveTheme, setEffectiveTheme] = useState<"dark" | "light">("dark");
 
+  // On initial mount, detect cached theme or system theme
   useEffect(() => {
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
+    if (typeof window !== "undefined") {
+      const override = sessionStorage.getItem("portfolio-theme-override") === "true";
+      let initialTheme: Theme = "system";
+
+      if (override) {
+        const savedTheme = localStorage.getItem("portfolio-theme") as Theme | null;
+        if (savedTheme === "dark" || savedTheme === "light" || savedTheme === "system") {
+          initialTheme = savedTheme;
+        }
+      }
+
+      setTheme(initialTheme);
     }
   }, []);
 
+  // Update DOM classes and listen for live system theme changes
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const root = window.document.documentElement;
-    const updateTheme = () => {
-      let newEffectiveTheme: "dark" | "light";
+
+    const updateDOM = () => {
+      let newEffectiveTheme: "dark" | "light" = "dark";
       if (theme === "system") {
-        newEffectiveTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (typeof window !== "undefined" && window.matchMedia) {
+          const mqDark = window.matchMedia("(prefers-color-scheme: dark)");
+          const mqLight = window.matchMedia("(prefers-color-scheme: light)");
+          if (mqDark.matches) {
+            newEffectiveTheme = "dark";
+          } else if (mqLight.matches) {
+            newEffectiveTheme = "light";
+          } else {
+            newEffectiveTheme = "dark"; // Default fallback if no system preference is set
+          }
+        } else {
+          newEffectiveTheme = "dark"; // Default fallback if matchMedia is unsupported
+        }
       } else {
-        newEffectiveTheme = theme;
+        newEffectiveTheme = theme === "dark" ? "dark" : "light";
       }
+
       setEffectiveTheme(newEffectiveTheme);
-      // Always remove both classes first
-      root.classList.remove("light");
-      root.classList.remove("dark");
-      // Then add the new one
+      root.classList.remove("light", "dark");
       root.classList.add(newEffectiveTheme);
-      // Force reflow to ensure CSS vars update
       root.style.colorScheme = newEffectiveTheme;
-      localStorage.setItem("theme", theme);
     };
-    updateTheme();
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => {
-      if (theme === "system") {
-        updateTheme();
-      }
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+
+    updateDOM();
+
+    // Live system theme switching listener
+    if (typeof window !== "undefined" && window.matchMedia) {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => {
+        // When system theme changes, automatically update and remove manual override
+        sessionStorage.removeItem("portfolio-theme-override");
+        setTheme("system");
+        updateDOM();
+      };
+
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
   }, [theme]);
 
+  // Wrapper for manual toggle
+  const handleSetTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("portfolio-theme", newTheme);
+      if (newTheme === "system") {
+        sessionStorage.removeItem("portfolio-theme-override");
+      } else {
+        sessionStorage.setItem("portfolio-theme-override", "true");
+      }
+    }
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, effectiveTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, effectiveTheme }}>
       {children}
     </ThemeContext.Provider>
   );
