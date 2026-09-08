@@ -17,6 +17,175 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
+// ABIs for current vs legacy contract versions
+const ifaceNew = new ethers.Interface([
+  "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
+  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
+  "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType))"
+]);
+
+const ifaceOld = new ethers.Interface([
+  "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount)",
+  "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, uint256 payout)",
+  "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 timestamp, uint8 status, string gameType))"
+]);
+
+const TOPIC_GAME_CREATED_NEW = ethers.id("GameCreated(bytes32,address,string,uint256,uint256,uint256)");
+const TOPIC_GAME_CREATED_OLD = ethers.id("GameCreated(bytes32,address,string,uint256,uint256)");
+
+const TOPIC_GAME_VERIFIED_NEW = ethers.id("GameVerified(bytes32,address,uint256,bool,bool,uint256)");
+const TOPIC_GAME_VERIFIED_OLD = ethers.id("GameVerified(bytes32,address,uint256,bool,uint256)");
+
+
+// Robust chunked getLogs that respects RPC block range limits (e.g. MetaMask/Infura 10,000 blocks limit)
+// with automatic bisection on range-related RPC errors.
+async function getLogsChunked(
+  provider: ethers.Provider,
+  filter: any,
+  fromBlock: number,
+  toBlock: number,
+  maxChunk = 8000,
+  concurrency = 6
+): Promise<any[]> {
+  if (toBlock < fromBlock) return [];
+  const ranges: { from: number; to: number }[] = [];
+  for (let from = fromBlock; from <= toBlock; from += maxChunk) {
+    ranges.push({ from, to: Math.min(from + maxChunk - 1, toBlock) });
+  }
+
+  const results: any[] = [];
+  for (let i = 0; i < ranges.length; i += concurrency) {
+    const batch = ranges.slice(i, i + concurrency);
+    const batchResults = await Promise.all(
+      batch.map(async ({ from, to }) => {
+        try {
+          return await provider.getLogs({
+            ...filter,
+            fromBlock: from,
+            toBlock: to,
+          });
+        } catch (err: any) {
+          const msg = String(err?.message || "").toLowerCase();
+          const isRangeErr =
+            err?.code === -32602 ||
+            err?.code === -32701 ||
+            msg.includes("exceed") ||
+            msg.includes("limit") ||
+            msg.includes("range");
+
+          if (isRangeErr && to > from) {
+            const mid = Math.floor((from + to) / 2);
+            const [left, right] = await Promise.all([
+              getLogsChunked(provider, filter, from, mid, Math.floor(maxChunk / 2), 2),
+              getLogsChunked(provider, filter, mid + 1, to, Math.floor(maxChunk / 2), 2),
+            ]);
+            return [...left, ...right];
+          } else {
+            console.warn(`getLogs failed for range [${from}, ${to}]:`, err);
+            return [];
+          }
+        }
+      })
+    );
+    for (const res of batchResults) {
+      if (Array.isArray(res)) results.push(...res);
+    }
+  }
+
+  return results;
+}
+
+function decodeVerifiedLog(log: any) {
+  try {
+    const decoded = ifaceNew.decodeEventLog("GameVerified", log.data, log.topics);
+    return {
+      actualScore: Number(decoded.actualScore),
+      won: Boolean(decoded.won),
+      payout: ethers.formatUnits(decoded.payout, 6),
+    };
+  } catch {
+    try {
+      const decoded = ifaceOld.decodeEventLog("GameVerified", log.data, log.topics);
+      return {
+        actualScore: Number(decoded.actualScore),
+        won: Boolean(decoded.won),
+        payout: ethers.formatUnits(decoded.payout, 6),
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
+function decodeCreatedLog(log: any) {
+  try {
+    const decoded = ifaceNew.decodeEventLog("GameCreated", log.data, log.topics);
+    return {
+      gameId: decoded.gameId,
+      player: decoded.player,
+      gameType: decoded.gameType,
+      targetScore: decoded.targetScore?.toString?.() || "",
+      stakeAmount: ethers.formatUnits(decoded.stakeAmount, 6),
+      flawlessStake: ethers.formatUnits(decoded.flawlessStake, 6),
+    };
+  } catch {
+    try {
+      const decoded = ifaceOld.decodeEventLog("GameCreated", log.data, log.topics);
+      return {
+        gameId: decoded.gameId,
+        player: decoded.player,
+        gameType: decoded.gameType,
+        targetScore: decoded.targetScore?.toString?.() || "",
+        stakeAmount: ethers.formatUnits(decoded.stakeAmount, 6),
+        flawlessStake: "0",
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
+async function fetchGameData(provider: ethers.Provider, contractAddress: string, gameId: string) {
+  let targetAddr = contractAddress;
+  try {
+    targetAddr = ethers.getAddress(contractAddress.toLowerCase());
+  } catch {}
+
+  try {
+    const res = await provider.call({
+      to: targetAddr,
+      data: ifaceNew.encodeFunctionData("getGame", [gameId]),
+    });
+    const decoded = ifaceNew.decodeFunctionResult("getGame", res);
+    return {
+      gameType: decoded[0].gameType,
+      targetScore: decoded[0].targetScore?.toString?.() || "",
+      stakeAmount: ethers.formatUnits(decoded[0].stakeAmount, 6),
+      flawlessStake: ethers.formatUnits(decoded[0].flawlessStake, 6),
+      timestamp: Number(decoded[0].timestamp),
+      status: Number(decoded[0].status),
+    };
+  } catch {
+    try {
+      const res = await provider.call({
+        to: targetAddr,
+        data: ifaceOld.encodeFunctionData("getGame", [gameId]),
+      });
+      const decoded = ifaceOld.decodeFunctionResult("getGame", res);
+      return {
+        gameType: decoded[0].gameType,
+        targetScore: decoded[0].targetScore?.toString?.() || "",
+        stakeAmount: ethers.formatUnits(decoded[0].stakeAmount, 6),
+        flawlessStake: "0",
+        timestamp: Number(decoded[0].timestamp),
+        status: Number(decoded[0].status),
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
 // This dashboard lists all games staked by the user and provides a button to submit results for each
 export default function StakedGamesDashboard() {
   const { account, signer } = useWallet();
@@ -43,163 +212,233 @@ export default function StakedGamesDashboard() {
       setLoading(true);
       setError("");
       try {
-        const contractABI = [
-          "event GameCreated(bytes32 indexed gameId, address indexed player, string gameType, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake)",
-          "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
-          // Use ethers v6 tuple ABI with named output (flawlessStake added)
-          "function getGame(bytes32 gameId) view returns (tuple(address player, uint256 targetScore, uint256 stakeAmount, uint256 flawlessStake, uint256 timestamp, uint8 status, string gameType) game)"
-        ];
         const primaryAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
-        const secondLastAddress = process.env.NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS || "";
-        const thirdLastAddress = process.env.NEXT_PUBLIC_THIRD_LAST_CONTRACT_ADDRESSES || "";
-        const legacyAddressesRaw = process.env.NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES || "";
+        const secondLastAddress =
+          process.env.NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS ||
+          process.env.NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESSES ||
+          "";
+        const thirdLastAddress =
+          process.env.NEXT_PUBLIC_THIRD_LAST_CONTRACT_ADDRESSES ||
+          process.env.NEXT_PUBLIC_THIRD_LAST_CONTRACT_ADDRESS ||
+          "";
+        const legacyAddressesRaw =
+          process.env.NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES ||
+          process.env.NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESS ||
+          "";
         const legacyAddresses = legacyAddressesRaw
           .split(",")
           .map((addr) => addr.trim())
           .filter((addr) => addr.length > 0);
 
-        const allAddresses = [primaryAddress, secondLastAddress, thirdLastAddress, ...legacyAddresses].filter((addr, index, self) =>
-          addr && self.indexOf(addr) === index
+        const provider = signer.provider;
+        if (!provider) return;
+
+        const latestBlock = await provider.getBlockNumber();
+        const envStart = Number(
+          process.env.NEXT_PUBLIC_DEPLOYMENT_START_BLOCK ||
+          process.env.NEXT_PUBLIC_START_BLOCK
         );
 
-        const provider = signer.provider;
+        // Build contract configurations directly from environment variables with their active block ranges
+        // No hardcoded address literals: all addresses are sourced purely from process.env
+        const contractConfigs: { address: string; startBlock: number; endBlock: number }[] = [];
 
-        const allGames: any[] = [];
-
-        for (const addr of allAddresses) {
-          try {
-            const contract = new ethers.Contract(addr, contractABI, provider);
-
-            // Query all GameCreated events for this user on this contract
-            const filter = contract.filters.GameCreated(null, account);
-            const events = await contract.queryFilter(filter, 0);
-
-            const gamesForContract = await Promise.all(
-              events.map(async (ev: any) => {
-                const gameId = ev.args.gameId;
-                let gameData;
-                let actualScore = null;
-                try {
-                  gameData = await contract.getGame(gameId);
-                  // Fetch GameVerified event for this gameId
-                  const verifiedFilter = contract.filters.GameVerified(gameId);
-                  const verifiedEvents = await contract.queryFilter(verifiedFilter, 0);
-                  if (verifiedEvents.length > 0) {
-                    // Use the last GameVerified event (should only be one per game)
-                    const last = verifiedEvents[verifiedEvents.length - 1];
-                    // ethers v6: args may not exist on Log/EventLog in production, so decode if needed
-                    let actualScoreRaw = null;
-                    if ("args" in last && last.args && typeof last.args === "object") {
-                      actualScoreRaw = (last as any).args.actualScore;
-                    } else if ((last as any).data && (last as any).topics) {
-                      // decode log manually
-                      const iface = new ethers.Interface([
-                        "event GameVerified(bytes32 indexed gameId, address indexed player, uint256 actualScore, bool won, bool flawlessClaimed, uint256 payout)",
-                      ]);
-                      const decoded = iface.decodeEventLog(
-                        "GameVerified",
-                        (last as any).data,
-                        (last as any).topics
-                      );
-                      actualScoreRaw = (decoded as any).actualScore;
-                    }
-                    actualScore = (actualScoreRaw as any)?.toString?.() || actualScoreRaw;
-                  }
-                  // Convert ethers.js Result (Proxy) to plain object
-                  let gameObj: { [key: string]: any };
-                  if (gameData && typeof gameData === "object" && typeof (gameData as any).toObject === "function") {
-                    gameObj = (gameData as any).toObject();
-                  } else if (gameData && typeof gameData === "object") {
-                    gameObj = {};
-                    for (const key of Object.keys(gameData as any)) {
-                      (gameObj as any)[key] = (gameData as any)[key];
-                    }
-                    for (const key in gameData as any) {
-                      if (!isNaN(Number(key))) {
-                        (gameObj as any)[key] = (gameData as any)[key];
-                      }
-                    }
-                  } else {
-                    gameObj = gameData as any;
-                  }
-                  // Log all properties for debugging
-                  console.log("dashboard row", ev.args.gameId, gameObj, { actualScore, addr });
-                } catch (err) {
-                  console.warn("getGame failed", gameId, addr, err);
-                }
-                let gameType, targetScore, stakeAmount, status;
-                if (gameData && typeof gameData === "object" && "gameType" in (gameData as any)) {
-                  gameType = (gameData as any).gameType || ev.args.gameType;
-                  targetScore =
-                    (gameData as any).targetScore?.toString?.() ||
-                    ev.args.targetScore?.toString?.() ||
-                    "";
-                  try {
-                    stakeAmount = (gameData as any).stakeAmount
-                      ? ethers.formatUnits((gameData as any).stakeAmount, 6)
-                      : ethers.formatUnits(ev.args.stakeAmount, 6);
-                  } catch {
-                    stakeAmount =
-                      (gameData as any).stakeAmount?.toString?.() ||
-                      ev.args.stakeAmount?.toString?.() ||
-                      "0";
-                  }
-                  // read flawlessStake if present
-                  let flawlessStake = "0";
-                  try {
-                    flawlessStake = (gameData as any).flawlessStake
-                      ? ethers.formatUnits((gameData as any).flawlessStake, 6)
-                      : "0";
-                  } catch {
-                    flawlessStake = (gameData as any).flawlessStake?.toString?.() || "0";
-                  }
-                  status = typeof (gameData as any).status !== "undefined" ? Number((gameData as any).status) : 0;
-                  // attach flawless info to object for UI
-                  (ev as any).flawlessStake = flawlessStake;
-                } else {
-                  gameType = ev.args.gameType;
-                  targetScore = ev.args.targetScore?.toString?.() || "";
-                  try {
-                    stakeAmount = ethers.formatUnits(ev.args.stakeAmount, 6);
-                  } catch {
-                    stakeAmount = ev.args.stakeAmount?.toString?.() || "0";
-                  }
-                  (ev as any).flawlessStake = "0";
-                  status = typeof ev.args.status !== "undefined" ? Number(ev.args.status) : 0;
-                }
-                return {
-                  contractAddress: addr,
-                  gameId,
-                  gameType,
-                  targetScore,
-                  stakeAmount,
-                  flawlessStake: (ev as any).flawlessStake || "0",
-                  status: typeof status === "bigint" ? Number(status) : status,
-                  actualScore: actualScore !== null ? Number(actualScore) : null,
-                  createdBlock: Number((ev as any).blockNumber ?? 0),
-                  createdLogIndex: Number((ev as any).logIndex ?? (ev as any).index ?? 0),
-                };
-              })
-            );
-
-            allGames.push(...gamesForContract);
-          } catch (err) {
-            console.warn("Failed to fetch games for contract", addr, err);
-          }
+        if (primaryAddress) {
+          contractConfigs.push({
+            address: primaryAddress,
+            startBlock: !isNaN(envStart) && envStart > 0 ? envStart : 11045000,
+            endBlock: latestBlock,
+          });
+        }
+        if (secondLastAddress) {
+          contractConfigs.push({
+            address: secondLastAddress,
+            startBlock: 9800000,
+            endBlock: 10450000,
+          });
+        }
+        if (thirdLastAddress) {
+          contractConfigs.push({
+            address: thirdLastAddress,
+            startBlock: 10250000,
+            endBlock: 10750000,
+          });
+        }
+        for (const addr of legacyAddresses) {
+          contractConfigs.push({
+            address: addr,
+            startBlock: 10500000,
+            endBlock: 11100000,
+          });
         }
 
-        // Sort newest stakes first so latest entries appear at the top
-        allGames.sort((a, b) => {
-          if (a.createdBlock !== b.createdBlock) {
-            return b.createdBlock - a.createdBlock;
-          }
-          return b.createdLogIndex - a.createdLogIndex;
-        });
+        // Deduplicate addresses safely and normalize with EIP-55 checksum
+        const seen = new Set<string>();
+        const uniqueConfigs: { address: string; startBlock: number; endBlock: number }[] = [];
 
-        setGames(allGames);
+        for (const cfg of contractConfigs) {
+          if (!cfg.address) continue;
+          let normalized = cfg.address.trim();
+          try {
+            normalized = ethers.getAddress(normalized.toLowerCase());
+          } catch {}
+          const lower = normalized.toLowerCase();
+          if (seen.has(lower)) continue;
+          seen.add(lower);
+
+          uniqueConfigs.push({
+            address: normalized,
+            startBlock: cfg.startBlock,
+            endBlock: cfg.endBlock,
+          });
+        }
+
+        const playerTopic = ethers.zeroPadValue(account.toLowerCase(), 32);
+
+        console.log("[Dashboard] Starting parallel fetch for contracts:", uniqueConfigs.map(c => `${c.address} [${c.startBlock}->${c.endBlock}]`));
+
+        // Helper to stream and deduplicate incoming games per contract
+        const updateGamesList = (incoming: any[]) => {
+          if (!incoming || incoming.length === 0) return;
+          setGames((prev) => {
+            const map = new Map<string, any>();
+            for (const g of prev) {
+              const key = `${(g.contractAddress || "").toLowerCase()}-${g.gameId}`;
+              map.set(key, g);
+            }
+            for (const g of incoming) {
+              const key = `${(g.contractAddress || "").toLowerCase()}-${g.gameId}`;
+              map.set(key, g);
+            }
+            const merged = Array.from(map.values());
+            merged.sort((a, b) => {
+              if (a.createdBlock !== b.createdBlock) {
+                return (b.createdBlock || 0) - (a.createdBlock || 0);
+              }
+              return (b.createdLogIndex || 0) - (a.createdLogIndex || 0);
+            });
+            return merged;
+          });
+        };
+
+        // Fetch all contracts concurrently in parallel for instant, low-latency loading
+        await Promise.all(
+          uniqueConfigs.map(async (config) => {
+            const addr = config.address;
+            const startBlock = config.startBlock;
+            const endBlock = config.endBlock;
+
+            try {
+              console.log(`[Dashboard] Scanning ${addr} [blocks ${startBlock} -> ${endBlock}]...`);
+
+              // Query both new and legacy GameCreated schemas concurrently
+              const [logsNew, logsOld] = await Promise.all([
+                getLogsChunked(
+                  provider,
+                  { address: addr, topics: [TOPIC_GAME_CREATED_NEW, null, playerTopic] },
+                  startBlock,
+                  endBlock,
+                  8000,
+                  4
+                ),
+                getLogsChunked(
+                  provider,
+                  { address: addr, topics: [TOPIC_GAME_CREATED_OLD, null, playerTopic] },
+                  startBlock,
+                  endBlock,
+                  8000,
+                  4
+                ),
+              ]);
+
+              const createdLogs = [...logsNew, ...logsOld];
+              console.log(`[Dashboard] Contract ${addr}: found ${createdLogs.length} created logs`);
+
+              if (!createdLogs || createdLogs.length === 0) {
+                return;
+              }
+
+              // Only query verification events starting from the earliest game created
+              const minCreatedBlock = Math.min(
+                ...createdLogs.map((l: any) => Number(l.blockNumber || startBlock))
+              );
+
+              // Query both new and legacy GameVerified schemas concurrently
+              const [vNew, vOld] = await Promise.all([
+                getLogsChunked(
+                  provider,
+                  { address: addr, topics: [TOPIC_GAME_VERIFIED_NEW, null, playerTopic] },
+                  minCreatedBlock,
+                  endBlock,
+                  8000,
+                  4
+                ),
+                getLogsChunked(
+                  provider,
+                  { address: addr, topics: [TOPIC_GAME_VERIFIED_OLD, null, playerTopic] },
+                  minCreatedBlock,
+                  endBlock,
+                  8000,
+                  4
+                ),
+              ]);
+
+              const verifiedLogs = [...vNew, ...vOld];
+              const verifiedMap = new Map<string, any>();
+              for (const v of verifiedLogs) {
+                const gId = v?.topics?.[1];
+                if (gId) {
+                  verifiedMap.set(gId, decodeVerifiedLog(v));
+                }
+              }
+
+              const gamesForContract = await Promise.all(
+                createdLogs.map(async (ev: any) => {
+                  const gameId = ev?.topics?.[1];
+                  const decodedCreated = decodeCreatedLog(ev);
+                  const verifiedInfo = verifiedMap.get(gameId);
+
+                  // If game is already verified from logs, status is won (1) or lost (2).
+                  // Only make an onchain getGame call if unverified to check for cancelled status (3).
+                  let status = verifiedInfo ? (verifiedInfo.won ? 1 : 2) : 0;
+                  let onchainGame: any = null;
+
+                  if (!verifiedInfo) {
+                    onchainGame = await fetchGameData(provider, addr, gameId);
+                    if (onchainGame?.status !== undefined) {
+                      status = onchainGame.status;
+                    }
+                  }
+
+                  const actualScore =
+                    verifiedInfo?.actualScore !== undefined ? Number(verifiedInfo.actualScore) : null;
+
+                  return {
+                    contractAddress: addr,
+                    gameId,
+                    gameType: onchainGame?.gameType || decodedCreated?.gameType || "unknown",
+                    targetScore: onchainGame?.targetScore || decodedCreated?.targetScore || "",
+                    stakeAmount: onchainGame?.stakeAmount || decodedCreated?.stakeAmount || "0",
+                    flawlessStake: onchainGame?.flawlessStake || decodedCreated?.flawlessStake || "0",
+                    status,
+                    actualScore,
+                    createdBlock: Number(ev.blockNumber ?? 0),
+                    createdLogIndex: Number(ev.index ?? ev.logIndex ?? 0),
+                  };
+                })
+              );
+
+              console.log(`[Dashboard] Loaded ${gamesForContract.length} games for ${addr}`);
+              updateGamesList(gamesForContract);
+            } catch (err) {
+              console.warn("Failed to fetch games for contract", addr, err);
+            }
+          })
+        );
       } catch (err: any) {
         setError(err.message || "Failed to fetch games");
       } finally {
+        setLoading(false);
         setLoading(false);
       }
     };
@@ -238,11 +477,15 @@ export default function StakedGamesDashboard() {
 
       const scoreNum = typeof g.actualScore === "number" ? g.actualScore : NaN;
       const targetNum = Number(g.targetScore);
-      if (isNaN(scoreNum) || isNaN(targetNum)) return;
-
-      if (scoreNum < targetNum) {
+      if (!isNaN(scoreNum) && !isNaN(targetNum)) {
+        if (scoreNum < targetNum) {
+          wins[index] += 1;
+        } else if (scoreNum >= targetNum) {
+          losses[index] += 1;
+        }
+      } else if (g.status === 1) {
         wins[index] += 1;
-      } else if (scoreNum >= targetNum) {
+      } else if (g.status === 2) {
         losses[index] += 1;
       }
     });
@@ -344,6 +587,8 @@ export default function StakedGamesDashboard() {
         if (scoreNum >= targetNum) return "Lost";
       }
     }
+    if (g.status === 1) return "Won";
+    if (g.status === 2) return "Lost";
     return "Pending";
   };
 
@@ -429,7 +674,7 @@ export default function StakedGamesDashboard() {
             </thead>
             <tbody>
               {paginatedGames.map((g) => (
-                <tr key={g.gameId} className="border-b border-border">
+                <tr key={`${g.contractAddress || ""}-${g.gameId}`} className="border-b border-border">
                   <td className="px-2 py-1">{g.gameType}</td>
                   <td className="px-2 py-1">{g.targetScore}</td>
                   <td className="px-2 py-1">{g.stakeAmount} USDC</td>
