@@ -22,7 +22,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 - Play Now Links - Per-game quick launch buttons open LinkedIn game links in a new tab
 - USDC Staking - Stake stablecoins on your LinkedIn Games scores
 - Attested Verification - Result settlement requires server-signed attestation (nonce + deadline + signature)
-- Historical Dashboard Aggregation - Charts aggregate across current, second-last, and legacy contracts
+- Progressive Multi-Contract Dashboard - Parallel chunked event fetching across all current, second-last, and legacy contracts with progressive streaming, zero RPC range limits, and dynamic live analytics
 - Instant Rewards - Earn rewards when you meet your target score
 - MetaMask Wallet - Browser wallet integration for Sepolia
 - Pleasant UI - Clean, minimal design inspired by competitive gaming and LinkedIn Games
@@ -328,6 +328,23 @@ Recompile and redeploy:
 python compile_solidity.py
 python deploy_sepolia.py
 ```
+
+## Recent Updates & Security Maintenance
+
+### Multi-Contract Dashboard & Progressive Streaming
+- **Concurrent Multi-Contract RPC Fetching**: Implemented parallel, chunked event querying across all configured contracts (`NEXT_PUBLIC_CONTRACT_ADDRESS`, `NEXT_PUBLIC_SECOND_LAST_CONTRACT_ADDRESS`, `NEXT_PUBLIC_THIRD_LAST_CONTRACT_ADDRESSES`, `NEXT_PUBLIC_LEGACY_CONTRACT_ADDRESSES`).
+- **Progressive Streaming & Zero RPC Limits**: Resolved the RPC `range exceeds limit of 10000` limit by auto-chunking block ranges, streaming stakes directly to the table as each contract finishes.
+- **Dual Event Schema Resolution**: Supports both legacy and modern `GameCreated` / `GameVerified` event signatures concurrently without manual ABI toggles.
+- **Dynamic Live Analytics**: Win/loss distribution charts dynamically re-aggregate in real time as historical and new stakes load, strictly scoped to the connected wallet.
+
+### Dependabot Security & Toolchain Upgrades
+- **Next.js Core**: Bumped `next` from `16.2.6` to `16.3.4` for framework security, stability, and Turbopack optimizations ([#25](https://github.com/Soumilgit/StakeLiGames/pull/25)).
+- **Brace Expansion**: Bumped `brace-expansion` for improved string pattern matching security ([#26](https://github.com/Soumilgit/StakeLiGames/pull/26)).
+- **JS-YAML**: Bumped `js-yaml` from `4.2.0` to `4.3.2` for enhanced YAML parsing security ([#27](https://github.com/Soumilgit/StakeLiGames/pull/27)).
+- **Browserslist**: Bumped `browserslist` from `4.28.0` to `4.28.9` for target matrix and compatibility updates ([#28](https://github.com/Soumilgit/StakeLiGames/pull/28)).
+- **HumanFS**: Bumped `@humanfs/node` from `0.16.7` to `0.16.8` for file system safety ([#29](https://github.com/Soumilgit/StakeLiGames/pull/29)).
+- **Babel Core**: Bumped `@babel/core` from `7.29.0` to `7.29.7` for build toolchain fixes ([#30](https://github.com/Soumilgit/StakeLiGames/pull/30)).
+- **PostCSS Selector Parser**: Bumped `postcss-selector-parser` from `6.1.2` to `6.1.4` for CSS AST parsing stability ([#31](https://github.com/Soumilgit/StakeLiGames/pull/31)).
 
 ## Contributing
 
