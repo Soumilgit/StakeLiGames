@@ -338,7 +338,7 @@ python deploy_sepolia.py
 - **Dynamic Live Analytics**: Win/loss distribution charts dynamically re-aggregate in real time as historical and new stakes load, strictly scoped to the connected wallet.
 
 ### Dependabot Security & Toolchain Upgrades
-- **Next.js Core**: Bumped `next` from `16.2.6` to `16.3.4` and then to `16.4.0` for framework updates ([#25](https://github.com/Soumilgit/StakeLiGames/pull/25), [#32](https://github.com/Soumilgit/StakeLiGames/pull/32)).
+- **Next.js Core**: Bumped `next` from `16.2.6` to `16.3.4`,then to `16.4.0` and further on to `16.4.4` for framework updates ([#25](https://github.com/Soumilgit/StakeLiGames/pull/25), [#32](https://github.com/Soumilgit/StakeLiGames/pull/32) & [#38](https://github.com/Soumilgit/StakeLiGames/pull/38)) .
 - **Brace Expansion**: Bumped `brace-expansion` from `1.1.12` to `1.1.18` and then to `1.1.21`, and from `5.0.4` to `5.0.9` and then to `5.0.12` for dependency updates ([#26](https://github.com/Soumilgit/StakeLiGames/pull/26), [#35](https://github.com/Soumilgit/StakeLiGames/pull/35)).
 - **JS-YAML**: Bumped `js-yaml` from `4.2.0` to `4.3.2` for enhanced YAML parsing security ([#27](https://github.com/Soumilgit/StakeLiGames/pull/27)).
 - **Browserslist**: Bumped `browserslist` from `4.28.0` to `4.28.9` for target matrix and compatibility updates ([#28](https://github.com/Soumilgit/StakeLiGames/pull/28)).
