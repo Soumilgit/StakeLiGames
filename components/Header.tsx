@@ -74,6 +74,7 @@ export function Header() {
               </>
             ) : (
               <button 
+                data-tour-id="wallet-connect"
                 onClick={connect} 
                 disabled={isConnecting}
                 className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"

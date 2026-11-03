@@ -31,7 +31,7 @@ export function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-4 items-center">
-              <a href="#stake" className="btn-primary text-lg">
+              <a href="#stake" data-tour-id="get-started" className="btn-primary text-lg">
                 Get Started
               </a>
 

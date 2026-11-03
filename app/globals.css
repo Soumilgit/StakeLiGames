@@ -212,3 +212,48 @@ html {
   background-color: var(--primary);
   color: white;
 }
+
+.journey-dimmer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: rgba(10, 15, 25, 0.24);
+  transition: opacity 180ms ease;
+}
+
+.journey-card {
+  position: fixed;
+  z-index: 92;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+  border-radius: 12px;
+  color: var(--foreground);
+  background: var(--card);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  animation: journey-enter 180ms ease-out both;
+}
+
+.journey-card p {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.journey-card button {
+  padding: 2px 0;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@keyframes journey-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-dimmer { transition: none; }
+  .journey-card { animation: none; }
+}

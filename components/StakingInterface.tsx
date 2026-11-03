@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useWallet } from "./WalletProvider";
 import { motion } from "framer-motion";
 import { ethers } from "ethers";
+import { advanceJourney } from "./JourneyGuide";
 
 const games = [
   { id: "queens", name: "Queens", image: "/queens.jpg", difficulty: "Hard", targetTime: 40, unit: "sec", reward: "25%", flawlessBonus: "10%" },
@@ -176,6 +177,7 @@ export function StakingInterface() {
       } catch (e) {
         console.warn("Failed to parse GameCreated event", e);
       }
+      advanceJourney("dashboard", undefined, createdGameId || undefined);
       const performanceMsg = selectedGame.id === "pinpoint" 
         ? `score of ${targetTime} or lower (1-5, or NA if unsolved)`
         : `under ${targetTime} seconds`;
@@ -380,6 +382,7 @@ export function StakingInterface() {
               )}
 
               <button
+                data-tour-id="stake-submit"
                 onClick={handleStake}
                 disabled={!account || loading || !stakeAmount || !targetTime}
                 className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"

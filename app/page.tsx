@@ -19,7 +19,7 @@ export default function Home() {
       <StakingInterface />
       <div className="flex justify-center mt-10 mb-16">
         <Link href="/dashboard">
-          <button className="btn-primary">Open Dashboard</button>
+          <button data-tour-id="open-dashboard" className="btn-primary">Open Dashboard</button>
         </Link>
       </div>
       <NotificationBar />

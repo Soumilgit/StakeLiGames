@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWallet } from "../../../components/WalletProvider";
 import { ethers } from "ethers";
 import { useParams } from "next/navigation";
+import { advanceJourney } from "../../../components/JourneyGuide";
 
 export default function GamePage() {
   const router = useRouter();
@@ -111,6 +112,7 @@ export default function GamePage() {
       const finalResultStatus = getResultStatus();
       setMessage("Result submitted and payout processed.");
       setSubmittedResultStatus(finalResultStatus);
+      advanceJourney("result", finalResultStatus, String(gameIdParam));
       // Redirect to dashboard after short delay
       setTimeout(() => {
         router.push("/dashboard");
@@ -289,6 +291,7 @@ export default function GamePage() {
       <h1 className="text-3xl font-bold mb-6">Submit Your Game Result</h1>
       <div className="mb-4">
         <a
+          data-tour-id="game-play"
           href={playNowUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -300,6 +303,7 @@ export default function GamePage() {
       <div className="mb-4">
         <label className="block mb-2 font-semibold">Your Score / Time</label>
         <input
+          data-tour-id="game-score"
           type="number"
           value={actualScore}
           onChange={e => setActualScore(e.target.value)}
@@ -329,6 +333,7 @@ export default function GamePage() {
         </div>
       )}
       <button
+        data-tour-id="game-submit"
         onClick={handleSubmit}
         disabled={submitting || !actualScore || !account}
         className="btn-primary px-6 py-2"

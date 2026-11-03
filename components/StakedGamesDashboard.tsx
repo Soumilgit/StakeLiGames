@@ -194,6 +194,11 @@ export default function StakedGamesDashboard() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isDark, setIsDark] = useState(false);
+  const [journeyGameId, setJourneyGameId] = useState("");
+
+  useEffect(() => {
+    setJourneyGameId(localStorage.getItem("stakeligames-last-game") || "");
+  }, []);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -600,7 +605,7 @@ export default function StakedGamesDashboard() {
       {games.length === 0 && !loading && !error && <div>No staked games found.</div>}
       {games.length > 0 && (
         <div className="mb-8">
-          <div className="relative w-full h-64 sm:h-72 md:h-80">
+          <div data-tour-id="results-chart" className="relative w-full h-64 sm:h-72 md:h-80">
             <Line data={chartData} options={chartOptions} />
           </div>
         </div>
@@ -684,7 +689,7 @@ export default function StakedGamesDashboard() {
                       const status = getGameResultStatus(g);
                       if (status === "Won" || status === "Lost") {
                         return (
-                          <span className={`status-pill ${status === "Won" ? "status-pill-won" : "status-pill-lost"}`}>
+                          <span data-tour-id={journeyGameId && journeyGameId.toLowerCase() === String(g.gameId).toLowerCase() ? "result-status" : undefined} className={`status-pill ${status === "Won" ? "status-pill-won" : "status-pill-lost"}`}>
                             {status}
                           </span>
                         );
@@ -712,7 +717,7 @@ export default function StakedGamesDashboard() {
                       }
                       // Pending: show button
                       return (
-                        <Link href={`/game/${g.gameId}`}>
+                        <Link href={`/game/${g.gameId}`} data-tour-id="submit-result">
                           <button className="btn-secondary text-xs">Submit Result</button>
                         </Link>
                       );
