@@ -5,6 +5,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
+import { JourneyGuide } from "@/components/JourneyGuide";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,6 +44,7 @@ export default function RootLayout({
         <ThemeProvider>
           <WalletProvider>
             {children}
+            <JourneyGuide />
           </WalletProvider>
         </ThemeProvider>
         <Analytics />
