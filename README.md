@@ -10,7 +10,7 @@ Stake on your LinkedIn Games performance using stablecoins and earn rewards base
 
 ## Demo pics
 
-<img width="913" height="716" alt="staking-interface-light" src="https://github.com/user-attachments/assets/f896d427-9ca0-4106-8a2b-db05eb295b39" />
+<img width="906" height="718" alt="stakeligames-new" src="https://github.com/user-attachments/assets/0a0ce3a0-ee2c-43fa-ab51-70d0d9872e1f" />
 <img width="1027" height="723" alt="dashboard-light" src="https://github.com/user-attachments/assets/b3f84364-e79f-4c9a-87ab-5e430348e7aa" />
 <img width="491" height="355" alt="submit-light" src="https://github.com/user-attachments/assets/3fb37d4b-d7b7-4cc4-b045-d1902e589216" />
 
@@ -336,17 +336,8 @@ python deploy_sepolia.py
 - **Progressive Streaming & Zero RPC Limits**: Resolved the RPC `range exceeds limit of 10000` limit by auto-chunking block ranges, streaming stakes directly to the table as each contract finishes.
 - **Dual Event Schema Resolution**: Supports both legacy and modern `GameCreated` / `GameVerified` event signatures concurrently without manual ABI toggles.
 - **Dynamic Live Analytics**: Win/loss distribution charts dynamically re-aggregate in real time as historical and new stakes load, strictly scoped to the connected wallet.
+- **Dependabot Security & Toolchain Upgrades**: Updated package versions in sync with compatibility, avoiding vulnerabilities to spread :)
 
-### Dependabot Security & Toolchain Upgrades
-- **Next.js Core**: Bumped `next` from `16.2.6` to `16.3.4`,then to `16.4.0` and further on to `16.4.4` for framework updates ([#25](https://github.com/Soumilgit/StakeLiGames/pull/25), [#32](https://github.com/Soumilgit/StakeLiGames/pull/32) & [#38](https://github.com/Soumilgit/StakeLiGames/pull/38)) .
-- **Brace Expansion**: Bumped `brace-expansion` from `1.1.12` to `1.1.18` and then to `1.1.21`, and from `5.0.4` to `5.0.9` and then to `5.0.12` for dependency updates ([#26](https://github.com/Soumilgit/StakeLiGames/pull/26), [#35](https://github.com/Soumilgit/StakeLiGames/pull/35)).
-- **JS-YAML**: Bumped `js-yaml` from `4.2.0` to `4.3.2` for enhanced YAML parsing security ([#27](https://github.com/Soumilgit/StakeLiGames/pull/27)).
-- **Browserslist**: Bumped `browserslist` from `4.28.0` to `4.28.9` for target matrix and compatibility updates ([#28](https://github.com/Soumilgit/StakeLiGames/pull/28)).
-- **HumanFS**: Bumped `@humanfs/node` from `0.16.7` to `0.16.8` for file system safety ([#29](https://github.com/Soumilgit/StakeLiGames/pull/29)).
-- **Babel Core**: Bumped `@babel/core` from `7.29.0` to `7.29.7` for build toolchain fixes ([#30](https://github.com/Soumilgit/StakeLiGames/pull/30)).
-- **PostCSS Selector Parser**: Bumped `postcss-selector-parser` from `6.1.2` to `6.1.4` for CSS AST parsing stability ([#31](https://github.com/Soumilgit/StakeLiGames/pull/31)).
-- **Source Map JS**: Bumped `source-map-js` from `1.2.1` to `1.2.2` for source map generation updates ([#33](https://github.com/Soumilgit/StakeLiGames/pull/33)).
-- **Sharp**: Bumped `sharp` from `0.35.4` to `0.35.5` for image processing updates ([#34](https://github.com/Soumilgit/StakeLiGames/pull/34)).
 
 ## Contributing
 
