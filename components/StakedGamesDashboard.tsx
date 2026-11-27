@@ -466,6 +466,7 @@ export default function StakedGamesDashboard() {
       { key: "pinpoint", label: "Pinpoint" },
       { key: "wend", label: "Wend" },
       { key: "patches", label: "Patches" },
+      { key: "sumbreak", label: "Sumbreak" },
     ],
     []
   );

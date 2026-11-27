@@ -4,6 +4,7 @@ No need for Hardhat or npm!
 """
 
 from solcx import compile_standard, install_solc
+import hashlib
 import json
 import os
 import requests
@@ -107,6 +108,9 @@ def compile_contract():
     
     with open("bytecode.txt", "w") as file:
         file.write(contract_data["evm"]["bytecode"]["object"])
+
+    with open("compiled_source.sha256", "w") as file:
+        file.write(hashlib.sha256(contract_source.encode("utf-8")).hexdigest() + "\n")
     
     print("📄 Extracted ABI to abi.json")
     print("📄 Extracted bytecode to bytecode.txt")

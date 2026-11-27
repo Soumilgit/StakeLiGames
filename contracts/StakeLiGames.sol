@@ -86,6 +86,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         reverseScoring[keccak256(bytes("zip"))] = true;
         reverseScoring[keccak256(bytes("wend"))] = true;
         reverseScoring[keccak256(bytes("patches"))] = true;
+        reverseScoring[keccak256(bytes("sumbreak"))] = true;
 
         maxTargetScore[keccak256(bytes("pinpoint"))] = 5;
         maxTargetScore[keccak256(bytes("queens"))] = 600;
@@ -95,6 +96,7 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
         maxTargetScore[keccak256(bytes("zip"))] = 600;
         maxTargetScore[keccak256(bytes("wend"))] = 600;
         maxTargetScore[keccak256(bytes("patches"))] = 600;
+        maxTargetScore[keccak256(bytes("sumbreak"))] = 600;
     }
 
     // two-step verifier signer update to avoid accidentally setting wrong address
@@ -169,8 +171,8 @@ contract StakeLiGames is Ownable, ReentrancyGuard {
             return (2500, 1000);
         }
 
-        // Medium games: Mini Sudoku, Tango -> 20% base, +8% flawless
-        if (t == keccak256(bytes("mini-sudoku")) || t == keccak256(bytes("tango"))) {
+        // Medium games: Mini Sudoku, Tango, Sumbreak -> 20% base, +8% flawless
+        if (t == keccak256(bytes("mini-sudoku")) || t == keccak256(bytes("tango")) || t == keccak256(bytes("sumbreak"))) {
             return (2000, 800);
         }
 

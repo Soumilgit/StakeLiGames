@@ -4,6 +4,7 @@ No MetaMask needed - generates account or uses your private key
 """
 
 import json
+import hashlib
 import os
 from web3 import Web3
 from eth_account import Account
@@ -26,6 +27,31 @@ SEPOLIA_RPC_URLS = [
 # Sepolia USDC test token address. This is expected to be set either in
 # contracts/.env or in the project root .env.local (loaded above).
 SEPOLIA_USDC = os.environ["NEXT_PUBLIC_USDC_ADDRESS"]
+def estimate_deployment_gas(w3, transaction):
+    """Try each configured Sepolia RPC; public endpoints can have different gas caps."""
+    active_url = getattr(w3.provider, "endpoint_uri", None)
+    candidates = [active_url] + [url for url in SEPOLIA_RPC_URLS if url != active_url]
+    errors = []
+    estimate_transaction = dict(transaction)
+    # Let each node apply its own block gas limit. An explicit cap here can
+    # make eth_estimateGas fail before it finds the required deployment gas.
+    estimate_transaction.pop("gas", None)
+
+    for rpc_url in candidates:
+        if not rpc_url:
+            continue
+        candidate = w3 if rpc_url == active_url else Web3(Web3.HTTPProvider(rpc_url))
+        try:
+            if not candidate.is_connected():
+                errors.append(f"{rpc_url}: not connected")
+                continue
+            estimated_gas = candidate.eth.estimate_gas(estimate_transaction)
+            block_gas_limit = candidate.eth.get_block("latest").gasLimit
+            return estimated_gas, block_gas_limit, rpc_url
+        except Exception as exc:
+            errors.append(f"{rpc_url}: {exc}")
+
+    raise RuntimeError("; ".join(errors))
 
 def get_web3():
     """Connect to Sepolia using free public RPC"""
@@ -96,6 +122,19 @@ def deploy_contract(w3, account):
         print("❌ Contract not compiled! Run: python compile_solidity.py")
         return None
     
+    if not os.path.exists("compiled_source.sha256"):
+        print("Compiled source checksum is missing; run: python compile_solidity.py")
+        return None
+
+    with open("StakeLiGames.sol", "r", encoding="utf-8") as f:
+        source_hash = hashlib.sha256(f.read().encode("utf-8")).hexdigest()
+    with open("compiled_source.sha256", "r", encoding="utf-8") as f:
+        compiled_hash = f.read().strip()
+    if source_hash != compiled_hash:
+        print("Compiled bytecode is stale; it does not match StakeLiGames.sol.")
+        print("Run: python compile_solidity.py, then retry deployment.")
+        return None
+
     with open("abi.json", "r") as f:
         abi = json.load(f)
     
@@ -113,21 +152,38 @@ def deploy_contract(w3, account):
     # Build transaction
     print("\n🔨 Building deployment transaction...")
     
+    latest_block_gas_limit = w3.eth.get_block("latest").gasLimit
     constructor_txn = Contract.constructor(SEPOLIA_USDC).build_transaction({
         'from': account.address,
         'nonce': w3.eth.get_transaction_count(account.address),
-        'gas': 3000000,  # Estimated gas limit
+        # Temporary value for transaction construction; replaced after estimation.
+        'gas': latest_block_gas_limit,
         'gasPrice': gas_price,
     })
     
     # Estimate actual gas needed
+    estimation_succeeded = False
     try:
-        estimated_gas = w3.eth.estimate_gas(constructor_txn)
-        constructor_txn['gas'] = int(estimated_gas * 1.2)  # Add 20% buffer
+        estimated_gas, block_gas_limit, estimating_rpc = estimate_deployment_gas(
+            w3, constructor_txn
+        )
+        buffered_gas = int(estimated_gas * 1.2)
+        if buffered_gas > block_gas_limit:
+            raise RuntimeError(
+                f"Deployment gas with buffer ({buffered_gas}) exceeds "
+                f"the latest block gas limit ({block_gas_limit})."
+            )
+        constructor_txn['gas'] = buffered_gas
+        estimation_succeeded = True
+        print(f"Gas estimate RPC: {estimating_rpc}")
         print(f"📊 Estimated Gas: {estimated_gas}")
     except Exception as e:
         print(f"⚠️  Could not estimate gas: {e}")
     
+    if not estimation_succeeded:
+        print("No transaction was sent. Check the contract constructor and RPC, then retry.")
+        return None
+
     # Sign transaction
     print("\n✍️  Signing transaction...")
     signed_txn = w3.eth.account.sign_transaction(constructor_txn, account.key)

@@ -16,6 +16,7 @@ const games = [
   { id: "pinpoint", name: "Pinpoint", image: "/pinpoint.jpg", difficulty: "Special", targetTime: 5, unit: "score", reward: "30%", flawlessBonus: "0%", note: "Score: 1-5 or NA", hideFlawless: true },
   { id: "wend", name: "Wend", image: "/wend.jpg", difficulty: "Hard", targetTime: 40, unit: "sec", reward: "20%", flawlessBonus: "15%" },
   { id: "patches", name: "Patches", image: "/patches.jpg", difficulty: "Special", targetTime: 40, unit: "sec", reward: "10%", flawlessBonus: "10%" },
+  { id: "sumbreak", name: "Sumbreak", image: "/sumbreak.jpg", difficulty: "Medium", targetTime: 90, unit: "sec", reward: "20%", flawlessBonus: "8%" },
 ];
 
 export function StakingInterface() {
@@ -57,6 +58,7 @@ export function StakingInterface() {
       patches: "http://lnkd.in/patches",
       wend: "http://lnkd.in/wend",
       pinpoint: "http://lnkd.in/pinpoint",
+      sumbreak: "http://lnkd.in/sumbreak",
     };
 
     return map[gameId] || "https://www.linkedin.com/games/";
@@ -404,7 +406,7 @@ export function StakingInterface() {
           <div className="card-modern bg-white hover:bg-cardHover">
             <h4 className="font-bold mb-2">Time-Based & Score Scoring</h4>
             <p className="text-sm text-muted">
-              Stake across 8 games! Pinpoint uses score (1-5 or NA if unsolved).
+              Stake across 9 games! Pinpoint uses score (1-5 or NA if unsolved).
             </p>
           </div>
           <div className="card-modern bg-card/50 hover:bg-cardHover">

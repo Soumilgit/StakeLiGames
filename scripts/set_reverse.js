@@ -3,7 +3,7 @@ const { ethers } = require('ethers');
 
 // Usage:
 // set env: OWNER_PRIVATE_KEY, NEXT_PUBLIC_CONTRACT_ADDRESS, SEP_RPC (optional)
-// node scripts/set_reverse.js queens,crossclimb,minisudoku,tango,zip
+// node scripts/set_reverse.js queens,crossclimb,mini-sudoku,tango,zip,sumbreak
 
 async function main() {
   const pk = process.env.OWNER_PRIVATE_KEY;
@@ -25,7 +25,7 @@ async function main() {
   const c = new ethers.Contract(contract, abi, wallet);
 
   const arg = process.argv[2] || '';
-  const games = arg ? arg.split(',') : ['queens','crossclimb','minisudoku','tango','zip'];
+  const games = arg ? arg.split(',') : ['queens','crossclimb','mini-sudoku','tango','zip','wend','patches','sumbreak'];
 
   for (const g of games) {
     console.log('Setting reverse scoring for', g);

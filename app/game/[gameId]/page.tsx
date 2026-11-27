@@ -199,7 +199,7 @@ export default function GamePage() {
     if (typeKey === "queens" || typeKey === "crossclimb") {
       baseRewardBps = 2500n;
       flawlessBonusBps = 1000n;
-    } else if (typeKey === "mini-sudoku" || typeKey === "tango") {
+    } else if (typeKey === "mini-sudoku" || typeKey === "tango" || typeKey === "sumbreak") {
       baseRewardBps = 2000n;
       flawlessBonusBps = 800n;
     } else if (typeKey === "zip") {
@@ -279,6 +279,7 @@ export default function GamePage() {
       pinpoint: "http://lnkd.in/pinpoint",
       wend: "http://lnkd.in/wend",
       patches: "http://lnkd.in/patches",
+      sumbreak: "http://lnkd.in/sumbreak",
     };
 
     return map[type.toLowerCase()] || "https://www.linkedin.com/games/";

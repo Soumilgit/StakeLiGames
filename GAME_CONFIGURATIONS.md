@@ -1,6 +1,6 @@
 # StakeLiGames - Game Configurations
 
-## Official 8 LinkedIn Games
+## Official 9 LinkedIn Games
 
 ### 1. **Queens**
 - **Difficulty:** Hard
@@ -59,12 +59,19 @@
 - **Flawless Bonus:** +10%
 - **Total Max:** 20%
 
+### 9. **Sumbreak**
+- **Difficulty:** Medium
+- **Scoring:** Time-based
+- **Base Reward:** 20%
+- **Flawless Bonus:** +8%
+- **Total Max:** 28%
+
 ---
 
 ## Scoring Systems
 
-### Time-Based Games (7 games)
-- Queens, Crossclimb, Mini Sudoku, Tango, Zip, Wend, Patches
+### Time-Based Games (8 games)
+- Queens, Crossclimb, Mini Sudoku, Tango, Zip, Wend, Patches, Sumbreak
 - **Metric:** Completion time in seconds
 - **Flawless Option:** Available (no hints, no mistakes)
 
@@ -116,6 +123,13 @@ function createGame(
 )
 ```
 
+Sumbreak uses reverse time scoring with a maximum target of 600 seconds and the
+Medium reward tier (20% base + 8% flawless). For an already deployed contract,
+run `python set_max_target_scores.py` from `contracts/` and
+`node scripts/set_reverse.js sumbreak` from the repository root. These configure
+its maximum target and reverse scoring without changing Pinpoint's special
+score-based rules.
+
 ### Example Stakes
 
 **Queens (Hard, Time-based with Flawless):**
@@ -148,12 +162,12 @@ Shows 2 featured games:
 - Crossclimb: +25% reward
 
 ### Staking Interface
-- Responsive grid showing all 8 games
+- Responsive grid showing all 9 games
 - Dynamic labels (seconds vs score)
 - Conditional flawless checkbox (hidden for Pinpoint)
 - Real-time reward calculations
 
 ---
 
-**Contract Address:** 0x60D96e2290CB500E315cE3f6eDf742afd6601663
+**Contract Address:** 0xaf572a1a22a104A7e3f11E293D618620D37A1583
 **Network:** Ethereum Sepolia Testnet

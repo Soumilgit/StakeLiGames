@@ -42,6 +42,7 @@ TARGETS = {
     "zip": 600,
     "wend": 600,
     "patches": 600,
+    "sumbreak": 600,
     "pinpoint": 5,
 }
 

@@ -1,5 +1,6 @@
 # Ignore deployment output
 contracts/deployment.json
+contracts/compiled_source.sha256
 # dependencies
 /node_modules
 /.pnp
